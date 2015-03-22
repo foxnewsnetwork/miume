@@ -2,9 +2,8 @@
 
 module.exports = function(environment) {
   var ENV = {
-    modulePrefix: 'miume',
+    modulePrefix: '<%= modulePrefix %>',
     environment: environment,
-    baseURL: '/',
     locationType: 'auto',
     EmberENV: {
       FEATURES: {
@@ -13,9 +12,22 @@ module.exports = function(environment) {
       }
     },
 
+    contentSecurityPolicy: { 
+      'connect-src': "'self' wss://*.firebaseio.com",
+      "img-src": "'self' http://192.168.0.101",
+      "media-src": "'self' http://localhost:*",
+      "font-src": "http://fonts.gstatic.com 'self'",
+      "style-src": "'self' http://fonts.googleapis.com",
+      "script-src": "'self' https://s.ytimg.com",
+      "frame-src": "'self' https://www.youtube.com"
+    },
+
     APP: {
       // Here you can pass flags/options to your application instance
       // when it is created
+    },
+    sassOptions: {
+      includePaths: ['bower_components/materialize/sass']
     }
   };
 
@@ -40,7 +52,8 @@ module.exports = function(environment) {
   }
 
   if (environment === 'production') {
-
+    ENV.locationType = "hash";
+    ENV.baseURL = "/" + ENV.modulePrefix;
   }
 
   return ENV;
