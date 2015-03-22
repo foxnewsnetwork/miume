@@ -21,12 +21,12 @@
   "devDependencies": {
     "broccoli-asset-rev": "^2.0.0",
     "coffee-script": "1.9.1",
+    "compass-mixins": "^0.12.3",
     "ember-cli": "0.2.0",
     "ember-cli-app-version": "0.3.2",
     "ember-cli-async-button": "0.5.0",
     "ember-cli-babel": "^4.0.0",
     "ember-cli-coffeescript": "0.10.0",
-    "ember-cli-compass-compiler": "0.0.18",
     "ember-cli-content-security-policy": "0.3.0",
     "ember-cli-dependency-checker": "0.0.8",
     "ember-cli-emblem-hbs-printer": "0.2.1",
@@ -45,7 +45,7 @@
     "ember-export-application-global": "^1.0.2",
     "ember-lazy-video": "0.2.5",
     "ember-moment": "1.1.1",
-    "liquid-fire": "0.18.0",
+    "liquid-fire": "^0.17.1",
     "rails-csrf": "2.0.1"
   }
 }

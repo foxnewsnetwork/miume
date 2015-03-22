@@ -2,7 +2,7 @@
 
 module.exports = function(environment) {
   var ENV = {
-    modulePrefix: '<%= modulePrefix %>',
+    modulePrefix: 'miume',
     environment: environment,
     locationType: 'auto',
     EmberENV: {
@@ -27,7 +27,10 @@ module.exports = function(environment) {
       // when it is created
     },
     sassOptions: {
-      includePaths: ['bower_components/materialize/sass']
+      includePaths: [
+        'bower_components/materialize/sass',
+        'node_modules/compass-mixins/lib'
+      ]
     }
   };
 
