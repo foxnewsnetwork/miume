@@ -1,3 +1,4 @@
+@import url(http://fonts.googleapis.com/css?family=Lobster);
 .materialize-red.lighten-5 {
   background-color: #fdeaeb !important; }
 
@@ -7888,5 +7889,289 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
 @media (min-height: 40.125em) {
   .picker--time .picker__box {
     margin-bottom: 5em; } }
+
+#index {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-direction: normal;
+  -webkit-box-orient: vertical;
+  -webkit-flex-direction: column;
+  -moz-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  -webkit-justify-content: center;
+  -moz-justify-content: center;
+  justify-content: center; }
+  #index .flexnav {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+    -moz-justify-content: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    -moz-align-items: center;
+    align-items: center; }
+  #index .site-title {
+    text-align: center; }
+  #index .brand-logo {
+    margin-left: 20px; }
+  #index.after {
+    visibility: hidden; }
+
+#index-faraway .parallax-background {
+  -webkit-filter: grayscale(25%) contrast(75%);
+  -moz-filter: grayscale(25%) contrast(75%);
+  -o-filter: grayscale(25%) contrast(75%);
+  -ms-filter: grayscale(25%) contrast(75%);
+  -ms-filter: "progid:DXImageTransform@mixin Microsoft@mixin Alpha(Opacity=${iefactor})";
+  filter: "alpha(opacity=(${iefactor}))";
+  -moz-opacity: 0.6;
+  -khtml-opacity: 0.6;
+  opacity: 0.6; }
+
+#index-back {
+  margin-top: 25px; }
+  #index-back .site-logo {
+    font-size: 2rem; }
+  #index-back .centered {
+    text-align: center; }
+
+#about {
+  padding-top: 20px;
+  -webkit-transition-property: background-color;
+  -moz-transition-property: background-color;
+  -o-transition-property: background-color;
+  -ms-transition-property: background-color;
+  transition-property: background-color;
+  -webkit-transition-timing-function: ease-out;
+  -moz-transition-timing-function: ease-out;
+  -o-transition-timing-function: ease-out;
+  -ms-transition-timing-function: ease-out;
+  transition-timing-function: ease-out;
+  -webkit-transition-duration: 300ms;
+  -moz-transition-duration: 300ms;
+  -o-transition-duration: 300ms;
+  -ms-transition-duration: 300ms;
+  transition-duration: 300ms; }
+  #about.invisible {
+    background-color: #bdbdbd; }
+  #about.after {
+    visibility: hidden; }
+
+#about-faraway {
+  text-align: right; }
+  #about-faraway .parallax-background {
+    -webkit-filter: blur(10px);
+    -moz-filter: blur(10px);
+    -o-filter: blur(10px);
+    -ms-filter: blur(10px); }
+  #about-faraway img {
+    width: 120%;
+    height: 100%; }
+
+#works {
+  padding-top: 20px;
+  -webkit-transition-property: background-color;
+  -moz-transition-property: background-color;
+  -o-transition-property: background-color;
+  -ms-transition-property: background-color;
+  transition-property: background-color;
+  -webkit-transition-timing-function: ease-out;
+  -moz-transition-timing-function: ease-out;
+  -o-transition-timing-function: ease-out;
+  -ms-transition-timing-function: ease-out;
+  transition-timing-function: ease-out;
+  -webkit-transition-duration: 300ms;
+  -moz-transition-duration: 300ms;
+  -o-transition-duration: 300ms;
+  -ms-transition-duration: 300ms;
+  transition-duration: 300ms; }
+  #works.invisible {
+    background-color: #dcedc8; }
+  #works.after {
+    visibility: hidden; }
+
+#works-faraway {
+  text-align: right; }
+  #works-faraway img {
+    width: 120%;
+    height: 100%; }
+
+#contact {
+  padding-top: 20px;
+  -webkit-transition-property: background-color;
+  -moz-transition-property: background-color;
+  -o-transition-property: background-color;
+  -ms-transition-property: background-color;
+  transition-property: background-color;
+  -webkit-transition-timing-function: ease-out;
+  -moz-transition-timing-function: ease-out;
+  -o-transition-timing-function: ease-out;
+  -ms-transition-timing-function: ease-out;
+  transition-timing-function: ease-out;
+  -webkit-transition-duration: 300ms;
+  -moz-transition-duration: 300ms;
+  -o-transition-duration: 300ms;
+  -ms-transition-duration: 300ms;
+  transition-duration: 300ms; }
+  #contact.invisible {
+    background-color: #dce775; }
+  #contact.after {
+    visibility: hidden; }
+
+#contact-faraway {
+  text-align: right; }
+  #contact-faraway img {
+    width: 120%;
+    height: 100%; }
+
+main {
+  overflow-x: hidden;
+  overflow-y: scroll;
+  -webkit-perspective: 1px;
+  -moz-perspective: 1px;
+  -ms-perspective: 1px;
+  -o-perspective: 1px;
+  perspective: 1px;
+  -webkit-perspective-origin: 100%;
+  -moz-perspective-origin: 100%;
+  -ms-perspective-origin: 100%;
+  -o-perspective-origin: 100%;
+  perspective-origin: 100%;
+  -webkit-transform-style: preserve-3d;
+  -moz-transform-style: preserve-3d;
+  -ms-transform-style: preserve-3d;
+  -o-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  height: 100vh;
+  width: 100%; }
+  main > .ember-view {
+    -webkit-transform-style: inherit;
+    -moz-transform-style: inherit;
+    -ms-transform-style: inherit;
+    -o-transform-style: inherit;
+    transform-style: inherit;
+    position: relative;
+    width: 100%;
+    height: 100vh; }
+
+.materialize-parallax-layer {
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100vh;
+  position: absolute;
+  -webkit-transform-origin: 99%;
+  -moz-transform-origin: 99%;
+  -ms-transform-origin: 99%;
+  -o-transform-origin: 99%;
+  transform-origin: 99%;
+  -webkit-transform-style: inherit;
+  -moz-transform-style: inherit;
+  -ms-transform-style: inherit;
+  -o-transform-style: inherit;
+  transform-style: inherit; }
+  .materialize-parallax-layer.base {
+    z-index: 0;
+    -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    transform: translateZ(0); }
+  .materialize-parallax-layer.back {
+    z-index: -1;
+    -webkit-transform: translateZ(-1px) scale(2);
+    -moz-transform: translateZ(-1px) scale(2);
+    -ms-transform: translateZ(-1px) scale(2);
+    -o-transform: translateZ(-1px) scale(2);
+    transform: translateZ(-1px) scale(2); }
+  .materialize-parallax-layer.deep {
+    z-index: -2;
+    -webkit-transform: translateZ(-2px) scale(3);
+    -moz-transform: translateZ(-2px) scale(3);
+    -ms-transform: translateZ(-2px) scale(3);
+    -o-transform: translateZ(-2px) scale(3);
+    transform: translateZ(-2px) scale(3); }
+  .materialize-parallax-layer.faraway {
+    z-index: -3;
+    -webkit-transform: translateZ(-3px) scale(4.5);
+    -moz-transform: translateZ(-3px) scale(4.5);
+    -ms-transform: translateZ(-3px) scale(4.5);
+    -o-transform: translateZ(-3px) scale(4.5);
+    transform: translateZ(-3px) scale(4.5); }
+
+.lazy-scroll-load {
+  min-height: 100vh;
+  width: 100%;
+  margin-bottom: -35px; }
+
+#top-nav-absolute {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  height: 70px;
+  z-index: 5; }
+  #top-nav-absolute .brand-logo {
+    margin-left: 25px; }
+  #top-nav-absolute.invisible {
+    visibility: hidden; }
+  #top-nav-absolute .nav-title {
+    font-size: 1.25rem;
+    text-transform: capitalize;
+    font-family: 'Lobster', cursive;
+    margin-left: 10px; }
+
+#top-nav-fixed {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  right: 0;
+  height: 70px;
+  visibility: hidden;
+  -webkit-transition-property: all;
+  -moz-transition-property: all;
+  -o-transition-property: all;
+  -ms-transition-property: all;
+  transition-property: all;
+  -webkit-transition-timing-function: ease-in;
+  -moz-transition-timing-function: ease-in;
+  -o-transition-timing-function: ease-in;
+  -ms-transition-timing-function: ease-in;
+  transition-timing-function: ease-in;
+  -webkit-transition-duration: 250ms;
+  -moz-transition-duration: 250ms;
+  -o-transition-duration: 250ms;
+  -ms-transition-duration: 250ms;
+  transition-duration: 250ms; }
+  @media only screen and (min-width : 601px) {
+    #top-nav-fixed {
+      right: 14px;
+      padding-left: 15px; } }
+  #top-nav-fixed .brand-logo {
+    margin-left: 25px; }
+  #top-nav-fixed.invisible {
+    visibility: hidden;
+    background-color: #bdbdbd; }
+  #top-nav-fixed.about {
+    visibility: visible; }
+  #top-nav-fixed.works {
+    visibility: visible;
+    background-color: #2e7d32; }
+  #top-nav-fixed.contact {
+    visibility: visible;
+    background-color: #ffa000; }
 
 /*# sourceMappingURL=miume.css.map */

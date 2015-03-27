@@ -46,6 +46,7 @@
     "ember-lazy-video": "0.2.5",
     "ember-moment": "1.1.1",
     "liquid-fire": "^0.17.1",
-    "rails-csrf": "2.0.1"
+    "rails-csrf": "2.0.1",
+    "sass-flex-mixin": "^1.0.0"
   }
 }

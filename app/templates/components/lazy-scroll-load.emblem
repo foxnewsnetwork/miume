@@ -1,0 +1,2 @@
+.loaded-contents class=shouldLoadContent:visible:invisible
+  == yield

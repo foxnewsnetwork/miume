@@ -14,7 +14,8 @@
     "qunit": "~1.17.1",
     "ember-cli-moment-shim": "~0.0.3",
     "lodash": "~3.5.0",
-    "materialize": "~0.95.0"
+    "materialize": "~0.95.0",
+    "sass-toolkit": "~2.9.0"
   },
   "resolutions": {
     "jquery": "^1.11.1"

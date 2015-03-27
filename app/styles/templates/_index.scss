@@ -1,0 +1,38 @@
+@import url(http://fonts.googleapis.com/css?family=Lobster);
+#index {
+  @include display-flex;
+  @include flex-direction(column);
+  @include justify-content(center);
+  .flexnav {
+    @include display-flex;
+    @include justify-content(center);
+    @include align-items(center);
+  }
+  
+  .site-title {
+    text-align: center;
+  }
+  .brand-logo {
+    margin-left: 20px;
+  }
+  &.after {
+    visibility: hidden;
+  }
+}
+
+#index-faraway {
+  .parallax-background {
+    @include filter(grayscale(25%) contrast(75%));
+    @include opacity(0.6);
+  }
+}
+
+#index-back {
+  margin-top: 25px;
+  .site-logo {
+    font-size: 2rem;
+  }
+  .centered {
+    text-align: center;
+  }
+}

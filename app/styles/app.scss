@@ -1,2 +1,63 @@
 @import 'compass';
 @import 'materialize';
+@import 'flex';
+@mixin display-flex {
+  @include flexbox;
+}
+@import 'templates';
+@import 'components';
+
+#top-nav-absolute {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  height: 70px;
+  z-index: 5;
+  .brand-logo {
+    margin-left: 25px;
+  }
+  &.invisible {
+    visibility: hidden;
+  }
+  .nav-title {
+    font-size: 1.25rem;
+    text-transform: capitalize;
+    font-family: 'Lobster', cursive;
+    margin-left: 10px;
+  }
+}
+
+#top-nav-fixed {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  right: 0;
+  height: 70px;
+  visibility: hidden;
+  @include transition-property(all);
+  @include transition-timing-function(ease-in);
+  @include transition-duration(250ms);
+  @media #{$medium-and-up} {
+    right: 14px;
+    padding-left: 15px;
+  }
+  .brand-logo {
+    margin-left: 25px;
+  }
+  &.invisible {
+    visibility: hidden;
+    background-color: #bdbdbd;
+  }
+  &.about {
+    visibility: visible;
+  }
+  &.works {
+    visibility: visible;
+    background-color: #2e7d32;
+  }
+  &.contact {
+    visibility: visible;
+    background-color: #ffa000;
+  }
+}

@@ -89661,6 +89661,67 @@ t?u.__wrapped__=e:t=e;var u=e,r=r.__wrapped__}return u.__wrapped__=n,t},Tt.proto
 }var m,b="3.5.0",w=1,x=2,A=4,j=8,k=16,E=32,R=64,I=128,O=256,C=30,W="...",T=150,S=16,N=0,U=1,F=2,$="Expected a function",L="__lodash_placeholder__",B="[object Arguments]",z="[object Array]",D="[object Boolean]",M="[object Date]",q="[object Error]",P="[object Function]",K="[object Number]",V="[object Object]",Y="[object RegExp]",Z="[object String]",G="[object ArrayBuffer]",J="[object Float32Array]",X="[object Float64Array]",H="[object Int8Array]",Q="[object Int16Array]",nt="[object Int32Array]",tt="[object Uint8Array]",rt="[object Uint8ClampedArray]",et="[object Uint16Array]",ut="[object Uint32Array]",ot=/\b__p\+='';/g,it=/\b(__p\+=)''\+/g,ft=/(__e\(.*?\)|\b__t\))\+'';/g,at=/&(?:amp|lt|gt|quot|#39|#96);/g,ct=/[&<>"'`]/g,lt=RegExp(at.source),st=RegExp(ct.source),pt=/<%-([\s\S]+?)%>/g,ht=/<%([\s\S]+?)%>/g,_t=/<%=([\s\S]+?)%>/g,gt=/\$\{([^\\}]*(?:\\.[^\\}]*)*)\}/g,vt=/\w*$/,yt=/^\s*function[ \n\r\t]+\w/,dt=/^0[xX]/,mt=/^\[object .+?Constructor\]$/,bt=/[\xc0-\xd6\xd8-\xde\xdf-\xf6\xf8-\xff]/g,wt=/($^)/,xt=/[.*+?^${}()|[\]\/\\]/g,At=RegExp(xt.source),jt=/\bthis\b/,kt=/['\n\r\u2028\u2029\\]/g,Et=RegExp("[A-Z\\xc0-\\xd6\\xd8-\\xde]+(?=[A-Z\\xc0-\\xd6\\xd8-\\xde][a-z\\xdf-\\xf6\\xf8-\\xff]+)|[A-Z\\xc0-\\xd6\\xd8-\\xde]?[a-z\\xdf-\\xf6\\xf8-\\xff]+|[A-Z\\xc0-\\xd6\\xd8-\\xde]+|[0-9]+","g"),Rt=" \t\x0b\f\xa0\ufeff\n\r\u2028\u2029\u1680\u180e\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u202f\u205f\u3000",It="Array ArrayBuffer Date Error Float32Array Float64Array Function Int8Array Int16Array Int32Array Math Number Object RegExp Set String _ clearTimeout document isFinite parseInt setTimeout TypeError Uint8Array Uint8ClampedArray Uint16Array Uint32Array WeakMap window WinRTError".split(" "),Ot={};
 Ot[J]=Ot[X]=Ot[H]=Ot[Q]=Ot[nt]=Ot[tt]=Ot[rt]=Ot[et]=Ot[ut]=true,Ot[B]=Ot[z]=Ot[G]=Ot[D]=Ot[M]=Ot[q]=Ot[P]=Ot["[object Map]"]=Ot[K]=Ot[V]=Ot[Y]=Ot["[object Set]"]=Ot[Z]=Ot["[object WeakMap]"]=false;var Ct={};Ct[B]=Ct[z]=Ct[G]=Ct[D]=Ct[M]=Ct[J]=Ct[X]=Ct[H]=Ct[Q]=Ct[nt]=Ct[K]=Ct[V]=Ct[Y]=Ct[Z]=Ct[tt]=Ct[rt]=Ct[et]=Ct[ut]=true,Ct[q]=Ct[P]=Ct["[object Map]"]=Ct["[object Set]"]=Ct["[object WeakMap]"]=false;var Wt={leading:false,maxWait:0,trailing:false},Tt={"\xc0":"A","\xc1":"A","\xc2":"A","\xc3":"A","\xc4":"A","\xc5":"A","\xe0":"a","\xe1":"a","\xe2":"a","\xe3":"a","\xe4":"a","\xe5":"a","\xc7":"C","\xe7":"c","\xd0":"D","\xf0":"d","\xc8":"E","\xc9":"E","\xca":"E","\xcb":"E","\xe8":"e","\xe9":"e","\xea":"e","\xeb":"e","\xcc":"I","\xcd":"I","\xce":"I","\xcf":"I","\xec":"i","\xed":"i","\xee":"i","\xef":"i","\xd1":"N","\xf1":"n","\xd2":"O","\xd3":"O","\xd4":"O","\xd5":"O","\xd6":"O","\xd8":"O","\xf2":"o","\xf3":"o","\xf4":"o","\xf5":"o","\xf6":"o","\xf8":"o","\xd9":"U","\xda":"U","\xdb":"U","\xdc":"U","\xf9":"u","\xfa":"u","\xfb":"u","\xfc":"u","\xdd":"Y","\xfd":"y","\xff":"y","\xc6":"Ae","\xe6":"ae","\xde":"Th","\xfe":"th","\xdf":"ss"},St={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","`":"&#96;"},Nt={"&amp;":"&","&lt;":"<","&gt;":">","&quot;":'"',"&#39;":"'","&#96;":"`"},Ut={"function":true,object:true},Ft={"\\":"\\","'":"'","\n":"n","\r":"r","\u2028":"u2028","\u2029":"u2029"},$t=Ut[typeof exports]&&exports&&!exports.nodeType&&exports,Lt=Ut[typeof module]&&module&&!module.nodeType&&module,Ut=Ut[typeof window]&&window,Bt=Lt&&Lt.exports===$t&&$t,zt=$t&&Lt&&typeof global=="object"&&global||Ut!==(this&&this.window)&&Ut||this,Dt=d();
 typeof define=="function"&&typeof define.amd=="object"&&define.amd?(zt._=Dt, define(function(){return Dt})):$t&&Lt?Bt?(Lt.exports=Dt)._=Dt:$t._=Dt:zt._=Dt}).call(this);
+;(function ($) {
+
+    $.fn.parallax = function () {
+      var window_width = $(window).width();
+      // Parallax Scripts
+      return this.each(function(i) {
+        var $this = $(this);
+        $this.addClass('parallax');
+
+        $this.find('img').each(function () {
+          $(this).css('background-image', 'url(' + $(this).attr('src') + ')' );
+          $(this).attr('src', 'data:image/gif;base64,R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
+        });
+
+        function updateParallax(initial) {
+          var container_height;
+          if (window_width < 992) {
+            container_height = ($this.height() > 0) ? $this.height() : $this.children("img").height();
+          }
+          else {
+            container_height = ($this.height() > 0) ? $this.height() : 500;
+          }
+          var img_height = $this.children("img").height();
+          var parallax_dist = img_height - container_height;
+          var bottom = $this.offset().top + container_height;
+          var top = $this.offset().top;
+          var scrollTop = $(window).scrollTop();
+          var windowHeight = window.innerHeight;
+          var windowBottom = scrollTop + windowHeight;
+          var percentScrolled = (windowBottom - top) / (container_height + windowHeight);
+          var parallax = -1 * parallax_dist * percentScrolled;
+
+          if ((bottom > scrollTop) && (top < (scrollTop + windowHeight))) {
+            $this.children("img").first().css('bottom', parallax + "px");
+          }
+          if (initial) {
+            $this.children("img").first().css('display', 'block');
+          }
+        }
+
+        // Wait for image load
+        $this.children("img").one("load", function() {
+          updateParallax(true);
+        }).each(function() {
+          if(this.complete) $(this).load();
+        });
+
+        $(window).scroll(function() {
+          window_width = $(window).width();
+          updateParallax(false);
+        });
+
+        $(window).resize(function() {
+          window_width = $(window).width();
+          updateParallax(false);
+        });
+
+      });
+
+    };
+}( jQuery ));
 ;define("ember-cli-async-button", ["ember-cli-async-button/index","exports"], function(__index__, __exports__) {
   "use strict";
   Object.keys(__index__).forEach(function(key){
@@ -92003,7 +92064,7 @@ define('liquid-fire/dsl', ['exports', 'ember', 'liquid-fire/animate'], function 
         payload: function(parentView) {
           var elt;
           return parentView &&
-            (parentView._morph && Ember['default'].$(parentView._morph.contextualElement).is(selector)) ||
+            (parentView._morph && Ember['default'].$(parentView._morph.start.parentElement).is(selector)) ||
             (parentView.morph  && Ember['default'].$('#' + parentView.morph.start).parent().is(selector)) ||
             ((elt=parentView.$()) && elt.parent().is(selector));
         }

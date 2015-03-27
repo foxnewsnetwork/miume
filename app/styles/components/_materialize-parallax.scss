@@ -1,0 +1,48 @@
+// @import "toolkit/parallax";
+
+main {
+  // @include parallax-init(1);
+  overflow-x: hidden;
+  overflow-y: scroll;
+  @include perspective(1px);
+  @include perspective-origin(100%);
+  @include transform-style(preserve-3d);
+  height: 100vh;
+  width: 100%;
+  >.ember-view {
+    @include transform-style(inherit);
+    position: relative;
+    width: 100%;
+    height: 100vh;
+  }
+}
+
+.materialize-parallax-layer {
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100vh;
+  position: absolute;
+  @include transform-origin(99%);
+  @include transform-style(inherit);
+  &.base {
+    // @include parallax(0, 1);
+    z-index: 0;
+    @include transform(translateZ(0));
+  }
+  &.back {
+    // @include parallax(-1, 1);
+    z-index: -1;
+    @include transform(translateZ(-1px) scale(2)); 
+  }
+  &.deep {
+    // @include parallax(-2, 1);
+    z-index: -2;
+    @include transform(translateZ(-2px) scale(3)); 
+  }
+  &.faraway {
+    // @include parallax(-1, 5);
+    z-index: -3;
+    @include transform(translateZ(-3px) scale(4.5)); 
+  }
+}

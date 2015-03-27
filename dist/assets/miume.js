@@ -26,6 +26,67 @@ define('miume/components/async-button', ['exports', 'ember-cli-async-button/comp
 	exports['default'] = AsyncButtonComponent['default'];
 
 });
+define('miume/components/lazy-scroll-load', ['exports', 'ember', 'miume/utils/fun-ex'], function (exports, Ember, FunEx) {
+
+  'use strict';
+
+  var LazyScrollLoadComponent, lll;
+
+  lll = function(x) {
+    console.log(x);
+    return x;
+  };
+
+  LazyScrollLoadComponent = Ember['default'].Component.extend({
+    classNames: ['lazy-scroll-load'],
+    scrollParent: 'body',
+    classNameBindings: ["shouldLoadContent:visible:invisible", "isBefore:before", "isAfter:after"],
+    overlap: 200,
+    sp$: FunEx['default'].computed("scrollParent", function() {
+      return $(this.get('scrollParent'));
+    }),
+    didInsertElement: function() {
+      var check, slowly;
+      this.decideRenderability();
+      check = _.bind(this.decideRenderability, this);
+      slowly = _.throttle(check, 50);
+      return this.get("sp$").on("scroll", slowly);
+    },
+    willDestroyElement: function() {
+      if (this.get("sp$.off") != null) {
+        return this.get("sp$").off("scroll");
+      }
+    },
+    topCutoff: function() {
+      return Ember['default'].get(this.$().position(), "top") - this.get("overlap");
+    },
+    scrollY: function() {
+      return this.get("sp$").scrollTop();
+    },
+    botCutoff: function() {
+      return this.$().innerHeight() + this.topCutoff();
+    },
+    decideRenderability: function() {
+      if (this.scrollY() < this.topCutoff()) {
+        this.set("isBefore", true);
+        this.set("isAfter", false);
+      }
+      if (this.botCutoff() < this.scrollY()) {
+        this.set("isAfter", true);
+        this.set("isBefore", false);
+      }
+      if ((this.topCutoff() < this.scrollY()) && (this.scrollY() < this.botCutoff())) {
+        this.set("shouldLoadContent", true);
+        return this.sendAction("action");
+      } else {
+        return this.set("shouldLoadContent", false);
+      }
+    }
+  });
+
+  exports['default'] = LazyScrollLoadComponent;
+
+});
 define('miume/components/lazy-video', ['exports', 'ember-lazy-video/components/lazy-video'], function (exports, LazyVideo) {
 
 	'use strict';
@@ -424,6 +485,97 @@ define('miume/components/materialize-navbar', ['exports', 'ember-cli-materialize
 	exports['default'] = MaterializeNavBar['default'];
 
 });
+define('miume/components/scroll-spy', ['exports', 'ember', 'miume/utils/fun-ex'], function (exports, Ember, FunEx) {
+
+  'use strict';
+
+  var ScrollSpyComponent;
+
+  ScrollSpyComponent = Ember['default'].Component.extend({
+    classNames: ["scroll-spy"],
+    classNameBindings: ["pastCutoff:after-cutoff:before-cutoff"],
+    scrollParent: 'body',
+    overlap: 0,
+    pastCutoff: false,
+    sp$: FunEx['default'].computed("scrollParent", function() {
+      return $(this.get('scrollParent'));
+    }),
+    didInsertElement: function() {
+      var check, slowly;
+      this.decideRazorsEdge();
+      check = _.bind(this.decideRazorsEdge, this);
+      slowly = _.throttle(check, 50);
+      return this.get("sp$").on("scroll", slowly);
+    },
+    willDestroyElement: function() {
+      if (this.get("sp$.off") != null) {
+        return this.get("sp$").off("scroll");
+      }
+    },
+    scrollY: function() {
+      return this.get("sp$").scrollTop();
+    },
+    cutoff: function() {
+      return Ember['default'].get(this.$().position(), "top") - this.get("overlap");
+    },
+    decideRazorsEdge: function() {
+      if (this.scrollY() >= this.cutoff()) {
+        return this.set("pastCutoff", true);
+      }
+    }
+  });
+
+  exports['default'] = ScrollSpyComponent;
+
+});
+define('miume/controllers/application', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  var ApplicationController, ClassNames;
+
+  ClassNames = ["index", "about", "works", "contact"];
+
+  ApplicationController = Ember['default'].Controller.extend({
+    hideAbsNav: function() {
+      return $("#top-nav-absolute").addClass("invisible");
+    },
+    hideFixNav: function() {
+      return $("#top-nav-fixed").removeClass().addClass("invisible");
+    },
+    showFixNav: function(className) {
+      return $("#top-nav-fixed").removeClass().addClass(className);
+    },
+    showAbsNav: function() {
+      return $("#top-nav-absolute").removeClass("invisible");
+    },
+    actions: {
+      loadIndex: function() {
+        this.transitionToRoute("index");
+        this.hideFixNav();
+        return this.showAbsNav();
+      },
+      loadAbout: function() {
+        this.transitionToRoute("about");
+        this.hideAbsNav();
+        return this.showFixNav("about");
+      },
+      loadWorks: function() {
+        this.transitionToRoute("works");
+        this.hideAbsNav();
+        return this.showFixNav("works");
+      },
+      loadContact: function() {
+        this.transitionToRoute("contact");
+        this.hideAbsNav();
+        return this.showFixNav("contact");
+      }
+    }
+  });
+
+  exports['default'] = ApplicationController;
+
+});
 define('miume/helpers/async-button', ['exports', 'ember-cli-async-button/helpers/async-button'], function (exports, AsyncButtonHelper) {
 
 	'use strict';
@@ -528,23 +680,52 @@ define('miume/helpers/fa-icon', ['exports', 'ember'], function (exports, Ember) 
   exports.faIcon = faIcon;
 
 });
-define('miume/helpers/liquid-bind', ['exports'], function (exports) {
+define('miume/helpers/liquid-bind', ['exports', 'ember'], function (exports, Ember) {
 
   'use strict';
 
-  exports['default'] = {
-    isHTMLBars: true,
-    helperFunction: function liquidBindHelper(params, hash, options, env) {
-      var componentLookup = this.container.lookup("component-lookup:main");
-      var cls = componentLookup.lookupFactory("liquid-bind-c");
-      hash.value = params[0];
-      if (hash["class"]) {
-        hash.innerClass = hash["class"];
-        delete hash["class"];
-      }
-      env.helpers.view.helperFunction.call(this, [cls], hash, options, env);
+  /* liquid-bind is really just liquid-with with a pre-provided block
+     that just says {{this}} */
+  function liquidBindHelperFunc() {
+    var options = arguments[arguments.length - 1];
+    var container = options.data.view.container;
+    var componentLookup = container.lookup("component-lookup:main");
+    var cls = componentLookup.lookupFactory("liquid-bind-c");
+    options.hash.value = arguments[0];
+    options.hashTypes.value = options.types[0];
+
+    if (options.hash["class"]) {
+      options.hash.innerClass = options.hash["class"];
+      delete options.hash["class"];
+      options.hashTypes.innerClass = options.hashTypes["class"];
+      delete options.hashTypes["class"];
     }
-  };
+    Ember['default'].Handlebars.helpers.view.call(this, cls, options);
+  }
+
+  function htmlbarsLiquidBindHelper(params, hash, options, env) {
+    var componentLookup = this.container.lookup("component-lookup:main");
+    var cls = componentLookup.lookupFactory("liquid-bind-c");
+    hash.value = params[0];
+    if (hash["class"]) {
+      hash.innerClass = hash["class"];
+      delete hash["class"];
+    }
+    env.helpers.view.helperFunction.call(this, [cls], hash, options, env);
+  }
+
+  var liquidBindHelper;
+
+  if (Ember['default'].HTMLBars) {
+    liquidBindHelper = {
+      isHTMLBars: true,
+      helperFunction: htmlbarsLiquidBindHelper
+    };
+  } else {
+    liquidBindHelper = liquidBindHelperFunc;
+  }
+
+  exports['default'] = liquidBindHelper;
 
 });
 define('miume/helpers/liquid-if', ['exports', 'ember'], function (exports, Ember) {
@@ -553,56 +734,127 @@ define('miume/helpers/liquid-if', ['exports', 'ember'], function (exports, Ember
 
   exports.factory = factory;
 
+  var isHTMLBars = !!Ember['default'].HTMLBars;
   function factory(invert) {
-    return {
-      isHTMLBars: true,
-      helperFunction: function liquidIfHelper(params, hash, options, env) {
-        var View = this.container.lookupFactory("view:liquid-if");
-        var templates = [options.template, options.inverse];
+    function helperFunc() {
+      var property, hash, options, env, container;
 
-        if (invert) {
-          templates.reverse();
-        }
-        delete options.template;
-        delete options.inverse;
-
-        if (hash.containerless) {
-          View = View.extend(Ember['default']._Metamorph);
-        }
-
-        hash.templates = templates;
-        hash.showFirst = params[0];
-        env.helpers.view.helperFunction.call(this, [View], hash, options, env);
+      if (isHTMLBars) {
+        property = arguments[0][0];
+        hash = arguments[1];
+        options = arguments[2];
+        env = arguments[3];
+        container = this.container;
+      } else {
+        property = arguments[0];
+        options = arguments[1];
+        hash = options.hash;
+        container = options.data.view.container;
       }
-    };
+      var View = container.lookupFactory("view:liquid-if");
+
+      var templates = [options.fn || options.template, options.inverse];
+      if (invert) {
+        templates.reverse();
+      }
+      delete options.fn;
+      delete options.template;
+      delete options.inverse;
+
+      if (hash.containerless) {
+        View = View.extend(Ember['default']._Metamorph);
+      }
+
+      hash.templates = templates;
+
+      if (isHTMLBars) {
+        hash.showFirst = property;
+        env.helpers.view.helperFunction.call(this, [View], hash, options, env);
+      } else {
+        hash.showFirstBinding = property;
+        return Ember['default'].Handlebars.helpers.view.call(this, View, options);
+      }
+    }
+
+    if (Ember['default'].HTMLBars) {
+      return {
+        isHTMLBars: true,
+        helperFunction: helperFunc,
+        preprocessArguments: function preprocessArguments() {}
+      };
+    } else {
+      return helperFunc;
+    }
   }
 
   exports['default'] = factory(false);
+
+});
+define('miume/helpers/liquid-measure', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  exports['default'] = function () {
+    Ember['default'].assert("liquid-measure is deprecated, see CHANGELOG.md", false);
+  };
 
 });
 define('miume/helpers/liquid-outlet', ['exports', 'ember'], function (exports, Ember) {
 
   'use strict';
 
-  exports['default'] = {
-    isHTMLBars: true,
-    helperFunction: function liquidOutletHelperFunc(params, hash, options, env) {
-      var property = params[0];
+  var isHTMLBars = !!Ember['default'].HTMLBars;
+
+  function liquidOutletHelperFunc(property, options) {
+    var property, options, container, hash, env;
+
+    if (isHTMLBars) {
+      property = arguments[0][0]; // params[0]
+      hash = arguments[1];
+      options = arguments[2];
+      env = arguments[3];
+      container = this.container;
 
       if (!property) {
         property = "main";
         options.paramTypes = ["string"];
       }
+    } else {
+      property = arguments[0];
 
-      var View = this.container.lookupFactory("view:liquid-outlet");
-      if (hash.containerless) {
-        View = View.extend(Ember['default']._Metamorph);
+      if (property && property.data && property.data.isRenderData) {
+        options = property;
+        property = "main";
+        options.types = ["STRING"];
       }
-      hash.viewClass = View;
 
-      env.helpers.outlet.helperFunction.call(this, [property], hash, options, env);
+      container = options.data.view.container;
+      hash = options.hash;
     }
-  };
+
+    var View = container.lookupFactory("view:liquid-outlet");
+    if (hash.containerless) {
+      View = View.extend(Ember['default']._Metamorph);
+    }
+    hash.viewClass = View;
+
+    if (isHTMLBars) {
+      env.helpers.outlet.helperFunction.call(this, [property], hash, options, env);
+    } else {
+      return Ember['default'].Handlebars.helpers.outlet.call(this, property, options);
+    }
+  }
+
+  var liquidOutletHelper = liquidOutletHelperFunc;
+  if (Ember['default'].HTMLBars) {
+    liquidOutletHelper = {
+      isHTMLBars: true,
+      helperFunction: liquidOutletHelperFunc,
+      preprocessArguments: function preprocessArguments() {}
+    };
+  }
+
+  exports['default'] = liquidOutletHelper;
 
 });
 define('miume/helpers/liquid-unless', ['exports', 'miume/helpers/liquid-if'], function (exports, liquid_if) {
@@ -616,41 +868,88 @@ define('miume/helpers/liquid-with', ['exports', 'ember'], function (exports, Emb
 
   'use strict';
 
-  exports['default'] = {
-    isHTMLBars: true,
-    helperFunction: function liquidWithHelperFunc(params, hash, options, env) {
-      var innerHash = {};
-      var View = this.container.lookupFactory("view:liquid-with");
-      var innerOptions = {
-        hashTypes: {},
-        morph: options.morph
-      };
+  var isHTMLBars = !!Ember['default'].HTMLBars;
 
-      innerHash.boundContext = params[0];
+  function liquidWithHelperFunc() {
+    var params, context, options, container, innerOptions, data, hash, env;
 
-      View = View.extend({
-        originalArgs: params,
-        originalHash: hash,
-        originalHashTypes: options.hashTypes,
-        innerTemplate: options.fn || options.template
-      });
+    var innerOptions = {
+      hashTypes: {}
+    };
 
-      var containerless = hash.containerless && (!hash.containerless.isStream || hash.containerless.value());
+    var innerHash = {};
 
-      if (containerless) {
-        View = View.extend(Ember['default']._Metamorph);
+    if (isHTMLBars) {
+      params = arguments[0];
+      hash = arguments[1];
+      options = arguments[2];
+      env = arguments[3];
+      context = params[0];
+      container = this.container;
+      data = arguments[3].data;
+      innerOptions.morph = options.morph;
+
+      if (params.length === 3) {
+        hash.keywordName = params[2]._label;
+        params = [context];
       }
-
-      ["class", "classNames", "classNameBindings", "use", "id", "growDuration", "growPixelsPerSecond", "growEasing", "enableGrowth", "containerless"].forEach(function (field) {
-        if (hash.hasOwnProperty(field)) {
-          innerHash[field] = hash[field];
-          innerOptions.hashTypes[field] = options.hashTypes ? options.hashTypes[field] : undefined;
-        }
-      });
-
-      env.helpers.view.helperFunction.call(this, [View], innerHash, innerOptions, env);
+      innerHash.boundContext = context;
+    } else {
+      params = Array.prototype.slice.apply(arguments, [0, -1]);
+      context = arguments[0];
+      options = arguments[arguments.length - 1];
+      data = options.data;
+      hash = options.hash;
+      container = data.view.container;
+      innerOptions.data = data;
+      innerOptions.hash = innerHash;
+      innerHash.boundContextBinding = context;
     }
-  };
+
+    var View = container.lookupFactory("view:liquid-with");
+
+    View = View.extend({
+      originalArgs: params,
+      originalHash: hash,
+      originalHashTypes: options.hashTypes,
+      innerTemplate: options.fn || options.template
+    });
+
+    var containerless = isHTMLBars && hash.containerless && (!hash.containerless.isStream || hash.containerless.value()) || !isHTMLBars && (options.hashTypes.containerless === "BOOLEAN" && hash.containerless || options.hashTypes.containerless === "ID" && this.containerless);
+
+    if (containerless) {
+      View = View.extend(Ember['default']._Metamorph);
+    }
+
+    ["class", "classNames", "classNameBindings", "use", "id", "growDuration", "growPixelsPerSecond", "growEasing", "enableGrowth", "containerless"].forEach(function (field) {
+      if (hash.hasOwnProperty(field)) {
+        innerHash[field] = hash[field];
+        innerOptions.hashTypes[field] = options.hashTypes ? options.hashTypes[field] : undefined;
+      }
+    });
+
+    if (isHTMLBars) {
+      env.helpers.view.helperFunction.call(this, [View], innerHash, innerOptions, env);
+    } else {
+      if (containerless) {
+        delete innerOptions.hash["class"];
+        delete innerOptions.hash.classNames;
+        delete innerOptions.hash.classNameBindings;
+      }
+      return Ember['default'].Handlebars.helpers.view.call(this, View, innerOptions);
+    }
+  }
+
+  var liquidWithHelper = liquidWithHelperFunc;
+  if (isHTMLBars) {
+    liquidWithHelper = {
+      isHTMLBars: true,
+      helperFunction: liquidWithHelperFunc,
+      preprocessArguments: function preprocessArguments() {}
+    };
+  }
+
+  exports['default'] = liquidWithHelper;
 
 });
 define('miume/helpers/t', ['exports', 'ember-cli-i18n/utils/stream'], function (exports, Stream) {
@@ -694,23 +993,71 @@ define('miume/helpers/with-apply', ['exports', 'ember'], function (exports, Embe
 
   'use strict';
 
-  exports['default'] = {
-    isHTMLBars: true,
-    helperFunction: function withApplyHelperFunc(params, hash, options, env) {
-      var parent = this.get("liquidWithParent");
-      var withArgs = parent.get("originalArgs").slice();
-      withArgs[0] = "lwith-view.boundContext";
-      options = Ember['default'].copy(options);
-      if (!this._keywords) {
-        this._keywords = {};
-      }
-      this._keywords["lwith-view"] = this;
-      options.template = parent.get("innerTemplate");
-      hash = parent.get("originalHash");
-      options.hashTypes = parent.get("originalHashTypes");
-      env.helpers["with"].helperFunction.call(this, [this.getStream(withArgs[0])], hash, options, env);
+  var isHTMLBars = !!Ember['default'].HTMLBars;
+
+  // This helper is internal to liquid-with.
+  function withApplyHelperFunc() {
+    var hash, options, env, view;
+
+    if (isHTMLBars) {
+      hash = arguments[1];
+      options = arguments[2];
+      env = arguments[3];
+      view = this;
+    } else {
+      options = arguments[0];
+      hash = options.hash;
+      view = options.data.view;
     }
-  };
+
+    var parent = view.get("liquidWithParent");
+    var withArgs = parent.get("originalArgs").slice();
+
+    withArgs[0] = "lwith-view.boundContext";
+    options = Ember['default'].copy(options);
+
+    // This works to inject our keyword in Ember >= 1.9
+    if (!view._keywords) {
+      view._keywords = {};
+    }
+    view._keywords["lwith-view"] = view;
+
+    // This works to inject our keyword in Ember < 1.9
+    if (!isHTMLBars) {
+      if (!options.data.keywords) {
+        options.data.keywords = {};
+      }
+      options.data.keywords["lwith-view"] = view;
+    }
+
+    if (isHTMLBars) {
+      options.template = parent.get("innerTemplate");
+    } else {
+      options.fn = parent.get("innerTemplate");
+    }
+
+    hash = parent.get("originalHash");
+    options.hashTypes = parent.get("originalHashTypes");
+
+    if (isHTMLBars) {
+      env.helpers["with"].helperFunction.call(this, [view.getStream(withArgs[0])], hash, options, env);
+    } else {
+      options.hash = hash;
+      withArgs.push(options);
+      return Ember['default'].Handlebars.helpers["with"].apply(this, withArgs);
+    }
+  }
+
+  var withApplyHelper = withApplyHelperFunc;
+  if (Ember['default'].HTMLBars) {
+    withApplyHelper = {
+      isHTMLBars: true,
+      helperFunction: withApplyHelperFunc,
+      preprocessArguments: function preprocessArguments() {}
+    };
+  }
+
+  exports['default'] = withApplyHelper;
 
 });
 define('miume/initializers/app-version', ['exports', 'miume/config/environment', 'ember'], function (exports, config, Ember) {
@@ -830,17 +1177,6 @@ define('miume/initializers/liquid-fire', ['exports', 'liquid-fire', 'ember'], fu
 
   'use strict';
 
-  var minEmberVersion = [1, 11];
-  var minVelocityVersion = [0, 11, 8];
-
-  function emberVersion() {
-    var m = /^(\d+)\.(\d+)/.exec(Ember['default'].VERSION);
-    if (!m) {
-      return [0, 0];
-    }
-    return [parseInt(m[1]), parseInt(m[2])];
-  }
-
   exports['default'] = {
     name: "liquid-fire",
 
@@ -855,16 +1191,13 @@ define('miume/initializers/liquid-fire', ['exports', 'liquid-fire', 'ember'], fu
 
       return _initializeWrapper;
     })(function (container) {
-      if (Ember['default'].compare(minEmberVersion, emberVersion()) === 1) {
-        Ember['default'].warn("This version of liquid fire requires Ember " + minEmberVersion.join(".") + " or newer");
-      }
-
       if (!Ember['default'].$.Velocity) {
         Ember['default'].warn("Velocity.js is missing");
       } else {
         var version = Ember['default'].$.Velocity.version;
-        if (Ember['default'].compare(minVelocityVersion, [version.major, version.minor, version.patch]) === 1) {
-          Ember['default'].warn("You should probably upgrade Velocity.js, recommended minimum is " + minVelocityVersion.join("."));
+        var recommended = [0, 11, 8];
+        if (Ember['default'].compare(recommended, [version.major, version.minor, version.patch]) === 1) {
+          Ember['default'].warn("You should probably upgrade Velocity.js, recommended minimum is " + recommended.join("."));
         }
       }
 
@@ -933,13 +1266,85 @@ define('miume/router', ['exports', 'ember', 'miume/config/environment'], functio
 
   'use strict';
 
-  var Router = Ember['default'].Router.extend({
+  var Router;
+
+  Router = Ember['default'].Router.extend({
     location: config['default'].locationType
   });
 
-  Router.map(function () {});
+  Router.map(function() {
+    this.route("about");
+    this.resource("works", {
+      path: "/works"
+    }, function() {
+      return this.resource("work", {
+        path: "/work/:workId"
+      }, function() {});
+    });
+    return this.route("contact");
+  });
 
   exports['default'] = Router;
+
+});
+define('miume/routes/about', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  var AboutRoute;
+
+  AboutRoute = Ember['default'].Route.extend({
+    renderTemplate: function() {
+      return this.render("about/faraway");
+    }
+  });
+
+  exports['default'] = AboutRoute;
+
+});
+define('miume/routes/contact', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  var ContactRoute;
+
+  ContactRoute = Ember['default'].Route.extend({
+    renderTemplate: function() {
+      return this.render("contact/faraway");
+    }
+  });
+
+  exports['default'] = ContactRoute;
+
+});
+define('miume/routes/index', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  var IndexRoute;
+
+  IndexRoute = Ember['default'].Route.extend({
+    renderTemplate: function() {
+      return this.render("index/faraway");
+    }
+  });
+
+  exports['default'] = IndexRoute;
+
+});
+define('miume/routes/works', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  var WorksRoute;
+
+  WorksRoute = Ember['default'].Route.extend({
+    renderTemplate: function() {
+      return this.render("works/faraway");
+    }
+  });
+
+  exports['default'] = WorksRoute;
 
 });
 define('miume/services/csrf', ['exports', 'ember'], function (exports, Ember) {
@@ -985,32 +1390,293 @@ define('miume/services/csrf', ['exports', 'ember'], function (exports, Ember) {
   });
 
 });
-define('miume/templates/application', ['exports'], function (exports) {
+define('miume/templates/about', ['exports'], function (exports) {
 
   'use strict';
 
   exports['default'] = Ember.HTMLBars.template((function() {
+    var child0 = (function() {
+      var child0 = (function() {
+        return {
+          isHTMLBars: true,
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createElement("h4");
+            dom.setAttribute(el1,"class","catchphrase");
+            var el2 = dom.createTextNode("something about me");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("p");
+            dom.setAttribute(el1,"class","exposition");
+            var el2 = dom.createTextNode("faksdjf laksjd flkjas dflkjasdlfkjals djflakjsd flkjasdl fkjalsdkjf");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            return fragment;
+          }
+        };
+      }());
+      var child1 = (function() {
+        var child0 = (function() {
+          return {
+            isHTMLBars: true,
+            blockParams: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            build: function build(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            render: function render(context, env, contextualElement) {
+              var dom = env.dom;
+              var hooks = env.hooks, inline = hooks.inline;
+              dom.detectNamespace(contextualElement);
+              var fragment;
+              if (env.useFragmentCache && dom.canClone) {
+                if (this.cachedFragment === null) {
+                  fragment = this.build(dom);
+                  if (this.hasRendered) {
+                    this.cachedFragment = fragment;
+                  } else {
+                    this.hasRendered = true;
+                  }
+                }
+                if (this.cachedFragment) {
+                  fragment = dom.cloneNode(this.cachedFragment, true);
+                }
+              } else {
+                fragment = this.build(dom);
+              }
+              if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1]); }
+              var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
+              inline(env, morph0, context, "fa-icon", ["home"], {"size": "2"});
+              return fragment;
+            }
+          };
+        }());
+        var child1 = (function() {
+          return {
+            isHTMLBars: true,
+            blockParams: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            build: function build(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            render: function render(context, env, contextualElement) {
+              var dom = env.dom;
+              var hooks = env.hooks, inline = hooks.inline;
+              dom.detectNamespace(contextualElement);
+              var fragment;
+              if (env.useFragmentCache && dom.canClone) {
+                if (this.cachedFragment === null) {
+                  fragment = this.build(dom);
+                  if (this.hasRendered) {
+                    this.cachedFragment = fragment;
+                  } else {
+                    this.hasRendered = true;
+                  }
+                }
+                if (this.cachedFragment) {
+                  fragment = dom.cloneNode(this.cachedFragment, true);
+                }
+              } else {
+                fragment = this.build(dom);
+              }
+              if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1]); }
+              var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
+              inline(env, morph0, context, "fa-icon", ["archive"], {"size": "2"});
+              return fragment;
+            }
+          };
+        }());
+        var child2 = (function() {
+          return {
+            isHTMLBars: true,
+            blockParams: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            build: function build(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            render: function render(context, env, contextualElement) {
+              var dom = env.dom;
+              var hooks = env.hooks, inline = hooks.inline;
+              dom.detectNamespace(contextualElement);
+              var fragment;
+              if (env.useFragmentCache && dom.canClone) {
+                if (this.cachedFragment === null) {
+                  fragment = this.build(dom);
+                  if (this.hasRendered) {
+                    this.cachedFragment = fragment;
+                  } else {
+                    this.hasRendered = true;
+                  }
+                }
+                if (this.cachedFragment) {
+                  fragment = dom.cloneNode(this.cachedFragment, true);
+                }
+              } else {
+                fragment = this.build(dom);
+              }
+              if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1]); }
+              var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
+              inline(env, morph0, context, "fa-icon", ["comments-o"], {"size": "2"});
+              return fragment;
+            }
+          };
+        }());
+        return {
+          isHTMLBars: true,
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, block = hooks.block;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1,2,3]); }
+            var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
+            var morph1 = dom.createMorphAt(fragment,1,2,contextualElement);
+            var morph2 = dom.createMorphAt(fragment,2,3,contextualElement);
+            block(env, morph0, context, "link-to", ["index"], {"class": "green-text darken-1"}, child0, null);
+            block(env, morph1, context, "link-to", ["works"], {"class": "green-text darken-1"}, child1, null);
+            block(env, morph2, context, "link-to", ["contact"], {"class": "green-text darken-1"}, child2, null);
+            return fragment;
+          }
+        };
+      }());
+      return {
+        isHTMLBars: true,
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, block = hooks.block;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1,2]); }
+          var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
+          var morph1 = dom.createMorphAt(fragment,1,2,contextualElement);
+          block(env, morph0, context, "materialize-card-content", [], {}, child0, null);
+          block(env, morph1, context, "materialize-card-action", [], {}, child1, null);
+          return fragment;
+        }
+      };
+    }());
     return {
       isHTMLBars: true,
       blockParams: 0,
       cachedFragment: null,
       hasRendered: false,
       build: function build(dom) {
-        var el0 = dom.createDocumentFragment();
-        var el1 = dom.createElement("h2");
-        dom.setAttribute(el1,"id","title");
-        var el2 = dom.createTextNode("Welcome to Ember.js");
+        var el0 = dom.createElement("div");
+        dom.setAttribute(el0,"id","about");
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1,"class","container");
+        var el2 = dom.createElement("div");
+        dom.setAttribute(el2,"class","row");
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","col l6 offset-l6");
+        dom.appendChild(el2, el3);
         dom.appendChild(el1, el2);
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
         return el0;
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, content = hooks.content;
+        var hooks = env.hooks, block = hooks.block;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -1028,8 +1694,707 @@ define('miume/templates/application', ['exports'], function (exports) {
         } else {
           fragment = this.build(dom);
         }
-        var morph0 = dom.createMorphAt(fragment,1,2,contextualElement);
-        content(env, morph0, context, "outlet");
+        var morph0 = dom.createMorphAt(dom.childAt(fragment, [0, 0, 0]),-1,-1);
+        block(env, morph0, context, "materialize-card", [], {"title": "introduction", "titleClass": "green-text darken-1", "image": "images/doge.jpg"}, child0, null);
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('miume/templates/about/faraway', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createElement("div");
+        dom.setAttribute(el0,"id","about-faraway");
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1,"class","parallax-background");
+        var el2 = dom.createElement("img");
+        dom.setAttribute(el2,"src","images/spring2.jpg");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('miume/templates/application', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    var child0 = (function() {
+      return {
+        isHTMLBars: true,
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createElement("span");
+          var el1 = dom.createTextNode("梅");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          return fragment;
+        }
+      };
+    }());
+    var child1 = (function() {
+      return {
+        isHTMLBars: true,
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createElement("i");
+          dom.setAttribute(el1,"class","mdi-action-face-unlock");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("span");
+          dom.setAttribute(el1,"class","nav-title");
+          var el2 = dom.createTextNode("about me");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          return fragment;
+        }
+      };
+    }());
+    var child2 = (function() {
+      return {
+        isHTMLBars: true,
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("span");
+          dom.setAttribute(el1,"class","nav-title");
+          var el2 = dom.createTextNode("my discography");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, inline = hooks.inline;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          if (this.cachedFragment) { dom.repairClonedNode(fragment,[0]); }
+          var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
+          inline(env, morph0, context, "fa-icon", ["archive"], {});
+          return fragment;
+        }
+      };
+    }());
+    var child3 = (function() {
+      return {
+        isHTMLBars: true,
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("span");
+          dom.setAttribute(el1,"class","nav-title");
+          var el2 = dom.createTextNode("leave me a message");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, inline = hooks.inline;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          if (this.cachedFragment) { dom.repairClonedNode(fragment,[0]); }
+          var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
+          inline(env, morph0, context, "fa-icon", ["comments-o"], {});
+          return fragment;
+        }
+      };
+    }());
+    var child4 = (function() {
+      return {
+        isHTMLBars: true,
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, inline = hooks.inline;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1]); }
+          var morph0 = dom.createUnsafeMorphAt(fragment,0,1,contextualElement);
+          inline(env, morph0, context, "render", ["index"], {});
+          return fragment;
+        }
+      };
+    }());
+    var child5 = (function() {
+      return {
+        isHTMLBars: true,
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, inline = hooks.inline;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1]); }
+          var morph0 = dom.createUnsafeMorphAt(fragment,0,1,contextualElement);
+          inline(env, morph0, context, "render", ["about"], {});
+          return fragment;
+        }
+      };
+    }());
+    var child6 = (function() {
+      return {
+        isHTMLBars: true,
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, inline = hooks.inline;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1]); }
+          var morph0 = dom.createUnsafeMorphAt(fragment,0,1,contextualElement);
+          inline(env, morph0, context, "render", ["works"], {});
+          return fragment;
+        }
+      };
+    }());
+    var child7 = (function() {
+      return {
+        isHTMLBars: true,
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, inline = hooks.inline;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1]); }
+          var morph0 = dom.createUnsafeMorphAt(fragment,0,1,contextualElement);
+          inline(env, morph0, context, "render", ["contact"], {});
+          return fragment;
+        }
+      };
+    }());
+    var child8 = (function() {
+      return {
+        isHTMLBars: true,
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createElement("span");
+          var el1 = dom.createTextNode("梅");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          return fragment;
+        }
+      };
+    }());
+    var child9 = (function() {
+      return {
+        isHTMLBars: true,
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createElement("i");
+          dom.setAttribute(el0,"class","mdi-action-face-unlock");
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          return fragment;
+        }
+      };
+    }());
+    var child10 = (function() {
+      return {
+        isHTMLBars: true,
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, inline = hooks.inline;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1]); }
+          var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
+          inline(env, morph0, context, "fa-icon", ["archive"], {});
+          return fragment;
+        }
+      };
+    }());
+    var child11 = (function() {
+      return {
+        isHTMLBars: true,
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, inline = hooks.inline;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1]); }
+          var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
+          inline(env, morph0, context, "fa-icon", ["comments-o"], {});
+          return fragment;
+        }
+      };
+    }());
+    return {
+      isHTMLBars: true,
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createElement("main");
+        var el2 = dom.createElement("nav");
+        dom.setAttribute(el2,"id","top-nav-absolute");
+        dom.setAttribute(el2,"class","grey lighten-1");
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","nav-wrapper");
+        var el4 = dom.createElement("ul");
+        dom.setAttribute(el4,"id","nav-mobile");
+        dom.setAttribute(el4,"class","right hide-on-med-and-down");
+        var el5 = dom.createElement("li");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("li");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("li");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("div");
+        dom.setAttribute(el2,"class","materialize-parallax-layer faraway");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("div");
+        dom.setAttribute(el2,"class","materialize-parallax-layer deep");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("div");
+        dom.setAttribute(el2,"class","materialize-parallax-layer back");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("div");
+        dom.setAttribute(el2,"class","materialize-parallax-layer base");
+        var el3 = dom.createTextNode("");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("");
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("nav");
+        dom.setAttribute(el1,"id","top-nav-fixed");
+        var el2 = dom.createElement("div");
+        dom.setAttribute(el2,"class","nav-wrapper");
+        var el3 = dom.createElement("ul");
+        dom.setAttribute(el3,"id","nav-mobile");
+        dom.setAttribute(el3,"class","right hide-on-med-and-down");
+        var el4 = dom.createElement("li");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("li");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("li");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, block = hooks.block, content = hooks.content, inline = hooks.inline;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        var element0 = dom.childAt(fragment, [0]);
+        var element1 = dom.childAt(element0, [0, 0]);
+        var element2 = dom.childAt(element1, [0]);
+        var element3 = dom.childAt(element0, [4]);
+        if (this.cachedFragment) { dom.repairClonedNode(element3,[0,1,2]); }
+        var element4 = dom.childAt(fragment, [1, 0]);
+        var element5 = dom.childAt(element4, [0]);
+        var morph0 = dom.createMorphAt(element1,-1,0);
+        var morph1 = dom.createMorphAt(dom.childAt(element2, [0]),-1,-1);
+        var morph2 = dom.createMorphAt(dom.childAt(element2, [1]),-1,-1);
+        var morph3 = dom.createMorphAt(dom.childAt(element2, [2]),-1,-1);
+        var morph4 = dom.createUnsafeMorphAt(dom.childAt(element0, [1]),-1,-1);
+        var morph5 = dom.createUnsafeMorphAt(dom.childAt(element0, [2]),-1,-1);
+        var morph6 = dom.createUnsafeMorphAt(dom.childAt(element0, [3]),-1,-1);
+        var morph7 = dom.createMorphAt(element3,-1,0);
+        var morph8 = dom.createMorphAt(element3,0,1);
+        var morph9 = dom.createMorphAt(element3,1,2);
+        var morph10 = dom.createMorphAt(element3,2,-1);
+        var morph11 = dom.createMorphAt(element4,-1,0);
+        var morph12 = dom.createMorphAt(dom.childAt(element5, [0]),-1,-1);
+        var morph13 = dom.createMorphAt(dom.childAt(element5, [1]),-1,-1);
+        var morph14 = dom.createMorphAt(dom.childAt(element5, [2]),-1,-1);
+        block(env, morph0, context, "link-to", ["index"], {"classNames": "brand-logo blue-grey-text darken-3"}, child0, null);
+        block(env, morph1, context, "link-to", ["about"], {"classNames": "blue-grey-text darken-3"}, child1, null);
+        block(env, morph2, context, "link-to", ["works"], {"classNames": "blue-grey-text darken-3"}, child2, null);
+        block(env, morph3, context, "link-to", ["contact"], {"classNames": "blue-grey-text darken-3"}, child3, null);
+        content(env, morph4, context, "liquid-outlet");
+        inline(env, morph5, context, "outlet", ["deep"], {});
+        inline(env, morph6, context, "outlet", ["back"], {});
+        block(env, morph7, context, "lazy-scroll-load", [], {"id": "index", "action": "loadIndex", "scrollParent": "main", "overlap": 0}, child4, null);
+        block(env, morph8, context, "lazy-scroll-load", [], {"id": "about", "action": "loadAbout", "scrollParent": "main", "overlap": 0}, child5, null);
+        block(env, morph9, context, "lazy-scroll-load", [], {"id": "works", "action": "loadWorks", "scrollParent": "main", "overlap": 0}, child6, null);
+        block(env, morph10, context, "lazy-scroll-load", [], {"id": "contact", "action": "loadContact", "scrollParent": "main", "overlap": 0}, child7, null);
+        block(env, morph11, context, "link-to", ["index"], {"class": "brand-logo"}, child8, null);
+        block(env, morph12, context, "link-to", ["about"], {}, child9, null);
+        block(env, morph13, context, "link-to", ["works"], {}, child10, null);
+        block(env, morph14, context, "link-to", ["contact"], {}, child11, null);
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('miume/templates/components/lazy-scroll-load', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createElement("div");
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, element = hooks.element, content = hooks.content;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        var element0 = fragment;
+        var morph0 = dom.createUnsafeMorphAt(element0,-1,-1);
+        element(env, element0, context, "bind-attr", [], {"class": ":loaded-contents shouldLoadContent:visible:invisible"});
+        content(env, morph0, context, "yield");
         return fragment;
       }
     };
@@ -1639,6 +3004,338 @@ define('miume/templates/components/liquid-spacer', ['exports'], function (export
   }()));
 
 });
+define('miume/templates/components/scroll-spy', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createTextNode("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, content = hooks.content;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1]); }
+        var morph0 = dom.createUnsafeMorphAt(fragment,0,1,contextualElement);
+        content(env, morph0, context, "yield");
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('miume/templates/contact', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createTextNode("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, content = hooks.content;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        if (this.cachedFragment) { dom.repairClonedNode(fragment,[0]); }
+        var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
+        content(env, morph0, context, "outlet");
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('miume/templates/contact/faraway', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createElement("div");
+        dom.setAttribute(el0,"id","contact-faraway");
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1,"class","parallax-background");
+        var el2 = dom.createElement("img");
+        dom.setAttribute(el2,"src","images/autumn.jpg");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('miume/templates/index', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createElement("h1");
+        dom.setAttribute(el0,"class","site-title");
+        var el1 = dom.createTextNode("梅");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('miume/templates/index/back', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createElement("div");
+        dom.setAttribute(el0,"id","index-back");
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1,"class","container");
+        var el2 = dom.createElement("div");
+        dom.setAttribute(el2,"class","row");
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","col s12 centered");
+        var el4 = dom.createElement("button");
+        dom.setAttribute(el4,"class","btn-floating btn-large waves-effect waves-light grey");
+        var el5 = dom.createElement("span");
+        dom.setAttribute(el5,"class","site-logo");
+        var el6 = dom.createTextNode("梅");
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('miume/templates/index/faraway', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createElement("div");
+        dom.setAttribute(el0,"id","index-faraway");
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1,"class","parallax-background");
+        var el2 = dom.createElement("img");
+        dom.setAttribute(el2,"src","images/winter.jpg");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('miume/templates/liquid-with-self', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createTextNode("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, content = hooks.content;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        if (this.cachedFragment) { dom.repairClonedNode(fragment,[0]); }
+        var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
+        content(env, morph0, context, "value");
+        return fragment;
+      }
+    };
+  }()));
+
+});
 define('miume/templates/liquid-with', ['exports'], function (exports) {
 
   'use strict';
@@ -1680,6 +3377,99 @@ define('miume/templates/liquid-with', ['exports'], function (exports) {
         if (this.cachedFragment) { dom.repairClonedNode(fragment,[0]); }
         var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
         content(env, morph0, context, "with-apply");
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('miume/templates/works', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createTextNode("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, content = hooks.content;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        if (this.cachedFragment) { dom.repairClonedNode(fragment,[0]); }
+        var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
+        content(env, morph0, context, "outlet");
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('miume/templates/works/faraway', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createElement("div");
+        dom.setAttribute(el0,"id","works-faraway");
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1,"class","parallax-background");
+        var el2 = dom.createElement("img");
+        dom.setAttribute(el2,"src","images/summer.jpg");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
         return fragment;
       }
     };
@@ -1802,16 +3592,6 @@ define('miume/tests/helpers/start-app.jshint', function () {
   });
 
 });
-define('miume/tests/router.jshint', function () {
-
-  'use strict';
-
-  module('JSHint - .');
-  test('router.js should pass jshint', function() { 
-    ok(true, 'router.js should pass jshint.'); 
-  });
-
-});
 define('miume/tests/test-helper', ['miume/tests/helpers/resolver', 'ember-qunit'], function (resolver, ember_qunit) {
 
 	'use strict';
@@ -1827,6 +3607,165 @@ define('miume/tests/test-helper.jshint', function () {
   test('test-helper.js should pass jshint', function() { 
     ok(true, 'test-helper.js should pass jshint.'); 
   });
+
+});
+define('miume/tests/unit/components/lazy-scroll-load-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForComponent('lazy-scroll-load', {});
+
+  ember_qunit.test('it renders', function(assert) {
+    var component;
+    assert.expect(2);
+    component = this.subject();
+    assert.equal(component._state, 'preRender');
+    this.render();
+    return assert.equal(component._state, 'inDOM');
+  });
+
+});
+define('miume/tests/unit/components/materialize-parallax-image-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForComponent('materialize-parallax-image', {});
+
+  ember_qunit.test('it renders', function(assert) {
+    var component;
+    assert.expect(2);
+    component = this.subject();
+    assert.equal(component._state, 'preRender');
+    this.render();
+    return assert.equal(component._state, 'inDOM');
+  });
+
+});
+define('miume/tests/unit/components/materialize-parallax-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForComponent('materialize-parallax', {});
+
+  ember_qunit.test('it renders', function(assert) {
+    var component;
+    assert.expect(2);
+    component = this.subject();
+    assert.equal(component._state, 'preRender');
+    this.render();
+    return assert.equal(component._state, 'inDOM');
+  });
+
+});
+define('miume/tests/unit/components/scroll-spy-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForComponent('scroll-spy', {});
+
+  ember_qunit.test('it renders', function(assert) {
+    var component;
+    assert.expect(2);
+    component = this.subject();
+    assert.equal(component._state, 'preRender');
+    this.render();
+    return assert.equal(component._state, 'inDOM');
+  });
+
+});
+define('miume/tests/unit/controllers/application-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('controller:application', {});
+
+  ember_qunit.test('it exists', function(assert) {
+    var controller;
+    controller = this.subject();
+    return assert.ok(controller);
+  });
+
+});
+define('miume/tests/unit/routes/about-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('route:about', {});
+
+  ember_qunit.test('it exists', function(assert) {
+    var route;
+    route = this.subject();
+    return assert.ok(route);
+  });
+
+});
+define('miume/tests/unit/routes/contact-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('route:contact', {});
+
+  ember_qunit.test('it exists', function(assert) {
+    var route;
+    route = this.subject();
+    return assert.ok(route);
+  });
+
+});
+define('miume/tests/unit/routes/index-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('route:index', {});
+
+  ember_qunit.test('it exists', function(assert) {
+    var route;
+    route = this.subject();
+    return assert.ok(route);
+  });
+
+});
+define('miume/tests/unit/routes/works-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('route:works', {});
+
+  ember_qunit.test('it exists', function(assert) {
+    var route;
+    route = this.subject();
+    return assert.ok(route);
+  });
+
+});
+define('miume/tests/unit/utils/fun-ex-test', ['miume/utils/fun-ex', 'qunit'], function (funEx, qunit) {
+
+  'use strict';
+
+  qunit.module('funEx');
+
+  qunit.test('it works', function(assert) {
+    var result;
+    result = funEx['default']();
+    return assert.ok(result);
+  });
+
+});
+define('miume/transition', ['exports', 'liquid-fire'], function (exports, liquid_fire) {
+
+  'use strict';
+
+  var transitionMap;
+
+  transitionMap = function() {
+    this.transition(this.fromRoute("index"), this.toRoute("about"), this.use("toDown"), this.reverse("toUp"));
+    this.transition(this.fromRoute("about"), this.toRoute("works"), this.use("toDown"), this.reverse("toUp"));
+    this.transition(this.fromRoute("works"), this.toRoute("contact"), this.use("toDown"), this.reverse("toUp"));
+    this.transition(this.fromRoute("index"), this.toRoute("contact"), this.use("toDown"), this.reverse("toUp"));
+    return this.transition(this.fromRoute("about"), this.toRoute("contact"), this.use("toDown"), this.reverse("toUp"));
+  };
+
+  exports['default'] = transitionMap;
 
 });
 define('miume/transitions/cross-fade', ['exports', 'liquid-fire'], function (exports, liquid_fire) {
@@ -2040,6 +3979,62 @@ define('miume/transitions/to-up', ['exports', 'liquid-fire'], function (exports,
 	exports['default'] = liquid_fire.curryTransition("move-over", "y", -1);
 
 });
+define('miume/utils/fun-ex', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  var FunEx,
+    slice = [].slice;
+
+  FunEx = (function() {
+    function FunEx() {}
+
+    FunEx.reverse = function(f) {
+      return function() {
+        var args;
+        args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+        return f.apply(this, args.reverse());
+      };
+    };
+
+    FunEx.flip = function(f) {
+      return function() {
+        var arg1, arg2, rest;
+        arg1 = arguments[0], arg2 = arguments[1], rest = 3 <= arguments.length ? slice.call(arguments, 2) : [];
+        return f.apply(this, [arg2, arg1].concat(rest));
+      };
+    };
+
+    FunEx.computed = function() {
+      var deps, ff, fun, i;
+      deps = 2 <= arguments.length ? slice.call(arguments, 0, i = arguments.length - 1) : (i = 0, []), fun = arguments[i++];
+      ff = Ember['default'].computed(fun);
+      return ff.property.apply(ff, deps);
+    };
+
+    FunEx.volatile = function(f) {
+      return Ember['default'].computed(f).volatile();
+    };
+
+    FunEx.observed = function() {
+      var fields, fun, i;
+      fields = 2 <= arguments.length ? slice.call(arguments, 0, i = arguments.length - 1) : (i = 0, []), fun = arguments[i++];
+      return fun.observes.apply(fun, fields);
+    };
+
+    FunEx.isBlank = Ember['default'].isBlank;
+
+    FunEx.isPresent = function(x) {
+      return !Ember['default'].isBlank(x);
+    };
+
+    return FunEx;
+
+  })();
+
+  exports['default'] = FunEx;
+
+});
 define('miume/views/liquid-child', ['exports', 'ember'], function (exports, Ember) {
 
   'use strict';
@@ -2062,11 +4057,13 @@ define('miume/views/liquid-if', ['exports', 'miume/views/liquid-outlet', 'ember'
 
   'use strict';
 
+  var isHTMLBars = !!Ember['default'].HTMLBars;
+
   exports['default'] = LiquidOutlet['default'].extend({
     liquidUpdate: Ember['default'].on("init", Ember['default'].observer("showFirst", function () {
       var template = this.get("templates")[this.get("showFirst") ? 0 : 1];
-      if (!template) {
-        this._newCurrentView(null);
+      if (!template || !isHTMLBars && template === Ember['default'].Handlebars.VM.noop) {
+        this.set("currentView", null);
         return;
       }
       var view = Ember['default']._MetamorphView.create({
@@ -2077,7 +4074,7 @@ define('miume/views/liquid-if', ['exports', 'miume/views/liquid-outlet', 'ember'
         liquidContext: this.get("showFirst"),
         hasLiquidContext: true
       });
-      this._newCurrentView(view);
+      this.set("currentView", view);
     }))
 
   });
@@ -2089,13 +4086,7 @@ define('miume/views/liquid-outlet', ['exports', 'ember', 'liquid-fire'], functio
 
   var capitalize = Ember['default'].String.capitalize;
 
-  if (!Ember['default'].OutletView) {
-    throw new Error("This version of liquid-fire requires a new Ember");
-  }
-
-  // OutletView.superclass is CoreOutletView, which is currently pending
-  // behind a feature flag to become an official public API.
-  exports['default'] = Ember['default'].OutletView.superclass.extend({
+  exports['default'] = Ember['default'].ContainerView.extend({
     classNames: ["liquid-container"],
     growDuration: 250,
     growPixelsPerSecond: 200,
@@ -2103,7 +4094,12 @@ define('miume/views/liquid-outlet', ['exports', 'ember', 'liquid-fire'], functio
     enableGrowth: true,
 
     init: function init() {
+      // The ContainerView constructor normally sticks our "currentView"
+      // directly into _childViews, but we want to leave that up to
+      // _currentViewDidChange so we have the opportunity to launch a
+      // transition.
       this._super();
+      Ember['default'].A(this._childViews).clear();
 
       if (this.get("containerless")) {
         // This prevents Ember from throwing an assertion when we try to
@@ -2113,26 +4109,24 @@ define('miume/views/liquid-outlet', ['exports', 'ember', 'liquid-fire'], functio
       }
     },
 
-    setOutletState: function setOutletState(state) {
-      if (!this._diffState(state)) {
-        var children = this._childOutlets;
-        for (var i = 0; i < children.length; i++) {
-          var child = children[i];
-          child.setOutletState(this._outletState && this._outletState.outlets[child._outletName]);
-        }
-      } else {
-        this._newCurrentView(this._buildView(this._outletState));
-      }
-    },
+    // Deliberately overriding a private method from
+    // Ember.ContainerView!
+    //
+    // We need to stop it from destroying our outgoing child view
+    // prematurely.
+    _currentViewWillChange: Ember['default'].beforeObserver("currentView", function () {}),
 
-    _newCurrentView: function _newCurrentView(newView) {
+    // Deliberately overriding a private method from
+    // Ember.ContainerView!
+    _currentViewDidChange: Ember['default'].on("init", Ember['default'].observer("currentView", function () {
       // Normally there is only one child (the view we're
       // replacing). But sometimes there may be two children (because a
       // transition is already in progress). In any case, we tell all of
       // them to start heading for the exits now.
 
-      var oldView = this.get("lastObject");
-      var firstTime;
+      var oldView = this.get("childViews.lastObject"),
+          newView = this.get("currentView"),
+          firstTime;
 
       // For the convenience of the transition rules, we explicitly
       // track our first transition, which happens at initial render.
@@ -2160,7 +4154,7 @@ define('miume/views/liquid-outlet', ['exports', 'ember', 'liquid-fire'], functio
         // EOL.
         Ember['default'].RSVP.Promise.resolve()._onerror(err);
       });
-    },
+    })),
 
     _liquidChildFor: function _liquidChildFor(content) {
       if (content && !content.get("hasLiquidContext")) {
@@ -2282,7 +4276,7 @@ define('miume/views/liquid-with', ['exports', 'miume/views/liquid-outlet', 'embe
     liquidUpdate: Ember['default'].on("init", Ember['default'].observer("boundContext", function () {
       var context = this.get("boundContext");
       if (Ember['default'].isEmpty(context)) {
-        this._newCurrentView(null);
+        this.set("currentView", null);
         return;
       }
       var view = Ember['default']._MetamorphView.create({
@@ -2292,7 +4286,7 @@ define('miume/views/liquid-with', ['exports', 'miume/views/liquid-outlet', 'embe
         liquidWithParent: this,
         liquidContext: context,
         hasLiquidContext: true });
-      this._newCurrentView(view);
+      this.set("currentView", view);
     }))
 
   });
@@ -2326,7 +4320,7 @@ catch(err) {
 if (runningTests) {
   require("miume/tests/test-helper");
 } else {
-  require("miume/app")["default"].create({"name":"miume","version":"0.0.0.add31d60"});
+  require("miume/app")["default"].create({"name":"miume","version":"0.0.0.4c78bb36"});
 }
 
 /* jshint ignore:end */

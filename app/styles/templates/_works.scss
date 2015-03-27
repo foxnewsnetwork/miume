@@ -1,0 +1,20 @@
+#works {
+  padding-top: 20px;
+  @include transition-property(background-color);
+  @include transition-timing-function(ease-out);
+  @include transition-duration(300ms);
+  &.invisible {
+    background-color: #dcedc8;
+  }
+  &.after {
+    visibility: hidden;
+  }
+}
+
+#works-faraway {
+  text-align: right;
+  img {
+    width: 120%;
+    height: 100%;
+  }
+}

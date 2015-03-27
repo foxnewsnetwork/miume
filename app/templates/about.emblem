@@ -1,0 +1,17 @@
+#about
+  .container
+    .row
+      .col.l6.offset-l6
+        materialize-card title="introduction" titleClass="green-text darken-1" image="images/doge.jpg"
+          materialize-card-content
+            h4.catchphrase something about me
+            p.exposition faksdjf laksjd flkjas dflkjasdlfkjals djflakjsd flkjasdl fkjalsdkjf
+          materialize-card-action
+            link-to "index" class="green-text darken-1"
+              fa-icon "home" size="2"
+
+            link-to "works" class="green-text darken-1"
+              fa-icon "archive" size="2"
+
+            link-to "contact" class="green-text darken-1"
+              fa-icon "comments-o" size="2"
