@@ -2,6 +2,38 @@
 
 /* jshint ignore:end */
 
+define('miume/adapters/application', ['exports', 'ember-data'], function (exports, DS) {
+
+	'use strict';
+
+	var ApplicationAdapter;
+
+	ApplicationAdapter = DS['default'].RESTAdapter.extend();
+
+	exports['default'] = ApplicationAdapter;
+
+});
+define('miume/adapters/youtube', ['exports', 'ember-youtube-data-model/adapters/youtube'], function (exports, YoutubeAdapter) {
+
+	'use strict';
+
+	exports['default'] = YoutubeAdapter['default'];
+
+});
+define('miume/adapters/youtube/channel', ['exports', 'ember-youtube-data-model/adapters/youtube/channel'], function (exports, YoutubeChannelAdapter) {
+
+	'use strict';
+
+	exports['default'] = YoutubeChannelAdapter['default'];
+
+});
+define('miume/adapters/youtube/playlist', ['exports', 'ember-youtube-data-model/adapters/youtube/playlist'], function (exports, YoutubePlaylistAdapter) {
+
+	'use strict';
+
+	exports['default'] = YoutubePlaylistAdapter['default'];
+
+});
 define('miume/app', ['exports', 'ember', 'ember/resolver', 'ember/load-initializers', 'miume/config/environment'], function (exports, Ember, Resolver, loadInitializers, config) {
 
   'use strict';
@@ -1238,6 +1270,13 @@ define('miume/initializers/t', ['exports', 'ember', 'ember-cli-i18n/utils/t', 'm
   };
 
 });
+define('miume/initializers/youtube', ['exports', 'ember-youtube-data-model/initializers/youtube'], function (exports, YoutubeInitializer) {
+
+	'use strict';
+
+	exports['default'] = YoutubeInitializer['default'];
+
+});
 define('miume/mixins/google-pageview', ['exports', 'ember', 'miume/config/environment'], function (exports, Ember, ENV) {
 
   'use strict';
@@ -1260,6 +1299,61 @@ define('miume/mixins/google-pageview', ['exports', 'ember', 'miume/config/enviro
       }
     }).on("didTransition")
   });
+
+});
+define('miume/models/youtube/channel', ['exports', 'ember-data', 'ember'], function (exports, DS, Ember) {
+
+  'use strict';
+
+  var YoutubeChannel;
+
+  YoutubeChannel = DS['default'].Model.extend({
+    title: DS['default'].attr("string"),
+    description: DS['default'].attr("string"),
+    thumbnails: DS['default'].attr("thumbnails"),
+    publishedAt: DS['default'].attr("date"),
+    uploadId: DS['default'].attr("string"),
+    uploads: Ember['default'].computed("uploadId", function() {
+      if (Ember['default'].isBlank(this.get("uploadId"))) {
+        return;
+      }
+      return this.store.find("youtube/playlist", this.get("uploadId"));
+    })
+  });
+
+  exports['default'] = YoutubeChannel;
+
+});
+define('miume/models/youtube/playlist', ['exports', 'ember-data'], function (exports, DS) {
+
+  'use strict';
+
+  var YoutubePlaylist;
+
+  YoutubePlaylist = DS['default'].Model.extend({
+    videos: DS['default'].hasMany("youtube/video", {
+      embedded: true
+    })
+  });
+
+  exports['default'] = YoutubePlaylist;
+
+});
+define('miume/models/youtube/video', ['exports', 'ember-data'], function (exports, DS) {
+
+  'use strict';
+
+  var YoutubeVideo;
+
+  YoutubeVideo = DS['default'].Model.extend({
+    title: DS['default'].attr("string"),
+    description: DS['default'].attr("string"),
+    thumbnails: DS['default'].attr("thumbnails"),
+    position: DS['default'].attr("number"),
+    publishedAt: DS['default'].attr("date")
+  });
+
+  exports['default'] = YoutubeVideo;
 
 });
 define('miume/router', ['exports', 'ember', 'miume/config/environment'], function (exports, Ember, config) {
@@ -1345,6 +1439,34 @@ define('miume/routes/works', ['exports', 'ember'], function (exports, Ember) {
   });
 
   exports['default'] = WorksRoute;
+
+});
+define('miume/serializers/youtube', ['exports', 'ember-youtube-data-model/serializers/youtube'], function (exports, YoutubeSerializer) {
+
+	'use strict';
+
+	exports['default'] = YoutubeSerializer['default'];
+
+});
+define('miume/serializers/youtube/channel', ['exports', 'ember-youtube-data-model/serializers/youtube/channel'], function (exports, YoutubeChannelSerializer) {
+
+	'use strict';
+
+	exports['default'] = YoutubeChannelSerializer['default'];
+
+});
+define('miume/serializers/youtube/playlist', ['exports', 'ember-youtube-data-model/serializers/youtube/playlist'], function (exports, YoutubePlaylistSerializer) {
+
+	'use strict';
+
+	exports['default'] = YoutubePlaylistSerializer['default'];
+
+});
+define('miume/serializers/youtube/video', ['exports', 'ember-youtube-data-model/serializers/youtube/video'], function (exports, YoutubeVideoSerializer) {
+
+	'use strict';
+
+	exports['default'] = YoutubeVideoSerializer['default'];
 
 });
 define('miume/services/csrf', ['exports', 'ember'], function (exports, Ember) {
@@ -2344,9 +2466,9 @@ define('miume/templates/application', ['exports'], function (exports) {
         inline(env, morph5, context, "outlet", ["deep"], {});
         inline(env, morph6, context, "outlet", ["back"], {});
         block(env, morph7, context, "lazy-scroll-load", [], {"id": "index", "action": "loadIndex", "scrollParent": "main", "overlap": 0}, child4, null);
-        block(env, morph8, context, "lazy-scroll-load", [], {"id": "about", "action": "loadAbout", "scrollParent": "main", "overlap": 0}, child5, null);
-        block(env, morph9, context, "lazy-scroll-load", [], {"id": "works", "action": "loadWorks", "scrollParent": "main", "overlap": 0}, child6, null);
-        block(env, morph10, context, "lazy-scroll-load", [], {"id": "contact", "action": "loadContact", "scrollParent": "main", "overlap": 0}, child7, null);
+        block(env, morph8, context, "lazy-scroll-load", [], {"id": "about", "action": "loadAbout", "scrollParent": "main", "overlap": 50}, child5, null);
+        block(env, morph9, context, "lazy-scroll-load", [], {"id": "works", "action": "loadWorks", "scrollParent": "main", "overlap": 50}, child6, null);
+        block(env, morph10, context, "lazy-scroll-load", [], {"id": "contact", "action": "loadContact", "scrollParent": "main", "overlap": 50}, child7, null);
         block(env, morph11, context, "link-to", ["index"], {"class": "brand-logo"}, child8, null);
         block(env, morph12, context, "link-to", ["about"], {}, child9, null);
         block(env, morph13, context, "link-to", ["works"], {}, child10, null);
@@ -3062,16 +3184,32 @@ define('miume/templates/contact', ['exports'], function (exports) {
       cachedFragment: null,
       hasRendered: false,
       build: function build(dom) {
-        var el0 = dom.createDocumentFragment();
-        var el1 = dom.createTextNode("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
+        var el0 = dom.createElement("div");
+        dom.setAttribute(el0,"id","contact");
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1,"class","container");
+        var el2 = dom.createElement("div");
+        dom.setAttribute(el2,"class","row");
+        var el3 = dom.createElement("form");
+        dom.setAttribute(el3,"class","col s12 m6 l6");
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","input-field");
+        var el5 = dom.createElement("label");
+        dom.setAttribute(el5,"for","name");
+        var el6 = dom.createElement("span");
+        var el7 = dom.createTextNode("name");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
         dom.appendChild(el0, el1);
         return el0;
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, content = hooks.content;
+        var hooks = env.hooks, inline = hooks.inline;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -3089,9 +3227,8 @@ define('miume/templates/contact', ['exports'], function (exports) {
         } else {
           fragment = this.build(dom);
         }
-        if (this.cachedFragment) { dom.repairClonedNode(fragment,[0]); }
-        var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
-        content(env, morph0, context, "outlet");
+        var morph0 = dom.createUnsafeMorphAt(dom.childAt(fragment, [0, 0, 0, 0]),-1,0);
+        inline(env, morph0, context, "input", [], {"type": "text", "name": "name", "class": "validate"});
         return fragment;
       }
     };
@@ -3394,16 +3531,112 @@ define('miume/templates/works', ['exports'], function (exports) {
       cachedFragment: null,
       hasRendered: false,
       build: function build(dom) {
-        var el0 = dom.createDocumentFragment();
-        var el1 = dom.createTextNode("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
+        var el0 = dom.createElement("div");
+        dom.setAttribute(el0,"id","works");
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1,"class","container");
+        var el2 = dom.createElement("div");
+        dom.setAttribute(el2,"class","row");
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","col s12 m6 l3");
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","card");
+        var el5 = dom.createElement("div");
+        dom.setAttribute(el5,"class","card-image waves-effect waves-block waves-light");
+        var el6 = dom.createElement("img");
+        dom.setAttribute(el6,"src","images/doge2.jpg");
+        dom.setAttribute(el6,"class","activator");
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("div");
+        dom.setAttribute(el5,"class","card-content");
+        var el6 = dom.createElement("span");
+        dom.setAttribute(el6,"class","card-title activator grey-text text-darken-4");
+        var el7 = dom.createElement("span");
+        var el8 = dom.createTextNode("video title");
+        dom.appendChild(el7, el8);
+        dom.appendChild(el6, el7);
+        var el7 = dom.createElement("i");
+        dom.setAttribute(el7,"class","mdi-navigation-more-vert right");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        var el6 = dom.createElement("p");
+        var el7 = dom.createTextNode("outbound link");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("div");
+        dom.setAttribute(el5,"class","card-reveal");
+        var el6 = dom.createElement("span");
+        dom.setAttribute(el6,"class","card-title grey-text text-darken-4");
+        var el7 = dom.createElement("span");
+        var el8 = dom.createTextNode("video title");
+        dom.appendChild(el7, el8);
+        dom.appendChild(el6, el7);
+        var el7 = dom.createElement("i");
+        dom.setAttribute(el7,"class","mdi-navigation-close right");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        var el6 = dom.createElement("p");
+        var el7 = dom.createTextNode("description goes here");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","col s12 m6 l3");
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","card");
+        var el5 = dom.createElement("div");
+        dom.setAttribute(el5,"class","card-image waves-effect waves-block waves-light");
+        var el6 = dom.createElement("img");
+        dom.setAttribute(el6,"src","images/doge2.jpg");
+        dom.setAttribute(el6,"class","activator");
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("div");
+        dom.setAttribute(el5,"class","card-content");
+        var el6 = dom.createElement("span");
+        dom.setAttribute(el6,"class","card-title activator grey-text text-darken-4");
+        var el7 = dom.createElement("span");
+        var el8 = dom.createTextNode("video title");
+        dom.appendChild(el7, el8);
+        dom.appendChild(el6, el7);
+        var el7 = dom.createElement("i");
+        dom.setAttribute(el7,"class","mdi-navigation-more-vert right");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        var el6 = dom.createElement("p");
+        var el7 = dom.createTextNode("outbound link");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("div");
+        dom.setAttribute(el5,"class","card-reveal");
+        var el6 = dom.createElement("span");
+        dom.setAttribute(el6,"class","card-title grey-text text-darken-4");
+        var el7 = dom.createElement("span");
+        var el8 = dom.createTextNode("video title");
+        dom.appendChild(el7, el8);
+        dom.appendChild(el6, el7);
+        var el7 = dom.createElement("i");
+        dom.setAttribute(el7,"class","mdi-navigation-close right");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        var el6 = dom.createElement("p");
+        var el7 = dom.createTextNode("description goes here");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
         dom.appendChild(el0, el1);
         return el0;
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, content = hooks.content;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -3421,9 +3654,6 @@ define('miume/templates/works', ['exports'], function (exports) {
         } else {
           fragment = this.build(dom);
         }
-        if (this.cachedFragment) { dom.repairClonedNode(fragment,[0]); }
-        var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
-        content(env, morph0, context, "outlet");
         return fragment;
       }
     };
@@ -3609,6 +3839,71 @@ define('miume/tests/test-helper.jshint', function () {
   });
 
 });
+define('miume/tests/unit/adapters/application-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('adapter:application', 'ApplicationAdapter', {});
+
+  ember_qunit.test('it exists', function(assert) {
+    var adapter;
+    adapter = this.subject();
+    return assert.ok(adapter);
+  });
+
+});
+define('miume/tests/unit/adapters/youtube-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('adapter:youtube', 'YoutubeAdapter', {});
+
+  ember_qunit.test('it exists', function(assert) {
+    var adapter;
+    adapter = this.subject();
+    return assert.ok(adapter);
+  });
+
+});
+define('miume/tests/unit/adapters/youtube/channel-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('adapter:youtube/channel', 'YoutubeChannelAdapter', {});
+
+  ember_qunit.test('it exists', function(assert) {
+    var adapter;
+    adapter = this.subject();
+    return assert.ok(adapter);
+  });
+
+});
+define('miume/tests/unit/adapters/youtube/playlist-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('adapter:youtube/playlist', 'YoutubePlaylistAdapter', {});
+
+  ember_qunit.test('it exists', function(assert) {
+    var adapter;
+    adapter = this.subject();
+    return assert.ok(adapter);
+  });
+
+});
+define('miume/tests/unit/adapters/youtube/video-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('adapter:youtube/video', 'YoutubeVideoAdapter', {});
+
+  ember_qunit.test('it exists', function(assert) {
+    var adapter;
+    adapter = this.subject();
+    return assert.ok(adapter);
+  });
+
+});
 define('miume/tests/unit/components/lazy-scroll-load-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -3686,6 +3981,51 @@ define('miume/tests/unit/controllers/application-test', ['ember-qunit'], functio
   });
 
 });
+define('miume/tests/unit/models/youtube/channel-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForModel('youtube/channel', {
+    needs: []
+  });
+
+  ember_qunit.test('it exists', function(assert) {
+    var model;
+    model = this.subject();
+    return assert.ok(!!model);
+  });
+
+});
+define('miume/tests/unit/models/youtube/playlist-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForModel('youtube/playlist', {
+    needs: []
+  });
+
+  ember_qunit.test('it exists', function(assert) {
+    var model;
+    model = this.subject();
+    return assert.ok(!!model);
+  });
+
+});
+define('miume/tests/unit/models/youtube/video-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForModel('youtube/video', {
+    needs: []
+  });
+
+  ember_qunit.test('it exists', function(assert) {
+    var model;
+    model = this.subject();
+    return assert.ok(!!model);
+  });
+
+});
 define('miume/tests/unit/routes/about-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -3738,6 +4078,58 @@ define('miume/tests/unit/routes/works-test', ['ember-qunit'], function (ember_qu
   });
 
 });
+define('miume/tests/unit/serializers/youtube-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('serializer:youtube', {});
+
+  ember_qunit.test('it exists', function(assert) {
+    var serializer;
+    serializer = this.subject();
+    return assert.ok(serializer);
+  });
+
+});
+define('miume/tests/unit/serializers/youtube/channel-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('serializer:youtube/channel', {});
+
+  ember_qunit.test('it exists', function(assert) {
+    var serializer;
+    serializer = this.subject();
+    return assert.ok(serializer);
+  });
+
+});
+define('miume/tests/unit/serializers/youtube/playlist-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('serializer:youtube/playlist', {});
+
+  ember_qunit.test('it exists', function(assert) {
+    var serializer;
+    serializer = this.subject();
+    return assert.ok(serializer);
+  });
+
+});
+define('miume/tests/unit/serializers/youtube/video-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('serializer:youtube/video', {});
+
+  ember_qunit.test('it exists', function(assert) {
+    var serializer;
+    serializer = this.subject();
+    return assert.ok(serializer);
+  });
+
+});
 define('miume/tests/unit/utils/fun-ex-test', ['miume/utils/fun-ex', 'qunit'], function (funEx, qunit) {
 
   'use strict';
@@ -3749,6 +4141,24 @@ define('miume/tests/unit/utils/fun-ex-test', ['miume/utils/fun-ex', 'qunit'], fu
     result = funEx['default']();
     return assert.ok(result);
   });
+
+});
+define('miume/transforms/thumbnails', ['exports', 'ember-data'], function (exports, DS) {
+
+  'use strict';
+
+  var ThumbnailsTransform;
+
+  ThumbnailsTransform = DS['default'].Transform.extend({
+    deserialize: function(serialized) {
+      return serialized;
+    },
+    serialize: function(deserialized) {
+      return deserialized;
+    }
+  });
+
+  exports['default'] = ThumbnailsTransform;
 
 });
 define('miume/transition', ['exports', 'liquid-fire'], function (exports, liquid_fire) {
@@ -4320,7 +4730,7 @@ catch(err) {
 if (runningTests) {
   require("miume/tests/test-helper");
 } else {
-  require("miume/app")["default"].create({"name":"miume","version":"0.0.0.4c78bb36"});
+  require("miume/app")["default"].create({"name":"miume","version":"0.0.0.5571135b"});
 }
 
 /* jshint ignore:end */

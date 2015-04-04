@@ -45,6 +45,7 @@
     "ember-export-application-global": "^1.0.2",
     "ember-lazy-video": "0.2.5",
     "ember-moment": "1.1.1",
+    "ember-youtube-data-model": "0.0.1-beta",
     "liquid-fire": "^0.17.1",
     "rails-csrf": "2.0.1",
     "sass-flex-mixin": "^1.0.0"

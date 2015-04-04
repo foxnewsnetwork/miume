@@ -1,6 +1,6 @@
 
 #about {
-  padding-top: 20px;
+  padding-top: 50px;
   @include transition-property(background-color);
   @include transition-timing-function(ease-out);
   @include transition-duration(300ms);
