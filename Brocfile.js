@@ -27,5 +27,4 @@ app.import("bower_components/lodash/lodash.min.js",{
     "lodash": ["_"]
   }
 });
-app.import('bower_components/materialize/js/parallax.js');
 module.exports = app.toTree();

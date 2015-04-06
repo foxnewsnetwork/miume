@@ -1,7 +1,5 @@
 `import Ember from 'ember'`
 
-ContactRoute = Ember.Route.extend
-  renderTemplate: ->
-    @render "contact/faraway"
+ContactRoute = Ember.Route.extend()
 
 `export default ContactRoute`

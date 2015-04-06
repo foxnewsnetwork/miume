@@ -11,4 +11,10 @@ Router.map ->
 
   @route "contact" 
 
+  @route "pictures"
+
+  @route "videos"
+
+  @route "dances"
+
 `export default Router`

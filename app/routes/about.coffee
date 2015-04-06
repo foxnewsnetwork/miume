@@ -1,7 +1,5 @@
 `import Ember from 'ember'`
 
-AboutRoute = Ember.Route.extend
-  renderTemplate: ->
-    @render "about/faraway"
+AboutRoute = Ember.Route.extend()
 
 `export default AboutRoute`

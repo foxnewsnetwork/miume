@@ -1,35 +1,3 @@
-main
-  nav#top-nav-absolute.grey.lighten-1
-    .nav-wrapper
-      link-to "index" classNames="brand-logo blue-grey-text darken-3"
-        span 梅
-      ul#nav-mobile.right.hide-on-med-and-down
-        li: link-to "about" classNames="blue-grey-text darken-3"
-          i.mdi-action-face-unlock
-          span.nav-title about me
-        li: link-to "works" classNames="blue-grey-text darken-3"
-          fa-icon "archive"
-          span.nav-title my discography
-        li: link-to "contact" classNames="blue-grey-text darken-3"
-          fa-icon "comments-o"
-          span.nav-title leave me a message
-  .materialize-parallax-layer.faraway
-    == liquid-outlet
-  .materialize-parallax-layer.deep
-    == outlet "deep"
-  .materialize-parallax-layer.back
-    == outlet "back"
-    
-  .materialize-parallax-layer.base
-    lazy-scroll-load id="index" action="loadIndex" scrollParent="main" overlap=0
-      == render "index"
-    lazy-scroll-load id="about" action="loadAbout" scrollParent="main" overlap=50
-      == render "about"
-    lazy-scroll-load id="works" action="loadWorks" scrollParent="main" overlap=50
-      == render "works"
-    lazy-scroll-load id="contact" action="loadContact" scrollParent="main" overlap=50
-      == render "contact"
-
 nav#top-nav-fixed
   .nav-wrapper
     link-to "index" class="brand-logo"
@@ -41,3 +9,20 @@ nav#top-nav-fixed
         fa-icon "archive"
       li: link-to "contact"
         fa-icon "comments-o"
+main
+  == liquid-outlet
+
+footer.page-footer
+  .container
+    .row
+      .col.l6.s12
+        h5.white-text web logo again
+        p.grey-text.text-lighten-4 about who built this
+      .col.l4.offset-l2.s12
+        h5.white-text links
+        ul
+          li: a somewhere
+  .footer-copyright
+    .container
+      span copyright
+      

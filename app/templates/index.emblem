@@ -1,1 +1,88 @@
-h1.site-title 梅
+#index
+  nav.index-nav-header
+    .nav-wrapper
+      link-to "index" class="brand-logo"
+        img.cover-width src="images/plum.png"
+      ul.right.hide-on-med-and-down
+        li: link-to "about"
+          span.nav-title about
+        li: link-to "dances"
+          span.nav-title dances
+        li: link-to "videos"
+          span.nav-title videos
+        li: link-to "pictures"
+          span.nav-title pictures
+        li: link-to "contact"
+          span.nav-title contact
+
+  .highlights
+    .container
+      .row
+        .col.l9.m12.s12
+          img.cover-width src="images/doge.jpg"
+        .col.l3.hide-on-med-and-down
+          .row
+            .col.l12
+              img.cover-width src="images/doge.jpg"
+            .col.l12
+              img.cover-width src="images/doge.jpg"
+            .col.l12
+              img.cover-width src="images/doge.jpg"
+
+  .parallax-art
+    span placeholder
+
+  .announcements
+    .container
+      .row
+        .col.s12.m6.l4
+          .card
+            .card-image.waves-effect.waves-block.waves-light
+              img src="images/doge.jpg"
+            .card-content
+              span.card-title.activator.grey-text.text-darken-4 
+                span accouncement
+                i.mdi-navigation-more-vert.right
+              p some sort of announcement here
+            .card-action
+              a href="https://github.com/foxnewsnetwork" action link            
+            .card-reveal
+              span.card-title.grey-text.text-darken-4
+                span announcement
+                i.mdi-navigation-close.right
+              p more crap
+        .col.s12.m6.l4
+          .card
+            .card-image.waves-effect.waves-block.waves-light
+              img src="images/doge.jpg"
+            .card-content
+              span.card-title.activator.grey-text.text-darken-4 
+                span accouncement
+                i.mdi-navigation-more-vert.right
+              p some sort of announcement here
+            .card-action
+              a href="https://github.com/foxnewsnetwork" action link            
+            .card-reveal
+              span.card-title.grey-text.text-darken-4
+                span announcement
+                i.mdi-navigation-close.right
+              p more crap
+        .col.s12.m6.l4
+          .card
+            .card-image.waves-effect.waves-block.waves-light
+              img src="images/doge.jpg"
+            .card-content
+              span.card-title.activator.grey-text.text-darken-4 
+                span accouncement
+                i.mdi-navigation-more-vert.right
+              p some sort of announcement here
+            .card-action
+              a href="https://github.com/foxnewsnetwork" action link            
+            .card-reveal
+              span.card-title.grey-text.text-darken-4
+                span announcement
+                i.mdi-navigation-close.right
+              p more crap
+
+  .parallax-art
+    span placeholder

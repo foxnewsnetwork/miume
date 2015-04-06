@@ -7,33 +7,13 @@
 @import 'templates';
 @import 'components';
 
-#top-nav-absolute {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  height: 70px;
-  z-index: 5;
-  .brand-logo {
-    margin-left: 25px;
-  }
-  &.invisible {
-    visibility: hidden;
-  }
-  .nav-title {
-    font-size: 1.25rem;
-    text-transform: capitalize;
-    font-family: 'Lobster', cursive;
-    margin-left: 10px;
-  }
-}
-
 #top-nav-fixed {
   position: fixed;
   top: 0;
-  width: 100%;
+  left: 0;
   right: 0;
   height: 70px;
+  z-index: 5;
   visibility: hidden;
   @include transition-property(all);
   @include transition-timing-function(ease-in);
@@ -42,11 +22,16 @@
     right: 14px;
     padding-left: 15px;
   }
+  .nav-title {
+    font-size: 1.25rem;
+    text-transform: capitalize;
+    font-family: 'Lobster', cursive;
+    margin-left: 10px;
+  }
   .brand-logo {
     margin-left: 25px;
   }
-  &.invisible {
-    visibility: hidden;
+  &.index {
     background-color: #bdbdbd;
   }
   &.about {

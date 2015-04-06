@@ -7891,38 +7891,19 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
     margin-bottom: 5em; } }
 
 #index {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -moz-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-direction: normal;
-  -webkit-box-orient: vertical;
-  -webkit-flex-direction: column;
-  -moz-flex-direction: column;
-  -ms-flex-direction: column;
-  flex-direction: column;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  -webkit-justify-content: center;
-  -moz-justify-content: center;
-  justify-content: center; }
-  #index .flexnav {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -moz-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
-    -webkit-justify-content: center;
-    -moz-justify-content: center;
-    justify-content: center;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    -webkit-align-items: center;
-    -moz-align-items: center;
-    align-items: center; }
+  background-image: url("/images/winter.jpg"); }
+  #index .cover-width {
+    width: 100%;
+    height: 100%; }
+  #index .index-nav-header {
+    margin-bottom: 15px; }
+  #index .highlights {
+    padding-top: 15px;
+    padding-bottom: 15px; }
+  #index .parallax-art {
+    background-image: url("/images/placeholder-border.png");
+    background-size: contain;
+    height: 125px; }
   #index .site-title {
     text-align: center; }
   #index .brand-logo {
@@ -8037,7 +8018,7 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
     width: 120%;
     height: 100%; }
 
-main {
+.materialize-parallax {
   overflow-x: hidden;
   overflow-y: scroll;
   -webkit-perspective: 1px;
@@ -8057,7 +8038,7 @@ main {
   transform-style: preserve-3d;
   height: 100vh;
   width: 100%; }
-  main > .ember-view {
+  .materialize-parallax > .ember-view {
     -webkit-transform-style: inherit;
     -moz-transform-style: inherit;
     -ms-transform-style: inherit;
@@ -8117,29 +8098,13 @@ main {
   width: 100%;
   margin-bottom: -35px; }
 
-#top-nav-absolute {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  height: 70px;
-  z-index: 5; }
-  #top-nav-absolute .brand-logo {
-    margin-left: 25px; }
-  #top-nav-absolute.invisible {
-    visibility: hidden; }
-  #top-nav-absolute .nav-title {
-    font-size: 1.25rem;
-    text-transform: capitalize;
-    font-family: 'Lobster', cursive;
-    margin-left: 10px; }
-
 #top-nav-fixed {
   position: fixed;
   top: 0;
-  width: 100%;
+  left: 0;
   right: 0;
   height: 70px;
+  z-index: 5;
   visibility: hidden;
   -webkit-transition-property: all;
   -moz-transition-property: all;
@@ -8160,10 +8125,14 @@ main {
     #top-nav-fixed {
       right: 14px;
       padding-left: 15px; } }
+  #top-nav-fixed .nav-title {
+    font-size: 1.25rem;
+    text-transform: capitalize;
+    font-family: 'Lobster', cursive;
+    margin-left: 10px; }
   #top-nav-fixed .brand-logo {
     margin-left: 25px; }
-  #top-nav-fixed.invisible {
-    visibility: hidden;
+  #top-nav-fixed.index {
     background-color: #bdbdbd; }
   #top-nav-fixed.about {
     visibility: visible; }
