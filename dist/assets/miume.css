@@ -8084,6 +8084,14 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
     -o-transform: rotateY(90deg);
     transform: rotateY(90deg); }
 
+#dances {
+  padding-top: 70px; }
+  #dances .section-title {
+    text-transform: capitalize;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #ddd; }
+
 #works {
   padding-top: 50px;
   -webkit-transition-property: background-color;

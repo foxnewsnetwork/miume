@@ -1,0 +1,100 @@
+#dances.row
+  .col.l9.m8.s12.videos
+    .row
+      .col.l3.m4.s6
+        .card
+          a.card-image href="external"
+            img src="images/doge3.jpg"
+            span.card-title Elect
+          .card-content
+            p choreography by x
+      .col.l3.m4.s6
+        .card.z-depth-3
+          a.card-image href="external"
+            img src="images/doge3.jpg"
+            span.card-title Elect
+          .card-content
+            p choreography by x
+      .col.l3.m4.s6
+        .card
+          a.card-image href="external"
+            img src="images/doge3.jpg"
+            span.card-title Elect
+          .card-content
+            p choreography by x
+      .col.l3.m4.s6
+        .card
+          a.card-image href="external"
+            img src="images/doge3.jpg"
+            span.card-title Elect
+          .card-content
+            p choreography by x
+      .col.l3.m4.s6
+        .card
+          a.card-image href="external"
+            img src="images/doge3.jpg"
+            span.card-title Elect
+          .card-content
+            p choreography by x
+      .col.l3.m4.s6
+        .card
+          a.card-image href="external"
+            img src="images/doge3.jpg"
+            span.card-title Elect
+          .card-content
+            p choreography by x
+      .col.l3.m4.s6
+        .card
+          a.card-image href="external"
+            img src="images/doge3.jpg"
+            span.card-title Elect
+          .card-content
+            p choreography by x
+      .col.l3.m4.s6
+        .card
+          a.card-image href="external"
+            img src="images/doge3.jpg"
+            span.card-title Elect
+          .card-content
+            p choreography by x
+      .col.l3.m4.s6
+        .card
+          a.card-image href="external"
+            img src="images/doge3.jpg"
+            span.card-title Elect
+          .card-content
+            p choreography by x
+      .col.l3.m4.s6
+        .card
+          a.card-image href="external"
+            img src="images/doge3.jpg"
+            span.card-title Elect
+          .card-content
+            p choreography by x
+  .col.l3.m4.hide-on-small-and-down.metadata
+    h4.section-title odotte mita
+    ul.collapsible.popup data-collapsible="expandable"
+      li
+        .collapsible-header
+          fa-icon "heartbeat"
+          span some sort of info
+        .collapsible-body
+          p more meta descriptions and junk
+      li
+        .collapsible-header
+          fa-icon "cloud"
+          span more info
+        .collapsible-body
+          p more meta descriptions and junk
+      li
+        .collapsible-header
+          fa-icon "globe"
+          span stuff
+        .collapsible-body
+          p more meta descriptions and junk
+      li
+        .collapsible-header
+          fa-icon "microphone"
+          span more junk
+        .collapsible-body
+          p more meta descriptions and junk

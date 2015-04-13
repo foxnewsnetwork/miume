@@ -8,6 +8,8 @@
           span.nav-title about
         li: link-to "dances"
           span.nav-title dances
+        li: link-to "snackbar"
+          span.nav-title snackbar
         li: link-to "videos"
           span.nav-title videos
         li: link-to "pictures"
