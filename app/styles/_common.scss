@@ -1,0 +1,8 @@
+@include keyframes(background-position-cascade-x) {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 100%;
+  }
+}

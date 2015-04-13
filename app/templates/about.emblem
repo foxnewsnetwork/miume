@@ -1,17 +1,33 @@
-#about
-  .container
-    .row
-      .col.l6.offset-l6
-        materialize-card title="introduction" titleClass="green-text darken-1" image="images/doge.jpg"
-          materialize-card-content
-            h4.catchphrase something about me
-            p.exposition faksdjf laksjd flkjas dflkjasdlfkjals djflakjsd flkjasdl fkjalsdkjf
-          materialize-card-action
-            link-to "index" class="green-text darken-1"
-              fa-icon "home" size="2"
-
-            link-to "works" class="green-text darken-1"
-              fa-icon "archive" size="2"
-
-            link-to "contact" class="green-text darken-1"
-              fa-icon "comments-o" size="2"
+#about.container
+  .row
+    .col.s12
+      .frosted-glass
+        h2.page-title hi, my name is Miume
+        h6.page-subheader I am a dancer living in Japan; below is a brief summary of my life
+        .timeline
+          ember-scrolltop-holder classNames="row scroll-holder"
+            .col.l5.m6.s12
+              materialize-card title="introduction" titleClass="green-text darken-1" image="images/doge.jpg" classNames="medium" activator=true
+                materialize-card-content
+                  h4.catchphrase something about me
+                materialize-card-reveal
+                  h4.catchphrase something about me
+                  p.exposition faksdjf laksjd flkjas dflkjasdlfkjals djflakjsd flkjasdl fkjalsdkjf
+            .col.l2.m6.s12.hide-on-small-and-down.vertical-centered.timecard
+              .btn-floating.btn-large.waves-effect.waves-light.red.timeline-icon.disabled
+                fa-icon "bomb"
+            .col.l5.hide-on-med-and-down.plain-centered.timecard
+              .timeline-date december 7, 1941
+          ember-scrolltop-holder classNames="row scroll-holder"
+            .col.l5.m6.s12
+              materialize-card title="stage 2" titleClass="green-text darken-1" image="images/doge.jpg" classNames="medium" activator=true
+                materialize-card-content
+                  h4.catchphrase something else
+                materialize-card-reveal
+                  h4.catchphrase something else
+                  p.exposition faksdjf laksjd flkjas dflkjasdlfkjals djflakjsd flkjasdl fkjalsdkjf
+            .col.l2.m6.s12.hide-on-small-and-down.vertical-centered.timecard
+              .btn-floating.btn-large.waves-effect.waves-light.red.timeline-icon.disabled
+                fa-icon "bomb"
+            .col.l5.hide-on-med-and-down.plain-centered.timecard
+              .timeline-date december 7, 1940

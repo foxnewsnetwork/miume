@@ -1,5 +1,10 @@
 `import Ember from 'ember'`
+`import ApplicationRoute from './application'`
 
-AboutRoute = Ember.Route.extend()
+AboutRoute = ApplicationRoute.extend
+  afterModel: ->
+
+  model: ->
+
 
 `export default AboutRoute`

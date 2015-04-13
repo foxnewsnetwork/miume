@@ -1,24 +1,76 @@
-
 #about {
-  padding-top: 50px;
+  background: {
+    color: fade-out(#fff, 0.4);
+    position: 0 70px;
+    size: cover;
+    repeat: repeat-y;
+  }
+  .frosted-glass {
+    &::before {
+      background: {
+        image: image-url('images/spring.jpg');
+        size: cover;
+        repeat: repeat-y;
+      }
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      content: " ";
+      z-index: -1;
+    }
+  }
+  padding-top: 70px;
   @include transition-property(background-color);
   @include transition-timing-function(ease-out);
   @include transition-duration(300ms);
-  &.invisible {
-    background-color: #bdbdbd;
+  .vertical-centered {
+    @include display-flex;
+    @include justify-content(center);
+    @include align-items(center);
   }
-  &.after {
-    visibility: hidden;
+  .plain-centered {
+    @include display-flex;
+    @include align-items(center);
   }
-}
-
-#about-faraway {
-  .parallax-background {
-    @include filter(blur(10px));
+  .timecard {
+    height: 400px;
   }
-  text-align: right;
-  img {
-    width: 120%;
-    height: 100%;
+  .timeline {
+    &::before {
+      content: " ";
+      position: absolute;
+      height: 100%;
+      width: 10px;
+      left: 49.65%;
+      @media #{$small-and-down} {
+        display: none;
+      }
+      @media #{$medium-and-down} {
+        left: 70.25%
+      }
+      @include background-image(linear-gradient(to bottom, #1e88e5, #0d47a1 50%, #bbdefb 55%, #0d47a1 56%, #1e88e5));
+      background-position: 0 0;
+      background-size: 100% 300%;
+      background-repeat: repeat-y;
+      @include animation-name(background-position-cascade-x);
+      @include animation-duration(10s);
+      @include animation-timing-function(ease-out);
+      @include animation-iteration-count(infinite);
+      @include animation-direction(reverse);
+    }
+  }
+  .timeline-date {
+    text-align: center;
+  }
+  .scroll-holder {
+    @include transition-property(all);
+    @include transition-timing-function(ease-in);
+    @include transition-duration(350ms);
+  }
+  .turn-invisible {
+    @include opacity(0);
+    @include transform(rotateY(90deg));
   }
 }

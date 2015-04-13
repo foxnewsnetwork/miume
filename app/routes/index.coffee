@@ -1,11 +1,10 @@
 `import Ember from 'ember'`
 
 IndexRoute = Ember.Route.extend
-  afterModel: ->
-    $('#top-nav-fixed').addClass "index"
+  renderTemplate: ->
+    @_super arguments...
+    @render "shared/nothing",
+      outlet: "top-nav"
 
-  actions:
-    willTransition: ->
-      $('#top-nav-fixed').removeClass "index"
-
+  
 `export default IndexRoute`

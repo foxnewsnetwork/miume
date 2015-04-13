@@ -9,6 +9,8 @@ Router.map ->
   @resource "works", path: "/works", ->
     @resource "work", path: "/work/:workId", ->
 
+  @route "snackbar"
+  
   @route "contact" 
 
   @route "pictures"

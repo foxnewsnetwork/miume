@@ -4,45 +4,76 @@
 @mixin display-flex {
   @include flexbox;
 }
+@import "common";
 @import 'templates';
 @import 'components';
 
+#side-nav {
+  .nav-title {
+    font-size: 1.25rem;
+    text-transform: capitalize;
+    font-family: 'Lobster', cursive;
+  }
+  .side-nav {
+    position: fixed;
+    width: 240px;
+    top: 0;
+    margin: 0;
+    height: calc(100% + 60px);
+    padding-bottom: 60px;
+    z-index: 999;
+    @include transition-property(left);
+    left: -240px;
+    background-color: #fff;
+  }
+  a {
+    @include transition-property(background-color);
+    @include transition-timing-function(ease-in);
+    @include transition-duration(300ms);
+    &:hover {
+      background-color: #ccc;
+    }
+    &.active {
+      border-right: 2px solid #ff6f00;
+    }
+    display: block;
+    width: 100%;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-left: 15px;
+  }
+}
 #top-nav-fixed {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 70px;
+  height: 55px;
+  background-color: #fff;
   z-index: 5;
-  visibility: hidden;
+  .tabs {
+    height: 55px;
+    background: none;
+  }
+  .tab {
+    height: 100%;
+    a.active {
+      border-bottom: 2px solid #ff6f00;
+    }
+  }
   @include transition-property(all);
   @include transition-timing-function(ease-in);
   @include transition-duration(250ms);
-  @media #{$medium-and-up} {
-    right: 14px;
-    padding-left: 15px;
+  
+  .nav-wrapper {
+    @include display-flex;
+    @include align-items(center);
+    @include justify-content(space-between);
   }
-  .nav-title {
-    font-size: 1.25rem;
-    text-transform: capitalize;
-    font-family: 'Lobster', cursive;
-    margin-left: 10px;
-  }
-  .brand-logo {
+  .flex-logo {
     margin-left: 25px;
-  }
-  &.index {
-    background-color: #bdbdbd;
-  }
-  &.about {
-    visibility: visible;
-  }
-  &.works {
-    visibility: visible;
-    background-color: #2e7d32;
-  }
-  &.contact {
-    visibility: visible;
-    background-color: #ffa000;
+    margin-right: 25px;
+    font-size: 2.5rem;
+    line-height: 3rem;
   }
 }

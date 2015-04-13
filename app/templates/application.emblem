@@ -1,14 +1,6 @@
-nav#top-nav-fixed
-  .nav-wrapper
-    link-to "index" class="brand-logo"
-      span 梅
-    ul#nav-mobile.right.hide-on-med-and-down
-      li: link-to "about"
-        i.mdi-action-face-unlock
-      li: link-to "works"
-        fa-icon "archive"
-      li: link-to "contact"
-        fa-icon "comments-o"
+section
+  == outlet "top-nav"
+  
 main
   == liquid-outlet
 

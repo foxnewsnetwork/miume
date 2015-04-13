@@ -1,0 +1,22 @@
+.row
+  .col.l8.m12.s12
+    link-to "index" class="flex-logo"
+      span 梅
+
+    a.pointer.right.button-collapse.hide-on-med-and-up data-activates="mobile-nav"
+      fa-icon "bars" size=3
+
+  .col.l4.hide-on-med-and-down
+    ul.tabs
+      li.tab.col.l2: link-to "about"
+        span.nav-title about
+      li.tab.col.l2: link-to "dances"
+        span.nav-title dances
+      li.tab.col.l2: link-to "snackbar"
+        span.nav-title snackbar
+      li.tab.col.l2: link-to "videos"
+        span.nav-title videos
+      li.tab.col.l2: link-to "pictures"
+        span.nav-title pictures
+      li.tab.col.l2: link-to "contact"
+        span.nav-title contact
