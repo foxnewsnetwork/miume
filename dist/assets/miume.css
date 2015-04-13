@@ -8084,9 +8084,9 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
     -o-transform: rotateY(90deg);
     transform: rotateY(90deg); }
 
-#dances {
+#dances, #snackbar {
   padding-top: 70px; }
-  #dances .section-title {
+  #dances .section-title, #snackbar .section-title {
     text-transform: capitalize;
     margin-bottom: 20px;
     padding-bottom: 15px;

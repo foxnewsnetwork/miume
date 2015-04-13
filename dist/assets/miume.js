@@ -1469,6 +1469,17 @@ define('miume/routes/index', ['exports', 'ember'], function (exports, Ember) {
   exports['default'] = IndexRoute;
 
 });
+define('miume/routes/snackbar', ['exports', 'ember', 'miume/routes/application'], function (exports, Ember, ApplicationRoute) {
+
+	'use strict';
+
+	var SnackbarRoute;
+
+	SnackbarRoute = ApplicationRoute['default'].extend();
+
+	exports['default'] = SnackbarRoute;
+
+});
 define('miume/routes/works', ['exports', 'ember'], function (exports, Ember) {
 
 	'use strict';
@@ -3766,42 +3777,6 @@ define('miume/templates/components/site-nav', ['exports'], function (exports) {
         build: function build(dom) {
           var el0 = dom.createElement("span");
           dom.setAttribute(el0,"class","nav-title");
-          var el1 = dom.createTextNode("videos");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        render: function render(context, env, contextualElement) {
-          var dom = env.dom;
-          dom.detectNamespace(contextualElement);
-          var fragment;
-          if (env.useFragmentCache && dom.canClone) {
-            if (this.cachedFragment === null) {
-              fragment = this.build(dom);
-              if (this.hasRendered) {
-                this.cachedFragment = fragment;
-              } else {
-                this.hasRendered = true;
-              }
-            }
-            if (this.cachedFragment) {
-              fragment = dom.cloneNode(this.cachedFragment, true);
-            }
-          } else {
-            fragment = this.build(dom);
-          }
-          return fragment;
-        }
-      };
-    }());
-    var child5 = (function() {
-      return {
-        isHTMLBars: true,
-        blockParams: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        build: function build(dom) {
-          var el0 = dom.createElement("span");
-          dom.setAttribute(el0,"class","nav-title");
           var el1 = dom.createTextNode("pictures");
           dom.appendChild(el0, el1);
           return el0;
@@ -3829,7 +3804,7 @@ define('miume/templates/components/site-nav', ['exports'], function (exports) {
         }
       };
     }());
-    var child6 = (function() {
+    var child5 = (function() {
       return {
         isHTMLBars: true,
         blockParams: 0,
@@ -3885,10 +3860,7 @@ define('miume/templates/components/site-nav', ['exports'], function (exports) {
         var el2 = dom.createElement("ul");
         dom.setAttribute(el2,"class","tabs");
         var el3 = dom.createElement("li");
-        dom.setAttribute(el3,"class","tab col l2");
-        dom.appendChild(el2, el3);
-        var el3 = dom.createElement("li");
-        dom.setAttribute(el3,"class","tab col l2");
+        dom.setAttribute(el3,"class","tab col l2 offset-l2");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("li");
         dom.setAttribute(el3,"class","tab col l2");
@@ -3935,15 +3907,13 @@ define('miume/templates/components/site-nav', ['exports'], function (exports) {
         var morph4 = dom.createMorphAt(dom.childAt(element1, [2]),-1,-1);
         var morph5 = dom.createMorphAt(dom.childAt(element1, [3]),-1,-1);
         var morph6 = dom.createMorphAt(dom.childAt(element1, [4]),-1,-1);
-        var morph7 = dom.createMorphAt(dom.childAt(element1, [5]),-1,-1);
         block(env, morph0, context, "link-to", ["index"], {"class": "flex-logo"}, child0, null);
         inline(env, morph1, context, "fa-icon", ["bars"], {"size": 3});
         block(env, morph2, context, "link-to", ["about"], {}, child1, null);
         block(env, morph3, context, "link-to", ["dances"], {}, child2, null);
         block(env, morph4, context, "link-to", ["snackbar"], {}, child3, null);
-        block(env, morph5, context, "link-to", ["videos"], {}, child4, null);
-        block(env, morph6, context, "link-to", ["pictures"], {}, child5, null);
-        block(env, morph7, context, "link-to", ["contact"], {}, child6, null);
+        block(env, morph5, context, "link-to", ["pictures"], {}, child4, null);
+        block(env, morph6, context, "link-to", ["contact"], {}, child5, null);
         return fragment;
       }
     };
@@ -4598,42 +4568,6 @@ define('miume/templates/index', ['exports'], function (exports) {
         build: function build(dom) {
           var el0 = dom.createElement("span");
           dom.setAttribute(el0,"class","nav-title");
-          var el1 = dom.createTextNode("videos");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        render: function render(context, env, contextualElement) {
-          var dom = env.dom;
-          dom.detectNamespace(contextualElement);
-          var fragment;
-          if (env.useFragmentCache && dom.canClone) {
-            if (this.cachedFragment === null) {
-              fragment = this.build(dom);
-              if (this.hasRendered) {
-                this.cachedFragment = fragment;
-              } else {
-                this.hasRendered = true;
-              }
-            }
-            if (this.cachedFragment) {
-              fragment = dom.cloneNode(this.cachedFragment, true);
-            }
-          } else {
-            fragment = this.build(dom);
-          }
-          return fragment;
-        }
-      };
-    }());
-    var child5 = (function() {
-      return {
-        isHTMLBars: true,
-        blockParams: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        build: function build(dom) {
-          var el0 = dom.createElement("span");
-          dom.setAttribute(el0,"class","nav-title");
           var el1 = dom.createTextNode("pictures");
           dom.appendChild(el0, el1);
           return el0;
@@ -4661,7 +4595,7 @@ define('miume/templates/index', ['exports'], function (exports) {
         }
       };
     }());
-    var child6 = (function() {
+    var child5 = (function() {
       return {
         isHTMLBars: true,
         blockParams: 0,
@@ -4711,8 +4645,6 @@ define('miume/templates/index', ['exports'], function (exports) {
         dom.setAttribute(el2,"class","nav-wrapper");
         var el3 = dom.createElement("ul");
         dom.setAttribute(el3,"class","right hide-on-med-and-down");
-        var el4 = dom.createElement("li");
-        dom.appendChild(el3, el4);
         var el4 = dom.createElement("li");
         dom.appendChild(el3, el4);
         var el4 = dom.createElement("li");
@@ -4984,14 +4916,12 @@ define('miume/templates/index', ['exports'], function (exports) {
         var morph3 = dom.createMorphAt(dom.childAt(element1, [2]),-1,-1);
         var morph4 = dom.createMorphAt(dom.childAt(element1, [3]),-1,-1);
         var morph5 = dom.createMorphAt(dom.childAt(element1, [4]),-1,-1);
-        var morph6 = dom.createMorphAt(dom.childAt(element1, [5]),-1,-1);
         block(env, morph0, context, "link-to", ["index"], {"class": "brand-logo"}, child0, null);
         block(env, morph1, context, "link-to", ["about"], {}, child1, null);
         block(env, morph2, context, "link-to", ["dances"], {}, child2, null);
         block(env, morph3, context, "link-to", ["snackbar"], {}, child3, null);
-        block(env, morph4, context, "link-to", ["videos"], {}, child4, null);
-        block(env, morph5, context, "link-to", ["pictures"], {}, child5, null);
-        block(env, morph6, context, "link-to", ["contact"], {}, child6, null);
+        block(env, morph4, context, "link-to", ["pictures"], {}, child4, null);
+        block(env, morph5, context, "link-to", ["contact"], {}, child5, null);
         return fragment;
       }
     };
@@ -5279,6 +5209,389 @@ define('miume/templates/shared/nothing', ['exports'], function (exports) {
         } else {
           fragment = this.build(dom);
         }
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('miume/templates/snackbar', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createElement("div");
+        dom.setAttribute(el0,"id","snackbar");
+        dom.setAttribute(el0,"class","row");
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1,"class","col l9 m8 s12 videos");
+        var el2 = dom.createElement("div");
+        dom.setAttribute(el2,"class","row");
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","col l3 m4 s6");
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","card");
+        var el5 = dom.createElement("a");
+        dom.setAttribute(el5,"href","external");
+        dom.setAttribute(el5,"class","card-image");
+        var el6 = dom.createElement("img");
+        dom.setAttribute(el6,"src","images/doge3.jpg");
+        dom.appendChild(el5, el6);
+        var el6 = dom.createElement("span");
+        dom.setAttribute(el6,"class","card-title");
+        var el7 = dom.createTextNode("Elect");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("div");
+        dom.setAttribute(el5,"class","card-content");
+        var el6 = dom.createElement("p");
+        var el7 = dom.createTextNode("choreography by x");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","col l3 m4 s6");
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","card z-depth-3");
+        var el5 = dom.createElement("a");
+        dom.setAttribute(el5,"href","external");
+        dom.setAttribute(el5,"class","card-image");
+        var el6 = dom.createElement("img");
+        dom.setAttribute(el6,"src","images/doge3.jpg");
+        dom.appendChild(el5, el6);
+        var el6 = dom.createElement("span");
+        dom.setAttribute(el6,"class","card-title");
+        var el7 = dom.createTextNode("Elect");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("div");
+        dom.setAttribute(el5,"class","card-content");
+        var el6 = dom.createElement("p");
+        var el7 = dom.createTextNode("choreography by x");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","col l3 m4 s6");
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","card");
+        var el5 = dom.createElement("a");
+        dom.setAttribute(el5,"href","external");
+        dom.setAttribute(el5,"class","card-image");
+        var el6 = dom.createElement("img");
+        dom.setAttribute(el6,"src","images/doge3.jpg");
+        dom.appendChild(el5, el6);
+        var el6 = dom.createElement("span");
+        dom.setAttribute(el6,"class","card-title");
+        var el7 = dom.createTextNode("Elect");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("div");
+        dom.setAttribute(el5,"class","card-content");
+        var el6 = dom.createElement("p");
+        var el7 = dom.createTextNode("choreography by x");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","col l3 m4 s6");
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","card");
+        var el5 = dom.createElement("a");
+        dom.setAttribute(el5,"href","external");
+        dom.setAttribute(el5,"class","card-image");
+        var el6 = dom.createElement("img");
+        dom.setAttribute(el6,"src","images/doge3.jpg");
+        dom.appendChild(el5, el6);
+        var el6 = dom.createElement("span");
+        dom.setAttribute(el6,"class","card-title");
+        var el7 = dom.createTextNode("Elect");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("div");
+        dom.setAttribute(el5,"class","card-content");
+        var el6 = dom.createElement("p");
+        var el7 = dom.createTextNode("choreography by x");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","col l3 m4 s6");
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","card");
+        var el5 = dom.createElement("a");
+        dom.setAttribute(el5,"href","external");
+        dom.setAttribute(el5,"class","card-image");
+        var el6 = dom.createElement("img");
+        dom.setAttribute(el6,"src","images/doge3.jpg");
+        dom.appendChild(el5, el6);
+        var el6 = dom.createElement("span");
+        dom.setAttribute(el6,"class","card-title");
+        var el7 = dom.createTextNode("Elect");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("div");
+        dom.setAttribute(el5,"class","card-content");
+        var el6 = dom.createElement("p");
+        var el7 = dom.createTextNode("choreography by x");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","col l3 m4 s6");
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","card");
+        var el5 = dom.createElement("a");
+        dom.setAttribute(el5,"href","external");
+        dom.setAttribute(el5,"class","card-image");
+        var el6 = dom.createElement("img");
+        dom.setAttribute(el6,"src","images/doge3.jpg");
+        dom.appendChild(el5, el6);
+        var el6 = dom.createElement("span");
+        dom.setAttribute(el6,"class","card-title");
+        var el7 = dom.createTextNode("Elect");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("div");
+        dom.setAttribute(el5,"class","card-content");
+        var el6 = dom.createElement("p");
+        var el7 = dom.createTextNode("choreography by x");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","col l3 m4 s6");
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","card");
+        var el5 = dom.createElement("a");
+        dom.setAttribute(el5,"href","external");
+        dom.setAttribute(el5,"class","card-image");
+        var el6 = dom.createElement("img");
+        dom.setAttribute(el6,"src","images/doge3.jpg");
+        dom.appendChild(el5, el6);
+        var el6 = dom.createElement("span");
+        dom.setAttribute(el6,"class","card-title");
+        var el7 = dom.createTextNode("Elect");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("div");
+        dom.setAttribute(el5,"class","card-content");
+        var el6 = dom.createElement("p");
+        var el7 = dom.createTextNode("choreography by x");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","col l3 m4 s6");
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","card");
+        var el5 = dom.createElement("a");
+        dom.setAttribute(el5,"href","external");
+        dom.setAttribute(el5,"class","card-image");
+        var el6 = dom.createElement("img");
+        dom.setAttribute(el6,"src","images/doge3.jpg");
+        dom.appendChild(el5, el6);
+        var el6 = dom.createElement("span");
+        dom.setAttribute(el6,"class","card-title");
+        var el7 = dom.createTextNode("Elect");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("div");
+        dom.setAttribute(el5,"class","card-content");
+        var el6 = dom.createElement("p");
+        var el7 = dom.createTextNode("choreography by x");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","col l3 m4 s6");
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","card");
+        var el5 = dom.createElement("a");
+        dom.setAttribute(el5,"href","external");
+        dom.setAttribute(el5,"class","card-image");
+        var el6 = dom.createElement("img");
+        dom.setAttribute(el6,"src","images/doge3.jpg");
+        dom.appendChild(el5, el6);
+        var el6 = dom.createElement("span");
+        dom.setAttribute(el6,"class","card-title");
+        var el7 = dom.createTextNode("Elect");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("div");
+        dom.setAttribute(el5,"class","card-content");
+        var el6 = dom.createElement("p");
+        var el7 = dom.createTextNode("choreography by x");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","col l3 m4 s6");
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","card");
+        var el5 = dom.createElement("a");
+        dom.setAttribute(el5,"href","external");
+        dom.setAttribute(el5,"class","card-image");
+        var el6 = dom.createElement("img");
+        dom.setAttribute(el6,"src","images/doge3.jpg");
+        dom.appendChild(el5, el6);
+        var el6 = dom.createElement("span");
+        dom.setAttribute(el6,"class","card-title");
+        var el7 = dom.createTextNode("Elect");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("div");
+        dom.setAttribute(el5,"class","card-content");
+        var el6 = dom.createElement("p");
+        var el7 = dom.createTextNode("choreography by x");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1,"class","col l3 m4 hide-on-small-and-down metadata");
+        var el2 = dom.createElement("h4");
+        dom.setAttribute(el2,"class","section-title");
+        var el3 = dom.createTextNode("snack bar");
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("ul");
+        dom.setAttribute(el2,"data-collapsible","expandable");
+        dom.setAttribute(el2,"class","collapsible popup");
+        var el3 = dom.createElement("li");
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","collapsible-header");
+        var el5 = dom.createElement("span");
+        var el6 = dom.createTextNode("some sort of info");
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","collapsible-body");
+        var el5 = dom.createElement("p");
+        var el6 = dom.createTextNode("more meta descriptions and junk");
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("li");
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","collapsible-header");
+        var el5 = dom.createElement("span");
+        var el6 = dom.createTextNode("more info");
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","collapsible-body");
+        var el5 = dom.createElement("p");
+        var el6 = dom.createTextNode("more meta descriptions and junk");
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("li");
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","collapsible-header");
+        var el5 = dom.createElement("span");
+        var el6 = dom.createTextNode("stuff");
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","collapsible-body");
+        var el5 = dom.createElement("p");
+        var el6 = dom.createTextNode("more meta descriptions and junk");
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("li");
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","collapsible-header");
+        var el5 = dom.createElement("span");
+        var el6 = dom.createTextNode("more junk");
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","collapsible-body");
+        var el5 = dom.createElement("p");
+        var el6 = dom.createTextNode("more meta descriptions and junk");
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, inline = hooks.inline;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        var element0 = dom.childAt(fragment, [1, 1]);
+        var morph0 = dom.createMorphAt(dom.childAt(element0, [0, 0]),-1,0);
+        var morph1 = dom.createMorphAt(dom.childAt(element0, [1, 0]),-1,0);
+        var morph2 = dom.createMorphAt(dom.childAt(element0, [2, 0]),-1,0);
+        var morph3 = dom.createMorphAt(dom.childAt(element0, [3, 0]),-1,0);
+        inline(env, morph0, context, "fa-icon", ["heartbeat"], {});
+        inline(env, morph1, context, "fa-icon", ["cloud"], {});
+        inline(env, morph2, context, "fa-icon", ["globe"], {});
+        inline(env, morph3, context, "fa-icon", ["microphone"], {});
         return fragment;
       }
     };
@@ -5867,6 +6180,19 @@ define('miume/tests/unit/routes/index-test', ['ember-qunit'], function (ember_qu
   'use strict';
 
   ember_qunit.moduleFor('route:index', {});
+
+  ember_qunit.test('it exists', function(assert) {
+    var route;
+    route = this.subject();
+    return assert.ok(route);
+  });
+
+});
+define('miume/tests/unit/routes/snackbar-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('route:snackbar', {});
 
   ember_qunit.test('it exists', function(assert) {
     var route;
