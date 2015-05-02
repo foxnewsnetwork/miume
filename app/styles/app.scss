@@ -8,6 +8,10 @@
 @import 'templates';
 @import 'components';
 
+main {
+  padding-top: 55px;
+}
+
 #side-nav {
   .nav-title {
     font-size: 1.25rem;
@@ -76,4 +80,8 @@
     font-size: 2.5rem;
     line-height: 3rem;
   }
+}
+
+.miume-footer.page-footer {
+  margin-top: 0;
 }

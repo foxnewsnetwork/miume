@@ -1,20 +1,12 @@
 #contact {
-  padding-top: 20px;
-  @include transition-property(background-color);
-  @include transition-timing-function(ease-out);
-  @include transition-duration(300ms);
-  &.invisible {
-    background-color: #dce775;
+  padding-top: 350px;
+  background: {
+    image: image-url('images/autumn.jpg');
+    size: cover;
+    repeat: no-repeat;
   }
-  &.after {
-    visibility: hidden;
-  }
-}
-
-#contact-faraway {
-  text-align: right;
-  img {
-    width: 120%;
-    height: 100%;
+  .meta-container {
+    background: #fff;
+    padding-top: 25px;
   }
 }

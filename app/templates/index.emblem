@@ -1,20 +1,4 @@
 #index
-  nav.index-nav-header
-    .nav-wrapper
-      link-to "index" class="brand-logo"
-        img.cover-width src="images/plum.png"
-      ul.right.hide-on-med-and-down
-        li: link-to "about"
-          span.nav-title about
-        li: link-to "dances"
-          span.nav-title dances
-        li: link-to "snackbar"
-          span.nav-title snackbar
-        li: link-to "pictures"
-          span.nav-title pictures
-        li: link-to "contact"
-          span.nav-title contact
-
   .highlights
     .container
       .row

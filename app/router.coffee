@@ -13,7 +13,6 @@ Router.map ->
   
   @route "contact" 
 
-  @route "pictures"
 
   @route "videos"
 

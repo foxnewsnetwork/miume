@@ -8,13 +8,11 @@
 
   .col.l4.hide-on-med-and-down
     ul.tabs
-      li.tab.col.l2.offset-l2: link-to "about"
+      li.tab.col.l3: link-to "about"
         span.nav-title about
-      li.tab.col.l2: link-to "dances"
+      li.tab.col.l3: link-to "dances"
         span.nav-title dances
-      li.tab.col.l2: link-to "snackbar"
+      li.tab.col.l3: link-to "snackbar"
         span.nav-title snackbar
-      li.tab.col.l2: link-to "pictures"
-        span.nav-title pictures
-      li.tab.col.l2: link-to "contact"
+      li.tab.col.l3: link-to "contact"
         span.nav-title contact

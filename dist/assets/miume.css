@@ -8072,17 +8072,6 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
     -o-transition-duration: 350ms;
     -ms-transition-duration: 350ms;
     transition-duration: 350ms; }
-  #about .turn-invisible {
-    -ms-filter: "progid:DXImageTransform@mixin Microsoft@mixin Alpha(Opacity=${iefactor})";
-    filter: "alpha(opacity=(${iefactor}))";
-    -moz-opacity: 0;
-    -khtml-opacity: 0;
-    opacity: 0;
-    -webkit-transform: rotateY(90deg);
-    -moz-transform: rotateY(90deg);
-    -ms-transform: rotateY(90deg);
-    -o-transform: rotateY(90deg);
-    transform: rotateY(90deg); }
 
 #dances, #snackbar {
   padding-top: 70px; }
@@ -8092,61 +8081,14 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
     padding-bottom: 15px;
     border-bottom: 1px solid #ddd; }
 
-#works {
-  padding-top: 50px;
-  -webkit-transition-property: background-color;
-  -moz-transition-property: background-color;
-  -o-transition-property: background-color;
-  -ms-transition-property: background-color;
-  transition-property: background-color;
-  -webkit-transition-timing-function: ease-out;
-  -moz-transition-timing-function: ease-out;
-  -o-transition-timing-function: ease-out;
-  -ms-transition-timing-function: ease-out;
-  transition-timing-function: ease-out;
-  -webkit-transition-duration: 300ms;
-  -moz-transition-duration: 300ms;
-  -o-transition-duration: 300ms;
-  -ms-transition-duration: 300ms;
-  transition-duration: 300ms; }
-  #works.invisible {
-    background-color: #dcedc8; }
-  #works.after {
-    visibility: hidden; }
-
-#works-faraway {
-  text-align: right; }
-  #works-faraway img {
-    width: 120%;
-    height: 100%; }
-
 #contact {
-  padding-top: 20px;
-  -webkit-transition-property: background-color;
-  -moz-transition-property: background-color;
-  -o-transition-property: background-color;
-  -ms-transition-property: background-color;
-  transition-property: background-color;
-  -webkit-transition-timing-function: ease-out;
-  -moz-transition-timing-function: ease-out;
-  -o-transition-timing-function: ease-out;
-  -ms-transition-timing-function: ease-out;
-  transition-timing-function: ease-out;
-  -webkit-transition-duration: 300ms;
-  -moz-transition-duration: 300ms;
-  -o-transition-duration: 300ms;
-  -ms-transition-duration: 300ms;
-  transition-duration: 300ms; }
-  #contact.invisible {
-    background-color: #dce775; }
-  #contact.after {
-    visibility: hidden; }
-
-#contact-faraway {
-  text-align: right; }
-  #contact-faraway img {
-    width: 120%;
-    height: 100%; }
+  padding-top: 350px;
+  background-image: url("/images/autumn.jpg");
+  background-size: cover;
+  background-repeat: no-repeat; }
+  #contact .meta-container {
+    background: #fff;
+    padding-top: 25px; }
 
 .materialize-parallax {
   overflow-x: hidden;
@@ -8227,6 +8169,9 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
   min-height: 100vh;
   width: 100%;
   margin-bottom: -35px; }
+
+main {
+  padding-top: 55px; }
 
 #side-nav .nav-title {
   font-size: 1.25rem;
@@ -8324,5 +8269,8 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
     margin-right: 25px;
     font-size: 2.5rem;
     line-height: 3rem; }
+
+.miume-footer.page-footer {
+  margin-top: 0; }
 
 /*# sourceMappingURL=miume.css.map */

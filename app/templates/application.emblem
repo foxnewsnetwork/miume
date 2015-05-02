@@ -4,7 +4,7 @@ section
 main
   == liquid-outlet
 
-footer.page-footer
+footer.page-footer.miume-footer
   .container
     .row
       .col.l6.s12

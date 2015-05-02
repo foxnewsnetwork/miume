@@ -79,6 +79,47 @@ define('miume/components/ember-scrolltop-holder', ['exports', 'ember-scrolltop-h
 	exports['default'] = EmberScrolltopHolder['default'];
 
 });
+define('miume/components/iframe-block', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  var IframeBlockComponent, every;
+
+  every = function(time, cb) {
+    return window.setInterval(cb, time);
+  };
+
+  IframeBlockComponent = Ember['default'].Component.extend({
+    tagName: 'iframe',
+    classNames: ['iframe-block'],
+    attributeBindings: ['horizontalscrolling', 'verticalscrolling', 'frameborder', 'scrolling', 'title', 'src', 'seamless', 'width'],
+    width: '100%',
+    horizontalscrolling: 'no',
+    verticalscrolling: 'no',
+    scrolling: 'no',
+    frameborder: 0,
+    seamless: 'seamless',
+    src: 'disqus.html',
+    didInsertElement: function() {
+      return this.heightWatchInterval = every(1000, (function(_this) {
+        return function() {
+          return _this.$().css("height", _this.getContentBodyHeight());
+        };
+      })(this));
+    },
+    willDestroyElement: function() {
+      return window.clearInterval(this.heightWatchInterval);
+    },
+    getContentBodyHeight: function() {
+      var obj;
+      obj = this.$()[0];
+      return obj.contentWindow.document.body.scrollHeight;
+    }
+  });
+
+  exports['default'] = IframeBlockComponent;
+
+});
 define('miume/components/lazy-scroll-load', ['exports', 'ember', 'miume/utils/fun-ex'], function (exports, Ember, FunEx) {
 
   'use strict';
@@ -536,6 +577,44 @@ define('miume/components/materialize-navbar', ['exports', 'ember-cli-materialize
 	'use strict';
 
 	exports['default'] = MaterializeNavBar['default'];
+
+});
+define('miume/components/round-hover-button', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  var RoundHoverButtonComponent, colors, count;
+
+  colors = ["red", "pink", "purple", "deep-purple", "indigo", "blue", "light-blue", "cyan", "teal", "green", "light-green", "lime", "yellow", "amber", "orange", "deep-orange"];
+
+  count = 0;
+
+  RoundHoverButtonComponent = Ember['default'].Component.extend({
+    tagName: "button",
+    classNames: ['round-hover-button', 'btn-floating', 'btn-large', 'waves-effect', 'waves-light'],
+    classNameBindings: ["color"],
+    faicon: Ember['default'].computed("i", function() {
+      return "fa fa-" + (this.get('i'));
+    }),
+    color: Ember['default'].computed("personalNumber", function() {
+      var k, n;
+      k = this.get("personalNumber");
+      if (k == null) {
+        k = 0;
+      }
+      n = k % colors.length;
+      return colors[n];
+    }),
+    didInsertElement: function() {
+      this.set("personalNumber", count);
+      return count += 1;
+    },
+    willDestroyElement: function() {
+      return count -= 1;
+    }
+  });
+
+  exports['default'] = RoundHoverButtonComponent;
 
 });
 define('miume/components/scroll-spy', ['exports', 'ember', 'miume/utils/fun-ex'], function (exports, Ember, FunEx) {
@@ -1388,7 +1467,6 @@ define('miume/router', ['exports', 'ember', 'miume/config/environment'], functio
     });
     this.route("snackbar");
     this.route("contact");
-    this.route("pictures");
     this.route("videos");
     return this.route("dances");
   });
@@ -1429,13 +1507,13 @@ define('miume/routes/application', ['exports', 'ember'], function (exports, Embe
   exports['default'] = ApplicationRoute;
 
 });
-define('miume/routes/contact', ['exports', 'ember'], function (exports, Ember) {
+define('miume/routes/contact', ['exports', 'ember', 'miume/routes/application'], function (exports, Ember, ApplicationRoute) {
 
 	'use strict';
 
 	var ContactRoute;
 
-	ContactRoute = Ember['default'].Route.extend();
+	ContactRoute = ApplicationRoute['default'].extend();
 
 	exports['default'] = ContactRoute;
 
@@ -1451,22 +1529,15 @@ define('miume/routes/dances', ['exports', 'ember', 'miume/routes/application'], 
 	exports['default'] = DancesRoute;
 
 });
-define('miume/routes/index', ['exports', 'ember'], function (exports, Ember) {
+define('miume/routes/index', ['exports', 'ember', 'miume/routes/application'], function (exports, Ember, ApplicationRoute) {
 
-  'use strict';
+	'use strict';
 
-  var IndexRoute;
+	var IndexRoute;
 
-  IndexRoute = Ember['default'].Route.extend({
-    renderTemplate: function() {
-      this._super.apply(this, arguments);
-      return this.render("shared/nothing", {
-        outlet: "top-nav"
-      });
-    }
-  });
+	IndexRoute = ApplicationRoute['default'].extend();
 
-  exports['default'] = IndexRoute;
+	exports['default'] = IndexRoute;
 
 });
 define('miume/routes/snackbar', ['exports', 'ember', 'miume/routes/application'], function (exports, Ember, ApplicationRoute) {
@@ -1478,17 +1549,6 @@ define('miume/routes/snackbar', ['exports', 'ember', 'miume/routes/application']
 	SnackbarRoute = ApplicationRoute['default'].extend();
 
 	exports['default'] = SnackbarRoute;
-
-});
-define('miume/routes/works', ['exports', 'ember'], function (exports, Ember) {
-
-	'use strict';
-
-	var WorksRoute;
-
-	WorksRoute = Ember['default'].Route.extend();
-
-	exports['default'] = WorksRoute;
 
 });
 define('miume/serializers/youtube', ['exports', 'ember-youtube-data-model/serializers/youtube'], function (exports, YoutubeSerializer) {
@@ -2055,7 +2115,7 @@ define('miume/templates/application', ['exports'], function (exports) {
         var el1 = dom.createElement("main");
         dom.appendChild(el0, el1);
         var el1 = dom.createElement("footer");
-        dom.setAttribute(el1,"class","page-footer");
+        dom.setAttribute(el1,"class","page-footer miume-footer");
         var el2 = dom.createElement("div");
         dom.setAttribute(el2,"class","container");
         var el3 = dom.createElement("div");
@@ -2677,6 +2737,53 @@ define('miume/templates/components/ember-scrolltop-holder', ['exports'], functio
           fragment = this.build(dom);
         }
         if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1]); }
+        var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
+        content(env, morph0, context, "yield");
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('miume/templates/components/iframe-block', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createTextNode("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, content = hooks.content;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        if (this.cachedFragment) { dom.repairClonedNode(fragment,[0]); }
         var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
         content(env, morph0, context, "yield");
         return fragment;
@@ -3332,6 +3439,56 @@ define('miume/templates/components/liquid-spacer', ['exports'], function (export
   }()));
 
 });
+define('miume/templates/components/round-hover-button', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createElement("i");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, get = hooks.get, element = hooks.element, content = hooks.content;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        var element0 = dom.childAt(fragment, [0]);
+        var morph0 = dom.createMorphAt(fragment,1,2,contextualElement);
+        element(env, element0, context, "bind-attr", [], {"class": get(env, context, "faicon")});
+        content(env, morph0, context, "yield");
+        return fragment;
+      }
+    };
+  }()));
+
+});
 define('miume/templates/components/scroll-spy', ['exports'], function (exports) {
 
   'use strict';
@@ -3465,7 +3622,7 @@ define('miume/templates/components/side-nav', ['exports'], function (exports) {
         build: function build(dom) {
           var el0 = dom.createElement("span");
           dom.setAttribute(el0,"class","nav-title");
-          var el1 = dom.createTextNode("videos");
+          var el1 = dom.createTextNode("snackbar");
           dom.appendChild(el0, el1);
           return el0;
         },
@@ -3493,42 +3650,6 @@ define('miume/templates/components/side-nav', ['exports'], function (exports) {
       };
     }());
     var child3 = (function() {
-      return {
-        isHTMLBars: true,
-        blockParams: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        build: function build(dom) {
-          var el0 = dom.createElement("span");
-          dom.setAttribute(el0,"class","nav-title");
-          var el1 = dom.createTextNode("pictures");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        render: function render(context, env, contextualElement) {
-          var dom = env.dom;
-          dom.detectNamespace(contextualElement);
-          var fragment;
-          if (env.useFragmentCache && dom.canClone) {
-            if (this.cachedFragment === null) {
-              fragment = this.build(dom);
-              if (this.hasRendered) {
-                this.cachedFragment = fragment;
-              } else {
-                this.hasRendered = true;
-              }
-            }
-            if (this.cachedFragment) {
-              fragment = dom.cloneNode(this.cachedFragment, true);
-            }
-          } else {
-            fragment = this.build(dom);
-          }
-          return fragment;
-        }
-      };
-    }());
-    var child4 = (function() {
       return {
         isHTMLBars: true,
         blockParams: 0,
@@ -3579,8 +3700,6 @@ define('miume/templates/components/side-nav', ['exports'], function (exports) {
         dom.appendChild(el0, el1);
         var el1 = dom.createTextNode("");
         dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("");
-        dom.appendChild(el0, el1);
         return el0;
       },
       render: function render(context, env, contextualElement) {
@@ -3603,17 +3722,15 @@ define('miume/templates/components/side-nav', ['exports'], function (exports) {
         } else {
           fragment = this.build(dom);
         }
-        if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1,2,3]); }
+        if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1,2]); }
         var morph0 = dom.createMorphAt(fragment,-1,0);
         var morph1 = dom.createMorphAt(fragment,0,1);
         var morph2 = dom.createMorphAt(fragment,1,2);
-        var morph3 = dom.createMorphAt(fragment,2,3);
-        var morph4 = dom.createMorphAt(fragment,3,-1);
+        var morph3 = dom.createMorphAt(fragment,2,-1);
         block(env, morph0, context, "link-to", ["about"], {"class": "blue-grey-text darken-3"}, child0, null);
         block(env, morph1, context, "link-to", ["dances"], {"class": "blue-grey-text darken-3"}, child1, null);
-        block(env, morph2, context, "link-to", ["videos"], {"class": "blue-grey-text darken-3"}, child2, null);
-        block(env, morph3, context, "link-to", ["pictures"], {"class": "blue-grey-text darken-3"}, child3, null);
-        block(env, morph4, context, "link-to", ["contact"], {"class": "blue-grey-text darken-3"}, child4, null);
+        block(env, morph2, context, "link-to", ["snackbar"], {"class": "blue-grey-text darken-3"}, child2, null);
+        block(env, morph3, context, "link-to", ["contact"], {"class": "blue-grey-text darken-3"}, child3, null);
         return fragment;
       }
     };
@@ -3777,42 +3894,6 @@ define('miume/templates/components/site-nav', ['exports'], function (exports) {
         build: function build(dom) {
           var el0 = dom.createElement("span");
           dom.setAttribute(el0,"class","nav-title");
-          var el1 = dom.createTextNode("pictures");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        render: function render(context, env, contextualElement) {
-          var dom = env.dom;
-          dom.detectNamespace(contextualElement);
-          var fragment;
-          if (env.useFragmentCache && dom.canClone) {
-            if (this.cachedFragment === null) {
-              fragment = this.build(dom);
-              if (this.hasRendered) {
-                this.cachedFragment = fragment;
-              } else {
-                this.hasRendered = true;
-              }
-            }
-            if (this.cachedFragment) {
-              fragment = dom.cloneNode(this.cachedFragment, true);
-            }
-          } else {
-            fragment = this.build(dom);
-          }
-          return fragment;
-        }
-      };
-    }());
-    var child5 = (function() {
-      return {
-        isHTMLBars: true,
-        blockParams: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        build: function build(dom) {
-          var el0 = dom.createElement("span");
-          dom.setAttribute(el0,"class","nav-title");
           var el1 = dom.createTextNode("contact");
           dom.appendChild(el0, el1);
           return el0;
@@ -3860,19 +3941,16 @@ define('miume/templates/components/site-nav', ['exports'], function (exports) {
         var el2 = dom.createElement("ul");
         dom.setAttribute(el2,"class","tabs");
         var el3 = dom.createElement("li");
-        dom.setAttribute(el3,"class","tab col l2 offset-l2");
+        dom.setAttribute(el3,"class","tab col l3");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("li");
-        dom.setAttribute(el3,"class","tab col l2");
+        dom.setAttribute(el3,"class","tab col l3");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("li");
-        dom.setAttribute(el3,"class","tab col l2");
+        dom.setAttribute(el3,"class","tab col l3");
         dom.appendChild(el2, el3);
         var el3 = dom.createElement("li");
-        dom.setAttribute(el3,"class","tab col l2");
-        dom.appendChild(el2, el3);
-        var el3 = dom.createElement("li");
-        dom.setAttribute(el3,"class","tab col l2");
+        dom.setAttribute(el3,"class","tab col l3");
         dom.appendChild(el2, el3);
         dom.appendChild(el1, el2);
         dom.appendChild(el0, el1);
@@ -3906,14 +3984,12 @@ define('miume/templates/components/site-nav', ['exports'], function (exports) {
         var morph3 = dom.createMorphAt(dom.childAt(element1, [1]),-1,-1);
         var morph4 = dom.createMorphAt(dom.childAt(element1, [2]),-1,-1);
         var morph5 = dom.createMorphAt(dom.childAt(element1, [3]),-1,-1);
-        var morph6 = dom.createMorphAt(dom.childAt(element1, [4]),-1,-1);
         block(env, morph0, context, "link-to", ["index"], {"class": "flex-logo"}, child0, null);
         inline(env, morph1, context, "fa-icon", ["bars"], {"size": 3});
         block(env, morph2, context, "link-to", ["about"], {}, child1, null);
         block(env, morph3, context, "link-to", ["dances"], {}, child2, null);
         block(env, morph4, context, "link-to", ["snackbar"], {}, child3, null);
-        block(env, morph5, context, "link-to", ["pictures"], {}, child4, null);
-        block(env, morph6, context, "link-to", ["contact"], {}, child5, null);
+        block(env, morph5, context, "link-to", ["contact"], {}, child4, null);
         return fragment;
       }
     };
@@ -3934,20 +4010,58 @@ define('miume/templates/contact', ['exports'], function (exports) {
         var el0 = dom.createElement("div");
         dom.setAttribute(el0,"id","contact");
         var el1 = dom.createElement("div");
-        dom.setAttribute(el1,"class","container");
+        dom.setAttribute(el1,"class","meta-container");
         var el2 = dom.createElement("div");
-        dom.setAttribute(el2,"class","row");
-        var el3 = dom.createElement("form");
-        dom.setAttribute(el3,"class","col s12 m6 l6");
+        dom.setAttribute(el2,"class","container");
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","row");
         var el4 = dom.createElement("div");
-        dom.setAttribute(el4,"class","input-field");
-        var el5 = dom.createElement("label");
-        dom.setAttribute(el5,"for","name");
+        dom.setAttribute(el4,"class","col s12 m12 l12");
+        var el5 = dom.createElement("h2");
+        dom.setAttribute(el5,"class","page-title");
+        var el6 = dom.createTextNode("feel free to say hi!");
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","row");
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","col s3 m2 l1");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","col s3 m2 l1");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","col s3 m2 l1");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","col s3 m2 l1");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","row");
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","col s12");
+        var el5 = dom.createElement("h6");
+        dom.setAttribute(el5,"class","section-slogan");
+        var el6 = dom.createTextNode("Need a choreographer? Email me!");
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("a");
+        dom.setAttribute(el5,"href","mailto:somewhere@email.co");
         var el6 = dom.createElement("span");
-        var el7 = dom.createTextNode("name");
+        dom.setAttribute(el6,"class","fa");
+        var el7 = dom.createTextNode("somewhere@email.co");
         dom.appendChild(el6, el7);
         dom.appendChild(el5, el6);
         dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","row");
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","col s12 m12 l12");
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         dom.appendChild(el1, el2);
@@ -3956,7 +4070,7 @@ define('miume/templates/contact', ['exports'], function (exports) {
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, inline = hooks.inline;
+        var hooks = env.hooks, inline = hooks.inline, content = hooks.content;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -3974,8 +4088,18 @@ define('miume/templates/contact', ['exports'], function (exports) {
         } else {
           fragment = this.build(dom);
         }
-        var morph0 = dom.createUnsafeMorphAt(dom.childAt(fragment, [0, 0, 0, 0]),-1,0);
-        inline(env, morph0, context, "input", [], {"type": "text", "name": "name", "class": "validate"});
+        var element0 = dom.childAt(fragment, [0, 0]);
+        var element1 = dom.childAt(element0, [1]);
+        var morph0 = dom.createMorphAt(dom.childAt(element1, [0]),-1,-1);
+        var morph1 = dom.createMorphAt(dom.childAt(element1, [1]),-1,-1);
+        var morph2 = dom.createMorphAt(dom.childAt(element1, [2]),-1,-1);
+        var morph3 = dom.createMorphAt(dom.childAt(element1, [3]),-1,-1);
+        var morph4 = dom.createMorphAt(dom.childAt(element0, [3, 0]),-1,-1);
+        inline(env, morph0, context, "round-hover-button", [], {"i": "twitter"});
+        inline(env, morph1, context, "round-hover-button", [], {"i": "youtube"});
+        inline(env, morph2, context, "round-hover-button", [], {"i": "facebook"});
+        inline(env, morph3, context, "round-hover-button", [], {"i": "google"});
+        content(env, morph4, context, "iframe-block");
         return fragment;
       }
     };
@@ -4416,221 +4540,6 @@ define('miume/templates/index', ['exports'], function (exports) {
   'use strict';
 
   exports['default'] = Ember.HTMLBars.template((function() {
-    var child0 = (function() {
-      return {
-        isHTMLBars: true,
-        blockParams: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        build: function build(dom) {
-          var el0 = dom.createElement("img");
-          dom.setAttribute(el0,"src","images/plum.png");
-          dom.setAttribute(el0,"class","cover-width");
-          return el0;
-        },
-        render: function render(context, env, contextualElement) {
-          var dom = env.dom;
-          dom.detectNamespace(contextualElement);
-          var fragment;
-          if (env.useFragmentCache && dom.canClone) {
-            if (this.cachedFragment === null) {
-              fragment = this.build(dom);
-              if (this.hasRendered) {
-                this.cachedFragment = fragment;
-              } else {
-                this.hasRendered = true;
-              }
-            }
-            if (this.cachedFragment) {
-              fragment = dom.cloneNode(this.cachedFragment, true);
-            }
-          } else {
-            fragment = this.build(dom);
-          }
-          return fragment;
-        }
-      };
-    }());
-    var child1 = (function() {
-      return {
-        isHTMLBars: true,
-        blockParams: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        build: function build(dom) {
-          var el0 = dom.createElement("span");
-          dom.setAttribute(el0,"class","nav-title");
-          var el1 = dom.createTextNode("about");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        render: function render(context, env, contextualElement) {
-          var dom = env.dom;
-          dom.detectNamespace(contextualElement);
-          var fragment;
-          if (env.useFragmentCache && dom.canClone) {
-            if (this.cachedFragment === null) {
-              fragment = this.build(dom);
-              if (this.hasRendered) {
-                this.cachedFragment = fragment;
-              } else {
-                this.hasRendered = true;
-              }
-            }
-            if (this.cachedFragment) {
-              fragment = dom.cloneNode(this.cachedFragment, true);
-            }
-          } else {
-            fragment = this.build(dom);
-          }
-          return fragment;
-        }
-      };
-    }());
-    var child2 = (function() {
-      return {
-        isHTMLBars: true,
-        blockParams: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        build: function build(dom) {
-          var el0 = dom.createElement("span");
-          dom.setAttribute(el0,"class","nav-title");
-          var el1 = dom.createTextNode("dances");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        render: function render(context, env, contextualElement) {
-          var dom = env.dom;
-          dom.detectNamespace(contextualElement);
-          var fragment;
-          if (env.useFragmentCache && dom.canClone) {
-            if (this.cachedFragment === null) {
-              fragment = this.build(dom);
-              if (this.hasRendered) {
-                this.cachedFragment = fragment;
-              } else {
-                this.hasRendered = true;
-              }
-            }
-            if (this.cachedFragment) {
-              fragment = dom.cloneNode(this.cachedFragment, true);
-            }
-          } else {
-            fragment = this.build(dom);
-          }
-          return fragment;
-        }
-      };
-    }());
-    var child3 = (function() {
-      return {
-        isHTMLBars: true,
-        blockParams: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        build: function build(dom) {
-          var el0 = dom.createElement("span");
-          dom.setAttribute(el0,"class","nav-title");
-          var el1 = dom.createTextNode("snackbar");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        render: function render(context, env, contextualElement) {
-          var dom = env.dom;
-          dom.detectNamespace(contextualElement);
-          var fragment;
-          if (env.useFragmentCache && dom.canClone) {
-            if (this.cachedFragment === null) {
-              fragment = this.build(dom);
-              if (this.hasRendered) {
-                this.cachedFragment = fragment;
-              } else {
-                this.hasRendered = true;
-              }
-            }
-            if (this.cachedFragment) {
-              fragment = dom.cloneNode(this.cachedFragment, true);
-            }
-          } else {
-            fragment = this.build(dom);
-          }
-          return fragment;
-        }
-      };
-    }());
-    var child4 = (function() {
-      return {
-        isHTMLBars: true,
-        blockParams: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        build: function build(dom) {
-          var el0 = dom.createElement("span");
-          dom.setAttribute(el0,"class","nav-title");
-          var el1 = dom.createTextNode("pictures");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        render: function render(context, env, contextualElement) {
-          var dom = env.dom;
-          dom.detectNamespace(contextualElement);
-          var fragment;
-          if (env.useFragmentCache && dom.canClone) {
-            if (this.cachedFragment === null) {
-              fragment = this.build(dom);
-              if (this.hasRendered) {
-                this.cachedFragment = fragment;
-              } else {
-                this.hasRendered = true;
-              }
-            }
-            if (this.cachedFragment) {
-              fragment = dom.cloneNode(this.cachedFragment, true);
-            }
-          } else {
-            fragment = this.build(dom);
-          }
-          return fragment;
-        }
-      };
-    }());
-    var child5 = (function() {
-      return {
-        isHTMLBars: true,
-        blockParams: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        build: function build(dom) {
-          var el0 = dom.createElement("span");
-          dom.setAttribute(el0,"class","nav-title");
-          var el1 = dom.createTextNode("contact");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        render: function render(context, env, contextualElement) {
-          var dom = env.dom;
-          dom.detectNamespace(contextualElement);
-          var fragment;
-          if (env.useFragmentCache && dom.canClone) {
-            if (this.cachedFragment === null) {
-              fragment = this.build(dom);
-              if (this.hasRendered) {
-                this.cachedFragment = fragment;
-              } else {
-                this.hasRendered = true;
-              }
-            }
-            if (this.cachedFragment) {
-              fragment = dom.cloneNode(this.cachedFragment, true);
-            }
-          } else {
-            fragment = this.build(dom);
-          }
-          return fragment;
-        }
-      };
-    }());
     return {
       isHTMLBars: true,
       blockParams: 0,
@@ -4639,25 +4548,6 @@ define('miume/templates/index', ['exports'], function (exports) {
       build: function build(dom) {
         var el0 = dom.createElement("div");
         dom.setAttribute(el0,"id","index");
-        var el1 = dom.createElement("nav");
-        dom.setAttribute(el1,"class","index-nav-header");
-        var el2 = dom.createElement("div");
-        dom.setAttribute(el2,"class","nav-wrapper");
-        var el3 = dom.createElement("ul");
-        dom.setAttribute(el3,"class","right hide-on-med-and-down");
-        var el4 = dom.createElement("li");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("li");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("li");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("li");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("li");
-        dom.appendChild(el3, el4);
-        dom.appendChild(el2, el3);
-        dom.appendChild(el1, el2);
-        dom.appendChild(el0, el1);
         var el1 = dom.createElement("div");
         dom.setAttribute(el1,"class","highlights");
         var el2 = dom.createElement("div");
@@ -4890,7 +4780,6 @@ define('miume/templates/index', ['exports'], function (exports) {
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, block = hooks.block;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -4908,20 +4797,6 @@ define('miume/templates/index', ['exports'], function (exports) {
         } else {
           fragment = this.build(dom);
         }
-        var element0 = dom.childAt(fragment, [0, 0]);
-        var element1 = dom.childAt(element0, [0]);
-        var morph0 = dom.createMorphAt(element0,-1,0);
-        var morph1 = dom.createMorphAt(dom.childAt(element1, [0]),-1,-1);
-        var morph2 = dom.createMorphAt(dom.childAt(element1, [1]),-1,-1);
-        var morph3 = dom.createMorphAt(dom.childAt(element1, [2]),-1,-1);
-        var morph4 = dom.createMorphAt(dom.childAt(element1, [3]),-1,-1);
-        var morph5 = dom.createMorphAt(dom.childAt(element1, [4]),-1,-1);
-        block(env, morph0, context, "link-to", ["index"], {"class": "brand-logo"}, child0, null);
-        block(env, morph1, context, "link-to", ["about"], {}, child1, null);
-        block(env, morph2, context, "link-to", ["dances"], {}, child2, null);
-        block(env, morph3, context, "link-to", ["snackbar"], {}, child3, null);
-        block(env, morph4, context, "link-to", ["pictures"], {}, child4, null);
-        block(env, morph5, context, "link-to", ["contact"], {}, child5, null);
         return fragment;
       }
     };
@@ -5598,192 +5473,6 @@ define('miume/templates/snackbar', ['exports'], function (exports) {
   }()));
 
 });
-define('miume/templates/works', ['exports'], function (exports) {
-
-  'use strict';
-
-  exports['default'] = Ember.HTMLBars.template((function() {
-    return {
-      isHTMLBars: true,
-      blockParams: 0,
-      cachedFragment: null,
-      hasRendered: false,
-      build: function build(dom) {
-        var el0 = dom.createElement("div");
-        dom.setAttribute(el0,"id","works");
-        var el1 = dom.createElement("div");
-        dom.setAttribute(el1,"class","container");
-        var el2 = dom.createElement("div");
-        dom.setAttribute(el2,"class","row");
-        var el3 = dom.createElement("div");
-        dom.setAttribute(el3,"class","col s12 m6 l3");
-        var el4 = dom.createElement("div");
-        dom.setAttribute(el4,"class","card");
-        var el5 = dom.createElement("div");
-        dom.setAttribute(el5,"class","card-image waves-effect waves-block waves-light");
-        var el6 = dom.createElement("img");
-        dom.setAttribute(el6,"src","images/doge2.jpg");
-        dom.setAttribute(el6,"class","activator");
-        dom.appendChild(el5, el6);
-        dom.appendChild(el4, el5);
-        var el5 = dom.createElement("div");
-        dom.setAttribute(el5,"class","card-content");
-        var el6 = dom.createElement("span");
-        dom.setAttribute(el6,"class","card-title activator grey-text text-darken-4");
-        var el7 = dom.createElement("span");
-        var el8 = dom.createTextNode("video title");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        var el7 = dom.createElement("i");
-        dom.setAttribute(el7,"class","mdi-navigation-more-vert right");
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        var el6 = dom.createElement("p");
-        var el7 = dom.createTextNode("outbound link");
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        dom.appendChild(el4, el5);
-        var el5 = dom.createElement("div");
-        dom.setAttribute(el5,"class","card-reveal");
-        var el6 = dom.createElement("span");
-        dom.setAttribute(el6,"class","card-title grey-text text-darken-4");
-        var el7 = dom.createElement("span");
-        var el8 = dom.createTextNode("video title");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        var el7 = dom.createElement("i");
-        dom.setAttribute(el7,"class","mdi-navigation-close right");
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        var el6 = dom.createElement("p");
-        var el7 = dom.createTextNode("description goes here");
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        dom.appendChild(el2, el3);
-        var el3 = dom.createElement("div");
-        dom.setAttribute(el3,"class","col s12 m6 l3");
-        var el4 = dom.createElement("div");
-        dom.setAttribute(el4,"class","card");
-        var el5 = dom.createElement("div");
-        dom.setAttribute(el5,"class","card-image waves-effect waves-block waves-light");
-        var el6 = dom.createElement("img");
-        dom.setAttribute(el6,"src","images/doge2.jpg");
-        dom.setAttribute(el6,"class","activator");
-        dom.appendChild(el5, el6);
-        dom.appendChild(el4, el5);
-        var el5 = dom.createElement("div");
-        dom.setAttribute(el5,"class","card-content");
-        var el6 = dom.createElement("span");
-        dom.setAttribute(el6,"class","card-title activator grey-text text-darken-4");
-        var el7 = dom.createElement("span");
-        var el8 = dom.createTextNode("video title");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        var el7 = dom.createElement("i");
-        dom.setAttribute(el7,"class","mdi-navigation-more-vert right");
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        var el6 = dom.createElement("p");
-        var el7 = dom.createTextNode("outbound link");
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        dom.appendChild(el4, el5);
-        var el5 = dom.createElement("div");
-        dom.setAttribute(el5,"class","card-reveal");
-        var el6 = dom.createElement("span");
-        dom.setAttribute(el6,"class","card-title grey-text text-darken-4");
-        var el7 = dom.createElement("span");
-        var el8 = dom.createTextNode("video title");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        var el7 = dom.createElement("i");
-        dom.setAttribute(el7,"class","mdi-navigation-close right");
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        var el6 = dom.createElement("p");
-        var el7 = dom.createTextNode("description goes here");
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        dom.appendChild(el2, el3);
-        dom.appendChild(el1, el2);
-        dom.appendChild(el0, el1);
-        return el0;
-      },
-      render: function render(context, env, contextualElement) {
-        var dom = env.dom;
-        dom.detectNamespace(contextualElement);
-        var fragment;
-        if (env.useFragmentCache && dom.canClone) {
-          if (this.cachedFragment === null) {
-            fragment = this.build(dom);
-            if (this.hasRendered) {
-              this.cachedFragment = fragment;
-            } else {
-              this.hasRendered = true;
-            }
-          }
-          if (this.cachedFragment) {
-            fragment = dom.cloneNode(this.cachedFragment, true);
-          }
-        } else {
-          fragment = this.build(dom);
-        }
-        return fragment;
-      }
-    };
-  }()));
-
-});
-define('miume/templates/works/faraway', ['exports'], function (exports) {
-
-  'use strict';
-
-  exports['default'] = Ember.HTMLBars.template((function() {
-    return {
-      isHTMLBars: true,
-      blockParams: 0,
-      cachedFragment: null,
-      hasRendered: false,
-      build: function build(dom) {
-        var el0 = dom.createElement("div");
-        dom.setAttribute(el0,"id","works-faraway");
-        var el1 = dom.createElement("div");
-        dom.setAttribute(el1,"class","parallax-background");
-        var el2 = dom.createElement("img");
-        dom.setAttribute(el2,"src","images/summer.jpg");
-        dom.appendChild(el1, el2);
-        dom.appendChild(el0, el1);
-        return el0;
-      },
-      render: function render(context, env, contextualElement) {
-        var dom = env.dom;
-        dom.detectNamespace(contextualElement);
-        var fragment;
-        if (env.useFragmentCache && dom.canClone) {
-          if (this.cachedFragment === null) {
-            fragment = this.build(dom);
-            if (this.hasRendered) {
-              this.cachedFragment = fragment;
-            } else {
-              this.hasRendered = true;
-            }
-          }
-          if (this.cachedFragment) {
-            fragment = dom.cloneNode(this.cachedFragment, true);
-          }
-        } else {
-          fragment = this.build(dom);
-        }
-        return fragment;
-      }
-    };
-  }()));
-
-});
 define('miume/tests/app.jshint', function () {
 
   'use strict';
@@ -5982,6 +5671,22 @@ define('miume/tests/unit/adapters/youtube/video-test', ['ember-qunit'], function
   });
 
 });
+define('miume/tests/unit/components/iframe-block-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForComponent('iframe-block', {});
+
+  ember_qunit.test('it renders', function(assert) {
+    var component;
+    assert.expect(2);
+    component = this.subject();
+    assert.equal(component._state, 'preRender');
+    this.render();
+    return assert.equal(component._state, 'inDOM');
+  });
+
+});
 define('miume/tests/unit/components/lazy-scroll-load-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -6019,6 +5724,22 @@ define('miume/tests/unit/components/materialize-parallax-test', ['ember-qunit'],
   'use strict';
 
   ember_qunit.moduleForComponent('materialize-parallax', {});
+
+  ember_qunit.test('it renders', function(assert) {
+    var component;
+    assert.expect(2);
+    component = this.subject();
+    assert.equal(component._state, 'preRender');
+    this.render();
+    return assert.equal(component._state, 'inDOM');
+  });
+
+});
+define('miume/tests/unit/components/round-hover-button-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForComponent('round-hover-button', {});
 
   ember_qunit.test('it renders', function(assert) {
     var component;
@@ -6866,7 +6587,7 @@ catch(err) {
 if (runningTests) {
   require("miume/tests/test-helper");
 } else {
-  require("miume/app")["default"].create({"name":"miume","version":"0.0.0.ea8e80d5"});
+  require("miume/app")["default"].create({"name":"miume","version":"0.0.0.cb853198"});
 }
 
 /* jshint ignore:end */

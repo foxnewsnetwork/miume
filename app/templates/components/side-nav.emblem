@@ -3,9 +3,7 @@
     span.nav-title about
   link-to "dances" class="blue-grey-text darken-3"
     span.nav-title dances
-  link-to "videos" class="blue-grey-text darken-3"
-    span.nav-title videos
-  link-to "pictures" class="blue-grey-text darken-3"
-    span.nav-title pictures
+  link-to "snackbar" class="blue-grey-text darken-3"
+    span.nav-title snackbar
   link-to "contact" class="blue-grey-text darken-3"
     span.nav-title contact

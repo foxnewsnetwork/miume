@@ -70,7 +70,6 @@
     @include transition-duration(350ms);
   }
   .turn-invisible {
-    @include opacity(0);
-    @include transform(rotateY(90deg));
+    
   }
 }

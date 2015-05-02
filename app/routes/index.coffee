@@ -1,10 +1,6 @@
 `import Ember from 'ember'`
+`import ApplicationRoute from './application'`
 
-IndexRoute = Ember.Route.extend
-  renderTemplate: ->
-    @_super arguments...
-    @render "shared/nothing",
-      outlet: "top-nav"
-
+IndexRoute = ApplicationRoute.extend()
   
 `export default IndexRoute`

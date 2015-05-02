@@ -1,8 +1,26 @@
 #contact
-  .container
-    .row
-      form.col.s12.m6.l6
-        .input-field
-          == input type="text" class="validate" name="name"
-          label for="name"
-            span name
+  .meta-container
+    .container
+      .row
+        .col.s12.m12.l12
+          h2.page-title feel free to say hi!
+
+      .row
+        .col.s3.m2.l1
+          round-hover-button i="twitter"
+        .col.s3.m2.l1
+          round-hover-button i="youtube"
+        .col.s3.m2.l1
+          round-hover-button i="facebook"
+        .col.s3.m2.l1
+          round-hover-button i="google"
+
+      .row
+        .col.s12
+          h6.section-slogan Need a choreographer? Email me!
+          a href="mailto:somewhere@email.co"
+            span.fa somewhere@email.co
+
+      .row
+        .col.s12.m12.l12
+          iframe-block
