@@ -1,0 +1,5 @@
+.card-content.thin
+  span.card-title.grey-text.text-darken-4
+    span.fat Accouncement
+    fa-icon 'twitter'
+  twitter-card-iframe n=personalNumber

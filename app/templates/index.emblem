@@ -20,53 +20,14 @@
     .container
       .row
         .col.s12.m6.l4
-          .card
-            .card-image.waves-effect.waves-block.waves-light
-              img src="images/doge.jpg"
-            .card-content
-              span.card-title.activator.grey-text.text-darken-4 
-                span accouncement
-                i.mdi-navigation-more-vert.right
-              p some sort of announcement here
-            .card-action
-              a href="https://github.com/foxnewsnetwork" action link            
-            .card-reveal
-              span.card-title.grey-text.text-darken-4
-                span announcement
-                i.mdi-navigation-close.right
-              p more crap
+          announcement-card
+
         .col.s12.m6.l4
-          .card
-            .card-image.waves-effect.waves-block.waves-light
-              img src="images/doge.jpg"
-            .card-content
-              span.card-title.activator.grey-text.text-darken-4 
-                span accouncement
-                i.mdi-navigation-more-vert.right
-              p some sort of announcement here
-            .card-action
-              a href="https://github.com/foxnewsnetwork" action link            
-            .card-reveal
-              span.card-title.grey-text.text-darken-4
-                span announcement
-                i.mdi-navigation-close.right
-              p more crap
+          announcement-card
+
         .col.s12.m6.l4
-          .card
-            .card-image.waves-effect.waves-block.waves-light
-              img src="images/doge.jpg"
-            .card-content
-              span.card-title.activator.grey-text.text-darken-4 
-                span accouncement
-                i.mdi-navigation-more-vert.right
-              p some sort of announcement here
-            .card-action
-              a href="https://github.com/foxnewsnetwork" action link            
-            .card-reveal
-              span.card-title.grey-text.text-darken-4
-                span announcement
-                i.mdi-navigation-close.right
-              p more crap
+          announcement-card
+
 
   .parallax-art
     span placeholder

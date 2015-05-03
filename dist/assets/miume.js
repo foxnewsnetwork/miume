@@ -51,6 +51,34 @@ define('miume/app', ['exports', 'ember', 'ember/resolver', 'ember/load-initializ
   exports['default'] = App;
 
 });
+define('miume/components/announcement-card', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  var AnnouncementCardComponent, count;
+
+  count = 0;
+
+  AnnouncementCardComponent = Ember['default'].Component.extend({
+    classNames: ['announcement-card', 'card', 'medium'],
+    isFullTweet: false,
+    didInsertElement: function() {
+      this.set("personalNumber", count);
+      return count += 1;
+    },
+    willDestroyElement: function() {
+      return count -= 1;
+    },
+    actions: {
+      toggleTweet: function() {
+        return this.toggleProperty("isFullTweet");
+      }
+    }
+  });
+
+  exports['default'] = AnnouncementCardComponent;
+
+});
 define('miume/components/async-button', ['exports', 'ember-cli-async-button/components/async-button'], function (exports, AsyncButtonComponent) {
 
 	'use strict';
@@ -685,6 +713,86 @@ define('miume/components/site-nav', ['exports', 'ember'], function (exports, Emb
   });
 
   exports['default'] = SiteNavComponent;
+
+});
+define('miume/components/twitter-card-iframe', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  var TwitterCardIframeComponent;
+
+  TwitterCardIframeComponent = Ember['default'].Component.extend({
+    tagName: 'iframe',
+    classNames: ['twitter-card-iframe'],
+    attributeBindings: ['horizontalscrolling', 'verticalscrolling', 'frameborder', 'scrolling', 'title', 'src', 'seamless', 'width', 'height'],
+    width: '100%',
+    horizontalscrolling: 'no',
+    verticalscrolling: 'no',
+    scrolling: 'no',
+    frameborder: 0,
+    seamless: 'seamless',
+    src: 'twitter.html',
+    didInsertElement: function() {
+      return this.scrollInterval = window.setInterval(this.ensureCorrectScrollPosition.bind(this), 1000);
+    },
+    willDestroyElement: function() {
+      if (Ember['default'].isPresent(this.scrollInterval)) {
+        return window.clearInterval(this.scrollInterval);
+      }
+    },
+    ensureCorrectScrollPosition: function() {
+      if (this.nthTopOffset() === "twitter not ready") {
+        return;
+      }
+      this.set('height', this.actualHeight());
+      return this.scrollIframeTo(this.nthTopOffset());
+    },
+    scrollIframeTo: function(offset) {
+      var error, obj;
+      try {
+        obj = this.$()[0];
+        return obj.contentWindow.scrollTo(0, offset);
+      } catch (_error) {
+        error = _error;
+        return console.log("unable to scroll to " + offset);
+      }
+    },
+    actualHeight: function() {
+      if (this.nthHeight() === 'twitter not ready') {
+        return 330;
+      }
+      if (this.nthHeight() > 330) {
+        return 330;
+      }
+      return this.nthHeight();
+    },
+    nthHeight: function() {
+      var error, obj, timeline, tweet;
+      try {
+        obj = this.$()[0];
+        timeline = $(obj.contentWindow.document.body).find("iframe.twitter-timeline")[0];
+        tweet = $(timeline.contentWindow.document.body).find("li.h-entry.tweet")[this.get('n')];
+        return $(tweet).height();
+      } catch (_error) {
+        error = _error;
+        return "twitter not ready";
+      }
+    },
+    nthTopOffset: function() {
+      var error, obj, timeline, tweet;
+      try {
+        obj = this.$()[0];
+        timeline = $(obj.contentWindow.document.body).find("iframe.twitter-timeline")[0];
+        tweet = $(timeline.contentWindow.document.body).find("li.h-entry.tweet")[this.get('n')];
+        return tweet.offsetTop;
+      } catch (_error) {
+        error = _error;
+        return "twitter not ready";
+      }
+    }
+  });
+
+  exports['default'] = TwitterCardIframeComponent;
 
 });
 define('miume/controllers/application', ['exports', 'ember'], function (exports, Ember) {
@@ -2188,6 +2296,59 @@ define('miume/templates/application', ['exports'], function (exports) {
         var morph1 = dom.createUnsafeMorphAt(dom.childAt(fragment, [1]),-1,-1);
         inline(env, morph0, context, "outlet", ["top-nav"], {});
         content(env, morph1, context, "liquid-outlet");
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('miume/templates/components/announcement-card', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createElement("div");
+        dom.setAttribute(el0,"class","card-content thin");
+        var el1 = dom.createElement("span");
+        dom.setAttribute(el1,"class","card-title grey-text text-darken-4");
+        var el2 = dom.createElement("span");
+        dom.setAttribute(el2,"class","fat");
+        var el3 = dom.createTextNode("Accouncement");
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, inline = hooks.inline, get = hooks.get;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        var morph0 = dom.createMorphAt(dom.childAt(fragment, [0]),0,-1);
+        var morph1 = dom.createMorphAt(fragment,0,-1);
+        inline(env, morph0, context, "fa-icon", ["twitter"], {});
+        inline(env, morph1, context, "twitter-card-iframe", [], {"n": get(env, context, "personalNumber")});
         return fragment;
       }
     };
@@ -3996,6 +4157,53 @@ define('miume/templates/components/site-nav', ['exports'], function (exports) {
   }()));
 
 });
+define('miume/templates/components/twitter-card-iframe', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createTextNode("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, content = hooks.content;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        if (this.cachedFragment) { dom.repairClonedNode(fragment,[0]); }
+        var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
+        content(env, morph0, context, "yield");
+        return fragment;
+      }
+    };
+  }()));
+
+});
 define('miume/templates/contact', ['exports'], function (exports) {
 
   'use strict';
@@ -4606,165 +4814,12 @@ define('miume/templates/index', ['exports'], function (exports) {
         dom.setAttribute(el3,"class","row");
         var el4 = dom.createElement("div");
         dom.setAttribute(el4,"class","col s12 m6 l4");
-        var el5 = dom.createElement("div");
-        dom.setAttribute(el5,"class","card");
-        var el6 = dom.createElement("div");
-        dom.setAttribute(el6,"class","card-image waves-effect waves-block waves-light");
-        var el7 = dom.createElement("img");
-        dom.setAttribute(el7,"src","images/doge.jpg");
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        var el6 = dom.createElement("div");
-        dom.setAttribute(el6,"class","card-content");
-        var el7 = dom.createElement("span");
-        dom.setAttribute(el7,"class","card-title activator grey-text text-darken-4");
-        var el8 = dom.createElement("span");
-        var el9 = dom.createTextNode("accouncement");
-        dom.appendChild(el8, el9);
-        dom.appendChild(el7, el8);
-        var el8 = dom.createElement("i");
-        dom.setAttribute(el8,"class","mdi-navigation-more-vert right");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        var el7 = dom.createElement("p");
-        var el8 = dom.createTextNode("some sort of announcement here");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        var el6 = dom.createElement("div");
-        dom.setAttribute(el6,"class","card-action");
-        var el7 = dom.createElement("a");
-        dom.setAttribute(el7,"href","https://github.com/foxnewsnetwork");
-        var el8 = dom.createTextNode("action link            ");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        var el6 = dom.createElement("div");
-        dom.setAttribute(el6,"class","card-reveal");
-        var el7 = dom.createElement("span");
-        dom.setAttribute(el7,"class","card-title grey-text text-darken-4");
-        var el8 = dom.createElement("span");
-        var el9 = dom.createTextNode("announcement");
-        dom.appendChild(el8, el9);
-        dom.appendChild(el7, el8);
-        var el8 = dom.createElement("i");
-        dom.setAttribute(el8,"class","mdi-navigation-close right");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        var el7 = dom.createElement("p");
-        var el8 = dom.createTextNode("more crap");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        dom.appendChild(el4, el5);
         dom.appendChild(el3, el4);
         var el4 = dom.createElement("div");
         dom.setAttribute(el4,"class","col s12 m6 l4");
-        var el5 = dom.createElement("div");
-        dom.setAttribute(el5,"class","card");
-        var el6 = dom.createElement("div");
-        dom.setAttribute(el6,"class","card-image waves-effect waves-block waves-light");
-        var el7 = dom.createElement("img");
-        dom.setAttribute(el7,"src","images/doge.jpg");
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        var el6 = dom.createElement("div");
-        dom.setAttribute(el6,"class","card-content");
-        var el7 = dom.createElement("span");
-        dom.setAttribute(el7,"class","card-title activator grey-text text-darken-4");
-        var el8 = dom.createElement("span");
-        var el9 = dom.createTextNode("accouncement");
-        dom.appendChild(el8, el9);
-        dom.appendChild(el7, el8);
-        var el8 = dom.createElement("i");
-        dom.setAttribute(el8,"class","mdi-navigation-more-vert right");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        var el7 = dom.createElement("p");
-        var el8 = dom.createTextNode("some sort of announcement here");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        var el6 = dom.createElement("div");
-        dom.setAttribute(el6,"class","card-action");
-        var el7 = dom.createElement("a");
-        dom.setAttribute(el7,"href","https://github.com/foxnewsnetwork");
-        var el8 = dom.createTextNode("action link            ");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        var el6 = dom.createElement("div");
-        dom.setAttribute(el6,"class","card-reveal");
-        var el7 = dom.createElement("span");
-        dom.setAttribute(el7,"class","card-title grey-text text-darken-4");
-        var el8 = dom.createElement("span");
-        var el9 = dom.createTextNode("announcement");
-        dom.appendChild(el8, el9);
-        dom.appendChild(el7, el8);
-        var el8 = dom.createElement("i");
-        dom.setAttribute(el8,"class","mdi-navigation-close right");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        var el7 = dom.createElement("p");
-        var el8 = dom.createTextNode("more crap");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        dom.appendChild(el4, el5);
         dom.appendChild(el3, el4);
         var el4 = dom.createElement("div");
         dom.setAttribute(el4,"class","col s12 m6 l4");
-        var el5 = dom.createElement("div");
-        dom.setAttribute(el5,"class","card");
-        var el6 = dom.createElement("div");
-        dom.setAttribute(el6,"class","card-image waves-effect waves-block waves-light");
-        var el7 = dom.createElement("img");
-        dom.setAttribute(el7,"src","images/doge.jpg");
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        var el6 = dom.createElement("div");
-        dom.setAttribute(el6,"class","card-content");
-        var el7 = dom.createElement("span");
-        dom.setAttribute(el7,"class","card-title activator grey-text text-darken-4");
-        var el8 = dom.createElement("span");
-        var el9 = dom.createTextNode("accouncement");
-        dom.appendChild(el8, el9);
-        dom.appendChild(el7, el8);
-        var el8 = dom.createElement("i");
-        dom.setAttribute(el8,"class","mdi-navigation-more-vert right");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        var el7 = dom.createElement("p");
-        var el8 = dom.createTextNode("some sort of announcement here");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        var el6 = dom.createElement("div");
-        dom.setAttribute(el6,"class","card-action");
-        var el7 = dom.createElement("a");
-        dom.setAttribute(el7,"href","https://github.com/foxnewsnetwork");
-        var el8 = dom.createTextNode("action link            ");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        var el6 = dom.createElement("div");
-        dom.setAttribute(el6,"class","card-reveal");
-        var el7 = dom.createElement("span");
-        dom.setAttribute(el7,"class","card-title grey-text text-darken-4");
-        var el8 = dom.createElement("span");
-        var el9 = dom.createTextNode("announcement");
-        dom.appendChild(el8, el9);
-        dom.appendChild(el7, el8);
-        var el8 = dom.createElement("i");
-        dom.setAttribute(el8,"class","mdi-navigation-close right");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        var el7 = dom.createElement("p");
-        var el8 = dom.createTextNode("more crap");
-        dom.appendChild(el7, el8);
-        dom.appendChild(el6, el7);
-        dom.appendChild(el5, el6);
-        dom.appendChild(el4, el5);
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         dom.appendChild(el1, el2);
@@ -4780,6 +4835,7 @@ define('miume/templates/index', ['exports'], function (exports) {
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
+        var hooks = env.hooks, content = hooks.content;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -4797,6 +4853,13 @@ define('miume/templates/index', ['exports'], function (exports) {
         } else {
           fragment = this.build(dom);
         }
+        var element0 = dom.childAt(fragment, [2, 0, 0]);
+        var morph0 = dom.createMorphAt(dom.childAt(element0, [0]),-1,-1);
+        var morph1 = dom.createMorphAt(dom.childAt(element0, [1]),-1,-1);
+        var morph2 = dom.createMorphAt(dom.childAt(element0, [2]),-1,-1);
+        content(env, morph0, context, "announcement-card");
+        content(env, morph1, context, "announcement-card");
+        content(env, morph2, context, "announcement-card");
         return fragment;
       }
     };
@@ -5671,6 +5734,22 @@ define('miume/tests/unit/adapters/youtube/video-test', ['ember-qunit'], function
   });
 
 });
+define('miume/tests/unit/components/announcement-card-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForComponent('announcement-card', {});
+
+  ember_qunit.test('it renders', function(assert) {
+    var component;
+    assert.expect(2);
+    component = this.subject();
+    assert.equal(component._state, 'preRender');
+    this.render();
+    return assert.equal(component._state, 'inDOM');
+  });
+
+});
 define('miume/tests/unit/components/iframe-block-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -5788,6 +5867,22 @@ define('miume/tests/unit/components/site-nav-test', ['ember-qunit'], function (e
   'use strict';
 
   ember_qunit.moduleForComponent('site-nav', {});
+
+  ember_qunit.test('it renders', function(assert) {
+    var component;
+    assert.expect(2);
+    component = this.subject();
+    assert.equal(component._state, 'preRender');
+    this.render();
+    return assert.equal(component._state, 'inDOM');
+  });
+
+});
+define('miume/tests/unit/components/twitter-card-iframe-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForComponent('twitter-card-iframe', {});
 
   ember_qunit.test('it renders', function(assert) {
     var component;
