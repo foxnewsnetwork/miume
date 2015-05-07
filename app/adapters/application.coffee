@@ -1,5 +1,5 @@
-`import DS from 'ember-data'`
+`import TumblrAdapter from './tumblr'`
 
-ApplicationAdapter = DS.RESTAdapter.extend()
+ApplicationAdapter = TumblrAdapter.extend()
 
 `export default ApplicationAdapter`

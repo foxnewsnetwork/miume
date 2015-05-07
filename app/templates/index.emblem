@@ -2,16 +2,45 @@
   .highlights
     .container
       .row
-        .col.l9.m12.s12
-          img.cover-width src="images/doge.jpg"
-        .col.l3.hide-on-med-and-down
+        .col.l8.m12.s12
+          .card.xlarge
+            .card-image.waves-effect.waves-block.waves-light
+              img.activator src="images/doge.jpg"
+              span.capitalize.card-title latest video
+            .card-content
+              span.card-title.activator.grey-text.text-darken-4
+                span blah blah blah vid title
+                i.activator.mdi-navigation-more-vert.right
+              p
+                link-to "dances"
+                  span see more videos
+            .card-reveal
+              span.card-title.activator.grey-text.text-darken-4
+                span blah blah blah vid title
+                i.activator.mdi-navigation-more-vert.right
+              p video description and stuff
+
+
+        .col.l4.hide-on-med-and-down
           .row
             .col.l12
-              img.cover-width src="images/doge.jpg"
+              .card
+                .card-image.waves-effect.waves-block.waves-light
+                  img.activator src="images/doge.jpg"
+                  span.capitalize.card-title some promotion
+                  
             .col.l12
-              img.cover-width src="images/doge.jpg"
+              .card
+                .card-image.waves-effect.waves-block.waves-light
+                  img.activator src="images/doge.jpg"
+                  span.capitalize.card-title buy my junk
+                  
             .col.l12
-              img.cover-width src="images/doge.jpg"
+              .card
+                .card-image.waves-effect.waves-block.waves-light
+                  img.activator src="images/doge.jpg"
+                  span.capitalize.card-title flat out donate money
+                  
 
   .parallax-art
     span placeholder

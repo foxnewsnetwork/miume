@@ -2,15 +2,101 @@
 
 /* jshint ignore:end */
 
-define('miume/adapters/application', ['exports', 'ember-data'], function (exports, DS) {
+define('miume/adapters/application', ['exports', 'miume/adapters/tumblr'], function (exports, TumblrAdapter) {
 
 	'use strict';
 
 	var ApplicationAdapter;
 
-	ApplicationAdapter = DS['default'].RESTAdapter.extend();
+	ApplicationAdapter = TumblrAdapter['default'].extend();
 
 	exports['default'] = ApplicationAdapter;
+
+});
+define('miume/adapters/tumblr', ['exports', 'ember', 'ember-data'], function (exports, Ember, DS) {
+
+  'use strict';
+
+  var TumblrAdapter, get, lll;
+
+  get = Ember['default'].get;
+
+  lll = function(x) {
+    console.log(x);
+    return x;
+  };
+
+  TumblrAdapter = DS['default'].RESTAdapter.extend({
+    host: 'http://api.tumblr.com',
+    namespace: 'v2/blog/blogsqlapi.tumblr.com',
+    defaultSerializer: '-tumblr',
+    apiKey: "wIP0ELJ0hXhmi11b1cgrY5t5z4JxFa8qSZzWNobtwgv98Q150X",
+    ajaxOptions: function() {
+      var hash;
+      hash = this._super.apply(this, arguments);
+      hash.crossDomain = true;
+      hash.dataType = "jsonp";
+      return hash;
+    },
+    buildURL: function() {
+      var uri;
+      uri = this.urlPrefix();
+      return [uri, "posts/text"].join('/');
+    },
+    find: function(store, type, id, snapshot) {
+      var data, uri;
+      data = this.buildUrlOptions({
+        typeKey: type.typeKey,
+        id: id,
+        snapshot: snapshot
+      });
+      uri = this.buildURL();
+      return this.ajax(uri, 'GET', {
+        data: data
+      });
+    },
+    findAll: function(store, type, sinceToken) {
+      var data, uri;
+      data = this.buildUrlOptions({
+        typeKey: type.typeKey,
+        sinceToken: sinceToken
+      });
+      uri = this.buildURL();
+      return this.ajax(uri, 'GET', {
+        data: data
+      });
+    },
+    findQuery: function(store, type, query) {
+      var data, uri;
+      data = this.buildUrlOptions({
+        typeKey: type.typeKey,
+        hash: query
+      });
+      uri = this.buildURL();
+      return this.ajax(uri, 'GET', {
+        data: data
+      });
+    },
+    buildUrlOptions: function(arg) {
+      var hash, id, sinceToken, snapshot, typeKey;
+      typeKey = arg.typeKey, id = arg.id, snapshot = arg.snapshot, sinceToken = arg.sinceToken, hash = arg.hash;
+      if (hash == null) {
+        hash = {};
+      }
+      hash.api_key = get(this, 'apiKey');
+      hash.filter = 'text';
+      hash.tag = "model:" + typeKey;
+      if (Ember['default'].isPresent(id)) {
+        hash.id = id;
+      }
+      if (Ember['default'].isPresent(sinceToken)) {
+        hash.since = sinceToken;
+      }
+      return hash;
+    }
+  });
+
+  exports['default'] = TumblrAdapter;
 
 });
 define('miume/adapters/youtube', ['exports', 'ember-youtube-data-model/adapters/youtube'], function (exports, YoutubeAdapter) {
@@ -1499,6 +1585,22 @@ define('miume/mixins/google-pageview', ['exports', 'ember', 'miume/config/enviro
   });
 
 });
+define('miume/models/promotion', ['exports', 'ember-data'], function (exports, DS) {
+
+  'use strict';
+
+  var Promotion;
+
+  Promotion = DS['default'].Model.extend({
+    title: DS['default'].attr("string"),
+    message: DS['default'].attr("string"),
+    createdAt: DS['default'].attr("date"),
+    tags: DS['default'].attr()
+  });
+
+  exports['default'] = Promotion;
+
+});
 define('miume/models/youtube/channel', ['exports', 'ember-data', 'ember'], function (exports, DS, Ember) {
 
   'use strict';
@@ -1657,6 +1759,95 @@ define('miume/routes/snackbar', ['exports', 'ember', 'miume/routes/application']
 	SnackbarRoute = ApplicationRoute['default'].extend();
 
 	exports['default'] = SnackbarRoute;
+
+});
+define('miume/serializers/promotion', ['exports', 'miume/serializers/tumblr'], function (exports, TumblrSerializer) {
+
+	'use strict';
+
+	var PromotionSerializer;
+
+	PromotionSerializer = TumblrSerializer['default'].extend();
+
+	exports['default'] = PromotionSerializer;
+
+});
+define('miume/serializers/tumblr', ['exports', 'ember', 'ember-data'], function (exports, Ember, DS) {
+
+  'use strict';
+
+  var TumblrSerializer, camelizeKeys, cleanString, getContent, getContents, getMeta, lll, map, parsePost;
+
+  map = Ember['default'].EnumerableUtils.map;
+
+  lll = function(x) {
+    console.log(x);
+    return x;
+  };
+
+  getMeta = function(arg) {
+    var meta, total_posts;
+    meta = arg.meta, total_posts = arg.total_posts;
+    meta.totalPosts = total_posts;
+    return meta;
+  };
+
+  getContent = function(arg) {
+    var post, ref;
+    ref = arg.response.posts, post = ref[0];
+    return parsePost(post);
+  };
+
+  getContents = function(arg) {
+    var posts;
+    posts = arg.response.posts;
+    return map(posts, parsePost);
+  };
+
+  camelizeKeys = function(hash) {
+    var camelKey, key, value;
+    for (key in hash) {
+      value = hash[key];
+      camelKey = Ember['default'].String.camelize(key);
+      if (key !== camelKey) {
+        hash[camelKey] = value;
+        delete hash[key];
+      }
+    }
+    return hash;
+  };
+
+  cleanString = function(string) {
+    return string.replace(/“/gi, '"').replace(/”/gi, '"');
+  };
+
+  parsePost = function(arg) {
+    var body, date, hash, id, tags, title;
+    id = arg.id, date = arg.date, tags = arg.tags, title = arg.title, body = arg.body;
+    hash = camelizeKeys(JSON.parse(cleanString(body)));
+    hash.id = id;
+    hash.createdAt = date;
+    hash.tags = tags;
+    hash.title = title;
+    return hash;
+  };
+
+  TumblrSerializer = DS['default'].RESTSerializer.extend({
+    extract: function(store, type, payload, id, requestType) {
+      var reformedPayload;
+      reformedPayload = {
+        meta: getMeta(payload)
+      };
+      if (Ember['default'].isPresent(id)) {
+        reformedPayload[type.typeKey] = getContent(payload);
+      } else {
+        reformedPayload[Ember['default'].string.pluralize(type.typeKey)] = getContents(payload);
+      }
+      return this._super(store, type, reformedPayload, id, requestType);
+    }
+  });
+
+  exports['default'] = TumblrSerializer;
 
 });
 define('miume/serializers/youtube', ['exports', 'ember-youtube-data-model/serializers/youtube'], function (exports, YoutubeSerializer) {
@@ -4748,6 +4939,41 @@ define('miume/templates/index', ['exports'], function (exports) {
   'use strict';
 
   exports['default'] = Ember.HTMLBars.template((function() {
+    var child0 = (function() {
+      return {
+        isHTMLBars: true,
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createElement("span");
+          var el1 = dom.createTextNode("see more videos");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          return fragment;
+        }
+      };
+    }());
     return {
       isHTMLBars: true,
       blockParams: 0,
@@ -4763,35 +4989,111 @@ define('miume/templates/index', ['exports'], function (exports) {
         var el3 = dom.createElement("div");
         dom.setAttribute(el3,"class","row");
         var el4 = dom.createElement("div");
-        dom.setAttribute(el4,"class","col l9 m12 s12");
-        var el5 = dom.createElement("img");
-        dom.setAttribute(el5,"src","images/doge.jpg");
-        dom.setAttribute(el5,"class","cover-width");
+        dom.setAttribute(el4,"class","col l8 m12 s12");
+        var el5 = dom.createElement("div");
+        dom.setAttribute(el5,"class","card xlarge");
+        var el6 = dom.createElement("div");
+        dom.setAttribute(el6,"class","card-image waves-effect waves-block waves-light");
+        var el7 = dom.createElement("img");
+        dom.setAttribute(el7,"src","images/doge.jpg");
+        dom.setAttribute(el7,"class","activator");
+        dom.appendChild(el6, el7);
+        var el7 = dom.createElement("span");
+        dom.setAttribute(el7,"class","capitalize card-title");
+        var el8 = dom.createTextNode("latest video");
+        dom.appendChild(el7, el8);
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        var el6 = dom.createElement("div");
+        dom.setAttribute(el6,"class","card-content");
+        var el7 = dom.createElement("span");
+        dom.setAttribute(el7,"class","card-title activator grey-text text-darken-4");
+        var el8 = dom.createElement("span");
+        var el9 = dom.createTextNode("blah blah blah vid title");
+        dom.appendChild(el8, el9);
+        dom.appendChild(el7, el8);
+        var el8 = dom.createElement("i");
+        dom.setAttribute(el8,"class","activator mdi-navigation-more-vert right");
+        dom.appendChild(el7, el8);
+        dom.appendChild(el6, el7);
+        var el7 = dom.createElement("p");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        var el6 = dom.createElement("div");
+        dom.setAttribute(el6,"class","card-reveal");
+        var el7 = dom.createElement("span");
+        dom.setAttribute(el7,"class","card-title activator grey-text text-darken-4");
+        var el8 = dom.createElement("span");
+        var el9 = dom.createTextNode("blah blah blah vid title");
+        dom.appendChild(el8, el9);
+        dom.appendChild(el7, el8);
+        var el8 = dom.createElement("i");
+        dom.setAttribute(el8,"class","activator mdi-navigation-more-vert right");
+        dom.appendChild(el7, el8);
+        dom.appendChild(el6, el7);
+        var el7 = dom.createElement("p");
+        var el8 = dom.createTextNode("video description and stuff");
+        dom.appendChild(el7, el8);
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
         dom.appendChild(el4, el5);
         dom.appendChild(el3, el4);
         var el4 = dom.createElement("div");
-        dom.setAttribute(el4,"class","col l3 hide-on-med-and-down");
+        dom.setAttribute(el4,"class","col l4 hide-on-med-and-down");
         var el5 = dom.createElement("div");
         dom.setAttribute(el5,"class","row");
         var el6 = dom.createElement("div");
         dom.setAttribute(el6,"class","col l12");
-        var el7 = dom.createElement("img");
-        dom.setAttribute(el7,"src","images/doge.jpg");
-        dom.setAttribute(el7,"class","cover-width");
+        var el7 = dom.createElement("div");
+        dom.setAttribute(el7,"class","card");
+        var el8 = dom.createElement("div");
+        dom.setAttribute(el8,"class","card-image waves-effect waves-block waves-light");
+        var el9 = dom.createElement("img");
+        dom.setAttribute(el9,"src","images/doge.jpg");
+        dom.setAttribute(el9,"class","activator");
+        dom.appendChild(el8, el9);
+        var el9 = dom.createElement("span");
+        dom.setAttribute(el9,"class","capitalize card-title");
+        var el10 = dom.createTextNode("some promotion");
+        dom.appendChild(el9, el10);
+        dom.appendChild(el8, el9);
+        dom.appendChild(el7, el8);
         dom.appendChild(el6, el7);
         dom.appendChild(el5, el6);
         var el6 = dom.createElement("div");
         dom.setAttribute(el6,"class","col l12");
-        var el7 = dom.createElement("img");
-        dom.setAttribute(el7,"src","images/doge.jpg");
-        dom.setAttribute(el7,"class","cover-width");
+        var el7 = dom.createElement("div");
+        dom.setAttribute(el7,"class","card");
+        var el8 = dom.createElement("div");
+        dom.setAttribute(el8,"class","card-image waves-effect waves-block waves-light");
+        var el9 = dom.createElement("img");
+        dom.setAttribute(el9,"src","images/doge.jpg");
+        dom.setAttribute(el9,"class","activator");
+        dom.appendChild(el8, el9);
+        var el9 = dom.createElement("span");
+        dom.setAttribute(el9,"class","capitalize card-title");
+        var el10 = dom.createTextNode("buy my junk");
+        dom.appendChild(el9, el10);
+        dom.appendChild(el8, el9);
+        dom.appendChild(el7, el8);
         dom.appendChild(el6, el7);
         dom.appendChild(el5, el6);
         var el6 = dom.createElement("div");
         dom.setAttribute(el6,"class","col l12");
-        var el7 = dom.createElement("img");
-        dom.setAttribute(el7,"src","images/doge.jpg");
-        dom.setAttribute(el7,"class","cover-width");
+        var el7 = dom.createElement("div");
+        dom.setAttribute(el7,"class","card");
+        var el8 = dom.createElement("div");
+        dom.setAttribute(el8,"class","card-image waves-effect waves-block waves-light");
+        var el9 = dom.createElement("img");
+        dom.setAttribute(el9,"src","images/doge.jpg");
+        dom.setAttribute(el9,"class","activator");
+        dom.appendChild(el8, el9);
+        var el9 = dom.createElement("span");
+        dom.setAttribute(el9,"class","capitalize card-title");
+        var el10 = dom.createTextNode("flat out donate money");
+        dom.appendChild(el9, el10);
+        dom.appendChild(el8, el9);
+        dom.appendChild(el7, el8);
         dom.appendChild(el6, el7);
         dom.appendChild(el5, el6);
         dom.appendChild(el4, el5);
@@ -4835,7 +5137,7 @@ define('miume/templates/index', ['exports'], function (exports) {
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, content = hooks.content;
+        var hooks = env.hooks, block = hooks.block, content = hooks.content;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -4854,12 +5156,14 @@ define('miume/templates/index', ['exports'], function (exports) {
           fragment = this.build(dom);
         }
         var element0 = dom.childAt(fragment, [2, 0, 0]);
-        var morph0 = dom.createMorphAt(dom.childAt(element0, [0]),-1,-1);
-        var morph1 = dom.createMorphAt(dom.childAt(element0, [1]),-1,-1);
-        var morph2 = dom.createMorphAt(dom.childAt(element0, [2]),-1,-1);
-        content(env, morph0, context, "announcement-card");
+        var morph0 = dom.createMorphAt(dom.childAt(fragment, [0, 0, 0, 0, 0, 1, 1]),-1,-1);
+        var morph1 = dom.createMorphAt(dom.childAt(element0, [0]),-1,-1);
+        var morph2 = dom.createMorphAt(dom.childAt(element0, [1]),-1,-1);
+        var morph3 = dom.createMorphAt(dom.childAt(element0, [2]),-1,-1);
+        block(env, morph0, context, "link-to", ["dances"], {}, child0, null);
         content(env, morph1, context, "announcement-card");
         content(env, morph2, context, "announcement-card");
+        content(env, morph3, context, "announcement-card");
         return fragment;
       }
     };
@@ -5536,6 +5840,49 @@ define('miume/templates/snackbar', ['exports'], function (exports) {
   }()));
 
 });
+define('miume/tests/acceptance/tumblr-promotion-test', ['ember', 'qunit', 'miume/tests/helpers/start-app'], function (Ember, qunit, startApp) {
+
+  'use strict';
+
+  var application, container, store;
+
+  application = null;
+
+  container = null;
+
+  store = null;
+
+  qunit.module('Acceptance: TumblrPromotion', {
+    beforeEach: function() {
+      application = startApp['default']();
+      container = application.__container__;
+      store = container.lookup("store:main");
+
+      /*
+      Don't return as Ember.Application.then is deprecated.
+      Newer version of QUnit uses the return value's .then
+      function to wait for promises if it exists.
+       */
+    },
+    afterEach: function() {
+      return Ember['default'].run(application, 'destroy');
+    }
+  });
+
+  qunit.test('hitting up remot tumblr', function(assert) {
+    return Ember['default'].run(function() {
+      return store.find('promotion', '118064140679').then(function(promotion) {
+        assert.ok(promotion, "it should find a promotion from tumblr");
+        assert.equal(promotion.get("message"), "you should be able to read this from ember", 'it should have the correct message attr');
+        return assert.deepEqual(promotion.get("tags"), ["datamodel:promotion"], 'it should have the correct tag attribute');
+      })["catch"](function(error) {
+        console.log(error);
+        return assert.ok(false, "should not have error");
+      });
+    });
+  });
+
+});
 define('miume/tests/app.jshint', function () {
 
   'use strict';
@@ -5674,6 +6021,19 @@ define('miume/tests/unit/adapters/application-test', ['ember-qunit'], function (
   'use strict';
 
   ember_qunit.moduleFor('adapter:application', 'ApplicationAdapter', {});
+
+  ember_qunit.test('it exists', function(assert) {
+    var adapter;
+    adapter = this.subject();
+    return assert.ok(adapter);
+  });
+
+});
+define('miume/tests/unit/adapters/tumblr-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('adapter:tumblr', 'TumblrAdapter', {});
 
   ember_qunit.test('it exists', function(assert) {
     var adapter;
@@ -5907,6 +6267,21 @@ define('miume/tests/unit/controllers/application-test', ['ember-qunit'], functio
   });
 
 });
+define('miume/tests/unit/models/promotion-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleForModel('promotion', {
+    needs: []
+  });
+
+  ember_qunit.test('it exists', function(assert) {
+    var model;
+    model = this.subject();
+    return assert.ok(!!model);
+  });
+
+});
 define('miume/tests/unit/models/youtube/channel-test', ['ember-qunit'], function (ember_qunit) {
 
   'use strict';
@@ -6027,6 +6402,32 @@ define('miume/tests/unit/routes/works-test', ['ember-qunit'], function (ember_qu
     var route;
     route = this.subject();
     return assert.ok(route);
+  });
+
+});
+define('miume/tests/unit/serializers/promotion-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('serializer:promotion', {});
+
+  ember_qunit.test('it exists', function(assert) {
+    var serializer;
+    serializer = this.subject();
+    return assert.ok(serializer);
+  });
+
+});
+define('miume/tests/unit/serializers/tumblr-test', ['ember-qunit'], function (ember_qunit) {
+
+  'use strict';
+
+  ember_qunit.moduleFor('serializer:tumblr', {});
+
+  ember_qunit.test('it exists', function(assert) {
+    var serializer;
+    serializer = this.subject();
+    return assert.ok(serializer);
   });
 
 });
@@ -6682,7 +7083,7 @@ catch(err) {
 if (runningTests) {
   require("miume/tests/test-helper");
 } else {
-  require("miume/app")["default"].create({"name":"miume","version":"0.0.0.cb853198"});
+  require("miume/app")["default"].create({"name":"miume","version":"0.0.0.5fcc15a1"});
 }
 
 /* jshint ignore:end */

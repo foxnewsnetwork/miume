@@ -13,13 +13,14 @@ module.exports = function(environment) {
     },
 
     contentSecurityPolicy: { 
-      'connect-src': "'self' wss://*.firebaseio.com",
+      "connect-src": "'self' ws://localhost:35729 ws://0.0.0.0:35729 http://*.tumblr.com",
       "img-src": "'self' http://192.168.0.101",
       "media-src": "'self' http://localhost:*",
       "font-src": "http://fonts.gstatic.com 'self'",
       "style-src": "'self' http://fonts.googleapis.com",
-      "script-src": "'self' https://s.ytimg.com",
-      "frame-src": "'self' https://www.youtube.com"
+      "script-src": "'self' https://s.ytimg.com https://*.twitter.com https://*.disqus.com",
+      "frame-src": "'self' https://www.youtube.com https://*.twitter.com https://*.disqus.com",
+      "report-uri": "'self'"
     },
 
     APP: {
