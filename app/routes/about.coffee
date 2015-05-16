@@ -2,9 +2,9 @@
 `import ApplicationRoute from './application'`
 
 AboutRoute = ApplicationRoute.extend
-  afterModel: ->
-
   model: ->
+    @store.find "about"
+
 
 
 `export default AboutRoute`

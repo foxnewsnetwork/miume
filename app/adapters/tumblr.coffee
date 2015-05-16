@@ -21,7 +21,7 @@ TumblrAdapter = DS.RESTAdapter.extend
     
   buildURL: ->
     uri = @urlPrefix()
-    [uri, "posts/text"].join('/')
+    [uri, "posts"].join('/')
 
   find: (store, type, id, snapshot) ->
     data = @buildUrlOptions
@@ -49,7 +49,7 @@ TumblrAdapter = DS.RESTAdapter.extend
     hash ?= {}
     hash.api_key = get(@, 'apiKey')
     hash.filter = 'text'
-    hash.tag = "model:#{typeKey}"
+    hash.tag = typeKey
     hash.id = id if Ember.isPresent id
     hash.since = sinceToken if Ember.isPresent sinceToken
     hash

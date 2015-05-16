@@ -91761,31 +91761,31 @@ define('ember-scrolltop-holder/components/ember-scrolltop-holder', ['exports', '
 
   EmberScrolltopHolderComponent = Ember['default'].Component.extend({
     classNames: Ember['default'].A(['vertical-timenode']),
-    classNameBindings: ["currentlyVisible:turn-visible:turn-invisible"],
+    classNameBindings: ['currentlyVisible:turn-visible:turn-invisible'],
     scrollParent: window,
-    currentlyInvisible: Ember['default'].computed.not("currentlyVisible"),
-    $scrollParent: Ember['default'].computed("scrollParent", function() {
-      return $(this.get("scrollParent"));
+    currentlyInvisible: Ember['default'].computed.not('currentlyVisible'),
+    $scrollParent: Ember['default'].computed('scrollParent', function () {
+      return $(this.get('scrollParent'));
     }),
-    didInsertElement: function() {
-      this.get("$scrollParent").on("scroll", this.decideVisibilityClass.bind(this));
+    didInsertElement: function didInsertElement() {
+      this.get('$scrollParent').on('scroll', this.decideVisibilityClass.bind(this));
       return this.decideVisibilityClass();
     },
-    willDestroyElement: function() {
-      return this.get("$scrollParent").off("scroll");
+    willDestroyElement: function willDestroyElement() {
+      return this.get('$scrollParent').off('scroll');
     },
-    shouldBeVisible: function() {
+    shouldBeVisible: function shouldBeVisible() {
       return visible['default'](this.$());
     },
-    shouldNotBeVisible: function() {
+    shouldNotBeVisible: function shouldNotBeVisible() {
       return !this.shouldBeVisible();
     },
-    decideVisibilityClass: function() {
-      if (this.shouldBeVisible() && this.get("currentlyInvisible")) {
-        this.set("currentlyVisible", true);
+    decideVisibilityClass: function decideVisibilityClass() {
+      if (this.shouldBeVisible() && this.get('currentlyInvisible')) {
+        this.set('currentlyVisible', true);
       }
-      if (this.get("currentlyVisible") && this.shouldNotBeVisible()) {
-        return this.set("currentlyVisible", false);
+      if (this.get('currentlyVisible') && this.shouldNotBeVisible()) {
+        return this.set('currentlyVisible', false);
       }
     }
   });
@@ -91801,14 +91801,14 @@ define('ember-scrolltop-holder/utils/visible', ['exports'], function (exports) {
 
   $w = $(window);
 
-  visible = function($el) {
+  visible = function ($el) {
     var bottom, height, top, viewBottom, viewTop;
     viewTop = $w.scrollTop();
     viewBottom = viewTop + $w.height();
     height = $el.height();
     top = $el.offset().top;
     bottom = top + height;
-    return (viewTop <= top + height / 2) && (viewBottom >= bottom);
+    return viewTop <= top + height / 2 && viewBottom >= bottom;
   };
 
   exports['default'] = visible;
@@ -91829,54 +91829,54 @@ define('ember-youtube-data-model/adapters/youtube', ['exports', 'ember', 'ember-
 
   map = Ember['default'].EnumerableUtils.map;
 
-  stringifyHashes = function(possiblyHash) {
-    if (typeof possiblyHash === "string") {
+  stringifyHashes = function (possiblyHash) {
+    if (typeof possiblyHash === 'string') {
       return possiblyHash;
     }
-    return map(possiblyHash, function(array, key) {
-      return key + "=(" + (array.join(',')) + ")";
-    }).join(",");
+    return map(possiblyHash, function (array, key) {
+      return key + '=(' + array.join(',') + ')';
+    }).join(',');
   };
 
-  encodeURIFields = function(fields) {
-    return encodeURIParts(fields.map(stringifyHashes).join(","));
+  encodeURIFields = function (fields) {
+    return encodeURIParts(fields.map(stringifyHashes).join(','));
   };
 
-  encodeURIParts = function(parts) {
-    if (typeof parts === "string") {
+  encodeURIParts = function (parts) {
+    if (typeof parts === 'string') {
       return parts;
     }
-    return encodeURIComponent(parts.join(","));
+    return encodeURIComponent(parts.join(','));
   };
 
   YoutubeAdapter = DS['default'].RESTAdapter.extend({
     key: null,
-    host: "https://www.googleapis.com",
-    namespace: "youtube/v3",
+    host: 'https://www.googleapis.com',
+    namespace: 'youtube/v3',
     defaultSerializer: '-youtube',
-    prepareType: function(type) {
-      return Ember['default'].String.pluralize(type.replace("youtube/", ""));
+    prepareType: function prepareType(type) {
+      return Ember['default'].String.pluralize(type.replace('youtube/', ''));
     },
-    buildURL: function(type, id, snapshot) {
+    buildURL: function buildURL(type, id, snapshot) {
       var queryparams, url;
-      url = [this.host, this.namespace, this.prepareType(type)].join("/");
+      url = [this.host, this.namespace, this.prepareType(type)].join('/');
       queryparams = this.generateQueryParams(type, id, snapshot);
-      return [url, queryparams].join("?");
+      return [url, queryparams].join('?');
     },
-    generateQueryParams: function(type, id, snapshot) {
+    generateQueryParams: function generateQueryParams(type, id, snapshot) {
       if (!this.key) {
-        throw new Error("missing API key on YoutubeAdapter");
+        throw new Error('missing API key on YoutubeAdapter');
       }
-      return $.param((function() {
+      return $.param((function () {
         switch (type) {
-          case "youtube/channel":
+          case 'youtube/channel':
             return {
               forUsername: id,
               part: this.partsForType(type),
               fields: this.fieldsForType(type),
               key: this.key
             };
-          case "youtube/playlist":
+          case 'youtube/playlist':
             return {
               playlistId: id,
               part: this.partsForType(type),
@@ -91884,42 +91884,38 @@ define('ember-youtube-data-model/adapters/youtube', ['exports', 'ember', 'ember-
               key: this.key
             };
           default:
-            throw new Error("I don't know how to handle " + type);
+            throw new Error('I don\'t know how to handle ' + type);
         }
       }).call(this));
     },
-    createRecord: function(store, type, snapshot) {
-      throw new Error("not implemented");
+    createRecord: function createRecord(store, type, snapshot) {
+      throw new Error('not implemented');
     },
-    fieldsForType: function(type) {
-      return encodeURIFields((function() {
+    fieldsForType: function fieldsForType(type) {
+      return encodeURIFields((function () {
         switch (type) {
-          case "youtube/channel":
-            return [
-              {
-                item: ["contentDetails", "id", "snippet"]
-              }, "nextPageToken", "pageInfo", "prevPageToken", "tokenPagination"
-            ];
-          case "youtube/playlist":
-            return [
-              {
-                item: ["contentDetails", "id", "snippet"]
-              }, "nextPageToken", "pageInfo", "prevPageToken", "tokenPagination"
-            ];
+          case 'youtube/channel':
+            return [{
+              item: ['contentDetails', 'id', 'snippet']
+            }, 'nextPageToken', 'pageInfo', 'prevPageToken', 'tokenPagination'];
+          case 'youtube/playlist':
+            return [{
+              item: ['contentDetails', 'id', 'snippet']
+            }, 'nextPageToken', 'pageInfo', 'prevPageToken', 'tokenPagination'];
           default:
-            throw new Error("I don't know the fields for " + type);
+            throw new Error('I don\'t know the fields for ' + type);
         }
       })());
     },
-    partsForType: function(type) {
-      return encodeURIParts((function() {
+    partsForType: function partsForType(type) {
+      return encodeURIParts((function () {
         switch (type) {
-          case "youtube/channel":
-            return ["id", "snippet", "contentDetails"];
-          case "youtube/playlist":
-            return ["id", "snippet", "contentDetails"];
+          case 'youtube/channel':
+            return ['id', 'snippet', 'contentDetails'];
+          case 'youtube/playlist':
+            return ['id', 'snippet', 'contentDetails'];
           default:
-            throw new Error("I don't know what the parts are for " + type);
+            throw new Error('I don\'t know what the parts are for ' + type);
         }
       })());
     }
@@ -91946,7 +91942,7 @@ define('ember-youtube-data-model/adapters/youtube/playlist', ['exports', 'ember-
   var YoutubePlaylistAdapter;
 
   YoutubePlaylistAdapter = YoutubeAdapter['default'].extend({
-    generateQueryParams: function(type, id, snapshot) {
+    generateQueryParams: function generateQueryParams(type, id, snapshot) {
       return $.param({
         playlistId: id,
         part: this.partsForType(type),
@@ -91954,7 +91950,7 @@ define('ember-youtube-data-model/adapters/youtube/playlist', ['exports', 'ember-
         key: this.key
       });
     },
-    prepareType: function(type) {
+    prepareType: function prepareType(type) {
       return "playlistItems";
     }
   });
@@ -91968,7 +91964,7 @@ define('ember-youtube-data-model/initializers/youtube', ['exports', 'ember-youtu
 
   var YoutubeInitializer, initialize;
 
-  exports.initialize = initialize = function(ctn, app) {
+  exports.initialize = initialize = function (ctn, app) {
     app.register('adapter:-youtube', YoutubeAdapter['default']);
     app.register('serializer:-youtube', YoutubeSerializer['default']);
     DS['default'].YoutubeAdapter = YoutubeAdapter['default'];
@@ -91991,7 +91987,7 @@ define('ember-youtube-data-model/serializers/youtube', ['exports', 'ember', 'emb
   var YoutubeSerializer;
 
   YoutubeSerializer = DS['default'].JSONSerializer.extend({
-    extractMeta: function(store, type, payload) {
+    extractMeta: function extractMeta(store, type, payload) {
       var meta;
       if (payload == null) {
         return;
@@ -92009,12 +92005,12 @@ define('ember-youtube-data-model/serializers/youtube', ['exports', 'ember', 'emb
         return delete payload.prevPageToken;
       }
     },
-    extractSingle: function(store, type, arg, id, requestType) {
+    extractSingle: function extractSingle(store, type, arg, id, requestType) {
       var payload, ref;
       ref = arg.items, payload = ref[0];
       return this._super(store, type, payload, id, requestType);
     },
-    extractArray: function(store, type, arg, id, requestType) {
+    extractArray: function extractArray(store, type, arg, id, requestType) {
       var payloads;
       payloads = arg.items;
       return this._super(store, type, payloads, id, requestType);
@@ -92031,7 +92027,7 @@ define('ember-youtube-data-model/serializers/youtube/channel', ['exports', 'embe
   var YoutubeChannelSerializer;
 
   YoutubeChannelSerializer = YoutubeSerializer['default'].extend({
-    normalizeAttributes: function(type, item) {
+    normalizeAttributes: function normalizeAttributes(type, item) {
       item.title = item.snippet.title;
       item.description = item.snippet.description;
       item.thumbnails = item.snippet.thumbnails;
@@ -92053,24 +92049,24 @@ define('ember-youtube-data-model/serializers/youtube/playlist', ['exports', 'emb
   var YoutubePlaylistSerializer;
 
   YoutubePlaylistSerializer = YoutubeSerializer['default'].extend({
-    extractSingle: function(store, type, payload, id, requestType) {
+    extractSingle: function extractSingle(store, type, payload, id, requestType) {
       payload.id = id;
       payload = this.normalizePayload(payload);
       return this.handleEmbeddedVideos(store, this.normalize(type, payload));
     },
-    handleEmbeddedVideos: function(store, payload) {
+    handleEmbeddedVideos: function handleEmbeddedVideos(store, payload) {
       var serializer, type;
-      type = store.modelFor("youtube/video");
+      type = store.modelFor('youtube/video');
       serializer = store.serializerFor(type);
       payload.videos = serializer.extractArray(store, type, payload.videos);
       return payload;
     },
-    extractArray: function(store, type, arg, id, requestType) {
+    extractArray: function extractArray(store, type, arg, id, requestType) {
       var payloads;
       payloads = arg.items;
-      throw new Error("not implemented");
+      throw new Error('not implemented');
     },
-    normalizeRelationships: function(type, payload) {
+    normalizeRelationships: function normalizeRelationships(type, payload) {
       payload.videos = payload.items;
       delete payload.items;
       return payload;
@@ -92089,12 +92085,12 @@ define('ember-youtube-data-model/serializers/youtube/video', ['exports', 'ember'
   map = Ember['default'].EnumerableUtils.map;
 
   YoutubeVideoSerializer = YoutubeSerializer['default'].extend({
-    normalizeId: function(item) {
+    normalizeId: function normalizeId(item) {
       item.id = item.contentDetails.videoId;
       delete item.contentDetails;
       return item;
     },
-    normalizeAttributes: function(type, item) {
+    normalizeAttributes: function normalizeAttributes(type, item) {
       item.title = item.snippet.title;
       item.description = item.snippet.description;
       item.thumbnails = item.snippet.thumbnails;
@@ -92103,14 +92099,14 @@ define('ember-youtube-data-model/serializers/youtube/video', ['exports', 'ember'
       delete item.snippet;
       return item;
     },
-    extractArray: function(store, type, videos, id, requestType) {
-      return map(videos, (function(_this) {
-        return function(video) {
+    extractArray: function extractArray(store, type, videos, id, requestType) {
+      return map(videos, (function (_this) {
+        return function (video) {
           return _this.extractSingle(store, type, video, id, requestType);
         };
       })(this));
     },
-    extractSingle: function(store, type, item, id, requestType) {
+    extractSingle: function extractSingle(store, type, item, id, requestType) {
       var payload;
       payload = this.normalize(type, item);
       return store.push(type.typeKey, payload);
@@ -92125,39 +92121,39 @@ define('ember-youtube-data-model/utils/fun-ex', ['exports', 'ember'], function (
   'use strict';
 
   var FunEx,
-    slice = [].slice;
+      slice = [].slice;
 
-  FunEx = (function() {
+  FunEx = (function () {
     function FunEx() {}
 
-    FunEx.reverse = function(f) {
-      return function() {
+    FunEx.reverse = function (f) {
+      return function () {
         var args;
         args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
         return f.apply(this, args.reverse());
       };
     };
 
-    FunEx.flip = function(f) {
-      return function() {
+    FunEx.flip = function (f) {
+      return function () {
         var arg1, arg2, rest;
         arg1 = arguments[0], arg2 = arguments[1], rest = 3 <= arguments.length ? slice.call(arguments, 2) : [];
         return f.apply(this, [arg2, arg1].concat(rest));
       };
     };
 
-    FunEx.computed = function() {
+    FunEx.computed = function () {
       var deps, ff, fun, i;
       deps = 2 <= arguments.length ? slice.call(arguments, 0, i = arguments.length - 1) : (i = 0, []), fun = arguments[i++];
       ff = Ember['default'].computed(fun);
       return ff.property.apply(ff, deps);
     };
 
-    FunEx.volatile = function(f) {
+    FunEx.volatile = function (f) {
       return Ember['default'].computed(f).volatile();
     };
 
-    FunEx.observed = function() {
+    FunEx.observed = function () {
       var fields, fun, i;
       fields = 2 <= arguments.length ? slice.call(arguments, 0, i = arguments.length - 1) : (i = 0, []), fun = arguments[i++];
       return fun.observes.apply(fun, fields);
@@ -92165,12 +92161,11 @@ define('ember-youtube-data-model/utils/fun-ex', ['exports', 'ember'], function (
 
     FunEx.isBlank = Ember['default'].isBlank;
 
-    FunEx.isPresent = function(x) {
+    FunEx.isPresent = function (x) {
       return !Ember['default'].isBlank(x);
     };
 
     return FunEx;
-
   })();
 
   exports['default'] = FunEx;

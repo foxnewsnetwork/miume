@@ -44,7 +44,7 @@ TumblrSerializer = DS.RESTSerializer.extend
     if Ember.isPresent id
       reformedPayload[type.typeKey] = getContent payload
     else
-      reformedPayload[Ember.string.pluralize type.typeKey] = getContents payload
+      reformedPayload[Ember.String.pluralize type.typeKey] = getContents payload
     @_super store, type, reformedPayload, id, requestType
 
 `export default TumblrSerializer`

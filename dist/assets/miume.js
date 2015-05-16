@@ -21,7 +21,7 @@ define('miume/adapters/tumblr', ['exports', 'ember', 'ember-data'], function (ex
 
   get = Ember['default'].get;
 
-  lll = function(x) {
+  lll = function (x) {
     console.log(x);
     return x;
   };
@@ -30,20 +30,20 @@ define('miume/adapters/tumblr', ['exports', 'ember', 'ember-data'], function (ex
     host: 'http://api.tumblr.com',
     namespace: 'v2/blog/blogsqlapi.tumblr.com',
     defaultSerializer: '-tumblr',
-    apiKey: "wIP0ELJ0hXhmi11b1cgrY5t5z4JxFa8qSZzWNobtwgv98Q150X",
-    ajaxOptions: function() {
+    apiKey: 'wIP0ELJ0hXhmi11b1cgrY5t5z4JxFa8qSZzWNobtwgv98Q150X',
+    ajaxOptions: function ajaxOptions() {
       var hash;
       hash = this._super.apply(this, arguments);
       hash.crossDomain = true;
-      hash.dataType = "jsonp";
+      hash.dataType = 'jsonp';
       return hash;
     },
-    buildURL: function() {
+    buildURL: function buildURL() {
       var uri;
       uri = this.urlPrefix();
-      return [uri, "posts/text"].join('/');
+      return [uri, 'posts'].join('/');
     },
-    find: function(store, type, id, snapshot) {
+    find: function find(store, type, id, snapshot) {
       var data, uri;
       data = this.buildUrlOptions({
         typeKey: type.typeKey,
@@ -55,7 +55,7 @@ define('miume/adapters/tumblr', ['exports', 'ember', 'ember-data'], function (ex
         data: data
       });
     },
-    findAll: function(store, type, sinceToken) {
+    findAll: function findAll(store, type, sinceToken) {
       var data, uri;
       data = this.buildUrlOptions({
         typeKey: type.typeKey,
@@ -66,7 +66,7 @@ define('miume/adapters/tumblr', ['exports', 'ember', 'ember-data'], function (ex
         data: data
       });
     },
-    findQuery: function(store, type, query) {
+    findQuery: function findQuery(store, type, query) {
       var data, uri;
       data = this.buildUrlOptions({
         typeKey: type.typeKey,
@@ -77,7 +77,7 @@ define('miume/adapters/tumblr', ['exports', 'ember', 'ember-data'], function (ex
         data: data
       });
     },
-    buildUrlOptions: function(arg) {
+    buildUrlOptions: function buildUrlOptions(arg) {
       var hash, id, sinceToken, snapshot, typeKey;
       typeKey = arg.typeKey, id = arg.id, snapshot = arg.snapshot, sinceToken = arg.sinceToken, hash = arg.hash;
       if (hash == null) {
@@ -85,7 +85,7 @@ define('miume/adapters/tumblr', ['exports', 'ember', 'ember-data'], function (ex
       }
       hash.api_key = get(this, 'apiKey');
       hash.filter = 'text';
-      hash.tag = "model:" + typeKey;
+      hash.tag = typeKey;
       if (Ember['default'].isPresent(id)) {
         hash.id = id;
       }
@@ -148,16 +148,16 @@ define('miume/components/announcement-card', ['exports', 'ember'], function (exp
   AnnouncementCardComponent = Ember['default'].Component.extend({
     classNames: ['announcement-card', 'card', 'medium'],
     isFullTweet: false,
-    didInsertElement: function() {
-      this.set("personalNumber", count);
+    didInsertElement: function didInsertElement() {
+      this.set('personalNumber', count);
       return count += 1;
     },
-    willDestroyElement: function() {
+    willDestroyElement: function willDestroyElement() {
       return count -= 1;
     },
     actions: {
-      toggleTweet: function() {
-        return this.toggleProperty("isFullTweet");
+      toggleTweet: function toggleTweet() {
+        return this.toggleProperty('isFullTweet');
       }
     }
   });
@@ -199,7 +199,7 @@ define('miume/components/iframe-block', ['exports', 'ember'], function (exports,
 
   var IframeBlockComponent, every;
 
-  every = function(time, cb) {
+  every = function (time, cb) {
     return window.setInterval(cb, time);
   };
 
@@ -214,17 +214,17 @@ define('miume/components/iframe-block', ['exports', 'ember'], function (exports,
     frameborder: 0,
     seamless: 'seamless',
     src: 'disqus.html',
-    didInsertElement: function() {
-      return this.heightWatchInterval = every(1000, (function(_this) {
-        return function() {
-          return _this.$().css("height", _this.getContentBodyHeight());
+    didInsertElement: function didInsertElement() {
+      return this.heightWatchInterval = every(1000, (function (_this) {
+        return function () {
+          return _this.$().css('height', _this.getContentBodyHeight());
         };
       })(this));
     },
-    willDestroyElement: function() {
+    willDestroyElement: function willDestroyElement() {
       return window.clearInterval(this.heightWatchInterval);
     },
-    getContentBodyHeight: function() {
+    getContentBodyHeight: function getContentBodyHeight() {
       var obj;
       obj = this.$()[0];
       return obj.contentWindow.document.body.scrollHeight;
@@ -240,7 +240,7 @@ define('miume/components/lazy-scroll-load', ['exports', 'ember', 'miume/utils/fu
 
   var LazyScrollLoadComponent, lll;
 
-  lll = function(x) {
+  lll = function (x) {
     console.log(x);
     return x;
   };
@@ -248,46 +248,46 @@ define('miume/components/lazy-scroll-load', ['exports', 'ember', 'miume/utils/fu
   LazyScrollLoadComponent = Ember['default'].Component.extend({
     classNames: ['lazy-scroll-load'],
     scrollParent: 'body',
-    classNameBindings: ["shouldLoadContent:visible:invisible", "isBefore:before", "isAfter:after"],
+    classNameBindings: ['shouldLoadContent:visible:invisible', 'isBefore:before', 'isAfter:after'],
     overlap: 200,
-    sp$: FunEx['default'].computed("scrollParent", function() {
+    sp$: FunEx['default'].computed('scrollParent', function () {
       return $(this.get('scrollParent'));
     }),
-    didInsertElement: function() {
+    didInsertElement: function didInsertElement() {
       var check, slowly;
       this.decideRenderability();
       check = _.bind(this.decideRenderability, this);
       slowly = _.throttle(check, 50);
-      return this.get("sp$").on("scroll", slowly);
+      return this.get('sp$').on('scroll', slowly);
     },
-    willDestroyElement: function() {
-      if (this.get("sp$.off") != null) {
-        return this.get("sp$").off("scroll");
+    willDestroyElement: function willDestroyElement() {
+      if (this.get('sp$.off') != null) {
+        return this.get('sp$').off('scroll');
       }
     },
-    topCutoff: function() {
-      return Ember['default'].get(this.$().position(), "top") - this.get("overlap");
+    topCutoff: function topCutoff() {
+      return Ember['default'].get(this.$().position(), 'top') - this.get('overlap');
     },
-    scrollY: function() {
-      return this.get("sp$").scrollTop();
+    scrollY: function scrollY() {
+      return this.get('sp$').scrollTop();
     },
-    botCutoff: function() {
+    botCutoff: function botCutoff() {
       return this.$().innerHeight() + this.topCutoff();
     },
-    decideRenderability: function() {
+    decideRenderability: function decideRenderability() {
       if (this.scrollY() < this.topCutoff()) {
-        this.set("isBefore", true);
-        this.set("isAfter", false);
+        this.set('isBefore', true);
+        this.set('isAfter', false);
       }
       if (this.botCutoff() < this.scrollY()) {
-        this.set("isAfter", true);
-        this.set("isBefore", false);
+        this.set('isAfter', true);
+        this.set('isBefore', false);
       }
-      if ((this.topCutoff() < this.scrollY()) && (this.scrollY() < this.botCutoff())) {
-        this.set("shouldLoadContent", true);
-        return this.sendAction("action");
+      if (this.topCutoff() < this.scrollY() && this.scrollY() < this.botCutoff()) {
+        this.set('shouldLoadContent', true);
+        return this.sendAction('action');
       } else {
-        return this.set("shouldLoadContent", false);
+        return this.set('shouldLoadContent', false);
       }
     }
   });
@@ -307,16 +307,16 @@ define('miume/components/lf-overlay', ['exports', 'ember'], function (exports, E
   'use strict';
 
   exports['default'] = Ember['default'].Component.extend({
-    tagName: "span",
-    classNames: ["lf-overlay"],
+    tagName: 'span',
+    classNames: ['lf-overlay'],
     didInsertElement: function didInsertElement() {
-      Ember['default'].$("body").addClass("lf-modal-open");
+      Ember['default'].$('body').addClass('lf-modal-open');
     },
     willDestroy: function willDestroy() {
-      Ember['default'].$("body").removeClass("lf-modal-open");
+      Ember['default'].$('body').removeClass('lf-modal-open');
     },
     click: function click() {
-      this.sendAction("clickAway");
+      this.sendAction('clickAway');
     }
   });
 
@@ -326,7 +326,7 @@ define('miume/components/liquid-bind-c', ['exports', 'ember'], function (exports
   'use strict';
 
   exports['default'] = Ember['default'].Component.extend({
-    tagName: ""
+    tagName: ''
   });
 
 });
@@ -407,38 +407,38 @@ define('miume/components/liquid-modal', ['exports', 'ember'], function (exports,
   'use strict';
 
   exports['default'] = Ember['default'].Component.extend({
-    classNames: ["liquid-modal"],
-    currentContext: Ember['default'].computed.oneWay("owner.modalContexts.lastObject"),
+    classNames: ['liquid-modal'],
+    currentContext: Ember['default'].computed.oneWay('owner.modalContexts.lastObject'),
 
     owner: null, // set by injection
 
-    innerView: Ember['default'].computed("currentContext", function () {
+    innerView: Ember['default'].computed('currentContext', function () {
       var self = this,
-          current = this.get("currentContext"),
-          name = current.get("name"),
-          container = this.get("container"),
-          component = container.lookup("component-lookup:main").lookupFactory(name);
-      Ember['default'].assert("Tried to render a modal using component '" + name + "', but couldn't find it.", !!component);
+          current = this.get('currentContext'),
+          name = current.get('name'),
+          container = this.get('container'),
+          component = container.lookup('component-lookup:main').lookupFactory(name);
+      Ember['default'].assert('Tried to render a modal using component \'' + name + '\', but couldn\'t find it.', !!component);
 
-      var args = Ember['default'].copy(current.get("params"));
+      var args = Ember['default'].copy(current.get('params'));
 
-      args.registerMyself = Ember['default'].on("init", function () {
-        self.set("innerViewInstance", this);
+      args.registerMyself = Ember['default'].on('init', function () {
+        self.set('innerViewInstance', this);
       });
 
       // set source so we can bind other params to it
       args._source = Ember['default'].computed(function () {
-        return current.get("source");
+        return current.get('source');
       });
 
-      var otherParams = current.get("options.otherParams");
+      var otherParams = current.get('options.otherParams');
       var from, to;
       for (from in otherParams) {
         to = otherParams[from];
-        args[to] = Ember['default'].computed.alias("_source." + from);
+        args[to] = Ember['default'].computed.alias('_source.' + from);
       }
 
-      var actions = current.get("options.actions") || {};
+      var actions = current.get('options.actions') || {};
 
       // Override sendAction in the modal component so we can intercept and
       // dynamically dispatch to the controller as expected
@@ -449,7 +449,7 @@ define('miume/components/liquid-modal', ['exports', 'ember'], function (exports,
           return;
         }
 
-        var controller = current.get("source");
+        var controller = current.get('source');
         var args = Array.prototype.slice.call(arguments, 1);
         args.unshift(actionName);
         controller.send.apply(controller, args);
@@ -460,23 +460,23 @@ define('miume/components/liquid-modal', ['exports', 'ember'], function (exports,
 
     actions: {
       outsideClick: function outsideClick() {
-        if (this.get("currentContext.options.dismissWithOutsideClick")) {
-          this.send("dismiss");
+        if (this.get('currentContext.options.dismissWithOutsideClick')) {
+          this.send('dismiss');
         } else {
-          proxyToInnerInstance(this, "outsideClick");
+          proxyToInnerInstance(this, 'outsideClick');
         }
       },
       escape: function escape() {
-        if (this.get("currentContext.options.dismissWithEscape")) {
-          this.send("dismiss");
+        if (this.get('currentContext.options.dismissWithEscape')) {
+          this.send('dismiss');
         } else {
-          proxyToInnerInstance(this, "escape");
+          proxyToInnerInstance(this, 'escape');
         }
       },
       dismiss: function dismiss() {
-        var source = this.get("currentContext.source"),
+        var source = this.get('currentContext.source'),
             proto = source.constructor.proto(),
-            params = this.get("currentContext.options.withParams"),
+            params = this.get('currentContext.options.withParams'),
             clearThem = {};
 
         for (var key in params) {
@@ -488,7 +488,7 @@ define('miume/components/liquid-modal', ['exports', 'ember'], function (exports,
   });
 
   function proxyToInnerInstance(self, message) {
-    var vi = self.get("innerViewInstance");
+    var vi = self.get('innerViewInstance');
     if (vi) {
       vi.send(message);
     }
@@ -705,12 +705,12 @@ define('miume/components/round-hover-button', ['exports', 'ember'], function (ex
 
   RoundHoverButtonComponent = Ember['default'].Component.extend({
     tagName: "button",
-    classNames: ['round-hover-button', 'btn-floating', 'btn-large', 'waves-effect', 'waves-light'],
+    classNames: ["round-hover-button", "btn-floating", "btn-large", "waves-effect", "waves-light"],
     classNameBindings: ["color"],
-    faicon: Ember['default'].computed("i", function() {
-      return "fa fa-" + (this.get('i'));
+    faicon: Ember['default'].computed("i", function () {
+      return "fa fa-" + this.get("i");
     }),
-    color: Ember['default'].computed("personalNumber", function() {
+    color: Ember['default'].computed("personalNumber", function () {
       var k, n;
       k = this.get("personalNumber");
       if (k == null) {
@@ -719,11 +719,11 @@ define('miume/components/round-hover-button', ['exports', 'ember'], function (ex
       n = k % colors.length;
       return colors[n];
     }),
-    didInsertElement: function() {
+    didInsertElement: function didInsertElement() {
       this.set("personalNumber", count);
       return count += 1;
     },
-    willDestroyElement: function() {
+    willDestroyElement: function willDestroyElement() {
       return count -= 1;
     }
   });
@@ -738,35 +738,35 @@ define('miume/components/scroll-spy', ['exports', 'ember', 'miume/utils/fun-ex']
   var ScrollSpyComponent;
 
   ScrollSpyComponent = Ember['default'].Component.extend({
-    classNames: ["scroll-spy"],
-    classNameBindings: ["pastCutoff:after-cutoff:before-cutoff"],
+    classNames: ['scroll-spy'],
+    classNameBindings: ['pastCutoff:after-cutoff:before-cutoff'],
     scrollParent: 'body',
     overlap: 0,
     pastCutoff: false,
-    sp$: FunEx['default'].computed("scrollParent", function() {
+    sp$: FunEx['default'].computed('scrollParent', function () {
       return $(this.get('scrollParent'));
     }),
-    didInsertElement: function() {
+    didInsertElement: function didInsertElement() {
       var check, slowly;
       this.decideRazorsEdge();
       check = _.bind(this.decideRazorsEdge, this);
       slowly = _.throttle(check, 50);
-      return this.get("sp$").on("scroll", slowly);
+      return this.get('sp$').on('scroll', slowly);
     },
-    willDestroyElement: function() {
-      if (this.get("sp$.off") != null) {
-        return this.get("sp$").off("scroll");
+    willDestroyElement: function willDestroyElement() {
+      if (this.get('sp$.off') != null) {
+        return this.get('sp$').off('scroll');
       }
     },
-    scrollY: function() {
-      return this.get("sp$").scrollTop();
+    scrollY: function scrollY() {
+      return this.get('sp$').scrollTop();
     },
-    cutoff: function() {
-      return Ember['default'].get(this.$().position(), "top") - this.get("overlap");
+    cutoff: function cutoff() {
+      return Ember['default'].get(this.$().position(), 'top') - this.get('overlap');
     },
-    decideRazorsEdge: function() {
+    decideRazorsEdge: function decideRazorsEdge() {
       if (this.scrollY() >= this.cutoff()) {
-        return this.set("pastCutoff", true);
+        return this.set('pastCutoff', true);
       }
     }
   });
@@ -793,7 +793,7 @@ define('miume/components/site-nav', ['exports', 'ember'], function (exports, Emb
 
   SiteNavComponent = Ember['default'].Component.extend({
     classNames: ["z-depth-2"],
-    didInsertElement: function() {
+    didInsertElement: function didInsertElement() {
       return this.$(".button-collapse").sideNav();
     }
   });
@@ -818,32 +818,32 @@ define('miume/components/twitter-card-iframe', ['exports', 'ember'], function (e
     frameborder: 0,
     seamless: 'seamless',
     src: 'twitter.html',
-    didInsertElement: function() {
+    didInsertElement: function didInsertElement() {
       return this.scrollInterval = window.setInterval(this.ensureCorrectScrollPosition.bind(this), 1000);
     },
-    willDestroyElement: function() {
+    willDestroyElement: function willDestroyElement() {
       if (Ember['default'].isPresent(this.scrollInterval)) {
         return window.clearInterval(this.scrollInterval);
       }
     },
-    ensureCorrectScrollPosition: function() {
-      if (this.nthTopOffset() === "twitter not ready") {
+    ensureCorrectScrollPosition: function ensureCorrectScrollPosition() {
+      if (this.nthTopOffset() === 'twitter not ready') {
         return;
       }
       this.set('height', this.actualHeight());
       return this.scrollIframeTo(this.nthTopOffset());
     },
-    scrollIframeTo: function(offset) {
+    scrollIframeTo: function scrollIframeTo(offset) {
       var error, obj;
       try {
         obj = this.$()[0];
         return obj.contentWindow.scrollTo(0, offset);
       } catch (_error) {
         error = _error;
-        return console.log("unable to scroll to " + offset);
+        return console.log('unable to scroll to ' + offset);
       }
     },
-    actualHeight: function() {
+    actualHeight: function actualHeight() {
       if (this.nthHeight() === 'twitter not ready') {
         return 330;
       }
@@ -852,28 +852,28 @@ define('miume/components/twitter-card-iframe', ['exports', 'ember'], function (e
       }
       return this.nthHeight();
     },
-    nthHeight: function() {
+    nthHeight: function nthHeight() {
       var error, obj, timeline, tweet;
       try {
         obj = this.$()[0];
-        timeline = $(obj.contentWindow.document.body).find("iframe.twitter-timeline")[0];
-        tweet = $(timeline.contentWindow.document.body).find("li.h-entry.tweet")[this.get('n')];
+        timeline = $(obj.contentWindow.document.body).find('iframe.twitter-timeline')[0];
+        tweet = $(timeline.contentWindow.document.body).find('li.h-entry.tweet')[this.get('n')];
         return $(tweet).height();
       } catch (_error) {
         error = _error;
-        return "twitter not ready";
+        return 'twitter not ready';
       }
     },
-    nthTopOffset: function() {
+    nthTopOffset: function nthTopOffset() {
       var error, obj, timeline, tweet;
       try {
         obj = this.$()[0];
-        timeline = $(obj.contentWindow.document.body).find("iframe.twitter-timeline")[0];
-        tweet = $(timeline.contentWindow.document.body).find("li.h-entry.tweet")[this.get('n')];
+        timeline = $(obj.contentWindow.document.body).find('iframe.twitter-timeline')[0];
+        tweet = $(timeline.contentWindow.document.body).find('li.h-entry.tweet')[this.get('n')];
         return tweet.offsetTop;
       } catch (_error) {
         error = _error;
-        return "twitter not ready";
+        return 'twitter not ready';
       }
     }
   });
@@ -916,59 +916,59 @@ define('miume/helpers/fa-icon', ['exports', 'ember'], function (exports, Ember) 
    * @return {Ember.Handlebars.SafeString} The HTML markup.
    */
   var faIcon = function faIcon(name, options) {
-    if (Ember['default'].typeOf(name) !== "string") {
-      var message = "fa-icon: no icon specified";
+    if (Ember['default'].typeOf(name) !== 'string') {
+      var message = 'fa-icon: no icon specified';
       warn(message);
       return Ember['default'].String.htmlSafe(message);
     }
 
     var params = options.hash,
         classNames = [],
-        html = "";
+        html = '';
 
-    classNames.push("fa");
+    classNames.push('fa');
     if (!name.match(FA_PREFIX)) {
-      name = "fa-" + name;
+      name = 'fa-' + name;
     }
     classNames.push(name);
     if (params.spin) {
-      classNames.push("fa-spin");
+      classNames.push('fa-spin');
     }
     if (params.flip) {
-      classNames.push("fa-flip-" + params.flip);
+      classNames.push('fa-flip-' + params.flip);
     }
     if (params.rotate) {
-      classNames.push("fa-rotate-" + params.rotate);
+      classNames.push('fa-rotate-' + params.rotate);
     }
     if (params.lg) {
-      warn("fa-icon: the 'lg' parameter is deprecated. Use 'size' instead. I.e. {{fa-icon size=\"lg\"}}");
-      classNames.push("fa-lg");
+      warn('fa-icon: the \'lg\' parameter is deprecated. Use \'size\' instead. I.e. {{fa-icon size="lg"}}');
+      classNames.push('fa-lg');
     }
     if (params.x) {
-      warn("fa-icon: the 'x' parameter is deprecated. Use 'size' instead. I.e. {{fa-icon size=\"" + params.x + "\"}}");
-      classNames.push("fa-" + params.x + "x");
+      warn('fa-icon: the \'x\' parameter is deprecated. Use \'size\' instead. I.e. {{fa-icon size="' + params.x + '"}}');
+      classNames.push('fa-' + params.x + 'x');
     }
     if (params.size) {
-      if (Ember['default'].typeOf(params.size) === "string" && params.size.match(/\d+/)) {
+      if (Ember['default'].typeOf(params.size) === 'string' && params.size.match(/\d+/)) {
         params.size = Number(params.size);
       }
-      if (Ember['default'].typeOf(params.size) === "number") {
-        classNames.push("fa-" + params.size + "x");
+      if (Ember['default'].typeOf(params.size) === 'number') {
+        classNames.push('fa-' + params.size + 'x');
       } else {
-        classNames.push("fa-" + params.size);
+        classNames.push('fa-' + params.size);
       }
     }
     if (params.fixedWidth) {
-      classNames.push("fa-fw");
+      classNames.push('fa-fw');
     }
     if (params.listItem) {
-      classNames.push("fa-li");
+      classNames.push('fa-li');
     }
     if (params.pull) {
-      classNames.push("pull-" + params.pull);
+      classNames.push('pull-' + params.pull);
     }
     if (params.border) {
-      classNames.push("fa-border");
+      classNames.push('fa-border');
     }
     if (params.classNames && !Ember['default'].isArray(params.classNames)) {
       params.classNames = [params.classNames];
@@ -977,17 +977,17 @@ define('miume/helpers/fa-icon', ['exports', 'ember'], function (exports, Ember) 
       Array.prototype.push.apply(classNames, params.classNames);
     }
 
-    html += "<";
-    var tagName = params.tagName || "i";
+    html += '<';
+    var tagName = params.tagName || 'i';
     html += tagName;
-    html += " class='" + classNames.join(" ") + "'";
+    html += ' class=\'' + classNames.join(' ') + '\'';
     if (params.title) {
-      html += " title='" + params.title + "'";
+      html += ' title=\'' + params.title + '\'';
     }
     if (params.ariaHidden === undefined || params.ariaHidden) {
-      html += " aria-hidden=\"true\"";
+      html += ' aria-hidden="true"';
     }
-    html += "></" + tagName + ">";
+    html += '></' + tagName + '>';
     return Ember['default'].String.htmlSafe(html);
   };
 
@@ -1005,27 +1005,27 @@ define('miume/helpers/liquid-bind', ['exports', 'ember'], function (exports, Emb
   function liquidBindHelperFunc() {
     var options = arguments[arguments.length - 1];
     var container = options.data.view.container;
-    var componentLookup = container.lookup("component-lookup:main");
-    var cls = componentLookup.lookupFactory("liquid-bind-c");
+    var componentLookup = container.lookup('component-lookup:main');
+    var cls = componentLookup.lookupFactory('liquid-bind-c');
     options.hash.value = arguments[0];
     options.hashTypes.value = options.types[0];
 
-    if (options.hash["class"]) {
-      options.hash.innerClass = options.hash["class"];
-      delete options.hash["class"];
-      options.hashTypes.innerClass = options.hashTypes["class"];
-      delete options.hashTypes["class"];
+    if (options.hash['class']) {
+      options.hash['innerClass'] = options.hash['class'];
+      delete options.hash['class'];
+      options.hashTypes['innerClass'] = options.hashTypes['class'];
+      delete options.hashTypes['class'];
     }
     Ember['default'].Handlebars.helpers.view.call(this, cls, options);
   }
 
   function htmlbarsLiquidBindHelper(params, hash, options, env) {
-    var componentLookup = this.container.lookup("component-lookup:main");
-    var cls = componentLookup.lookupFactory("liquid-bind-c");
+    var componentLookup = this.container.lookup('component-lookup:main');
+    var cls = componentLookup.lookupFactory('liquid-bind-c');
     hash.value = params[0];
-    if (hash["class"]) {
-      hash.innerClass = hash["class"];
-      delete hash["class"];
+    if (hash['class']) {
+      hash.innerClass = hash['class'];
+      delete hash['class'];
     }
     env.helpers.view.helperFunction.call(this, [cls], hash, options, env);
   }
@@ -1112,7 +1112,7 @@ define('miume/helpers/liquid-measure', ['exports', 'ember'], function (exports, 
 
   exports['default'] = function () {
     Ember['default'].assert("liquid-measure is deprecated, see CHANGELOG.md", false);
-  };
+  }
 
 });
 define('miume/helpers/liquid-outlet', ['exports', 'ember'], function (exports, Ember) {
@@ -1132,23 +1132,23 @@ define('miume/helpers/liquid-outlet', ['exports', 'ember'], function (exports, E
       container = this.container;
 
       if (!property) {
-        property = "main";
-        options.paramTypes = ["string"];
+        property = 'main';
+        options.paramTypes = ['string'];
       }
     } else {
       property = arguments[0];
 
       if (property && property.data && property.data.isRenderData) {
         options = property;
-        property = "main";
-        options.types = ["STRING"];
+        property = 'main';
+        options.types = ['STRING'];
       }
 
       container = options.data.view.container;
       hash = options.hash;
     }
 
-    var View = container.lookupFactory("view:liquid-outlet");
+    var View = container.lookupFactory('view:liquid-outlet');
     if (hash.containerless) {
       View = View.extend(Ember['default']._Metamorph);
     }
@@ -1222,7 +1222,7 @@ define('miume/helpers/liquid-with', ['exports', 'ember'], function (exports, Emb
       innerHash.boundContextBinding = context;
     }
 
-    var View = container.lookupFactory("view:liquid-with");
+    var View = container.lookupFactory('view:liquid-with');
 
     View = View.extend({
       originalArgs: params,
@@ -1231,13 +1231,13 @@ define('miume/helpers/liquid-with', ['exports', 'ember'], function (exports, Emb
       innerTemplate: options.fn || options.template
     });
 
-    var containerless = isHTMLBars && hash.containerless && (!hash.containerless.isStream || hash.containerless.value()) || !isHTMLBars && (options.hashTypes.containerless === "BOOLEAN" && hash.containerless || options.hashTypes.containerless === "ID" && this.containerless);
+    var containerless = isHTMLBars && hash.containerless && (!hash.containerless.isStream || hash.containerless.value()) || !isHTMLBars && (options.hashTypes.containerless === 'BOOLEAN' && hash.containerless || options.hashTypes.containerless === 'ID' && this.containerless);
 
     if (containerless) {
       View = View.extend(Ember['default']._Metamorph);
     }
 
-    ["class", "classNames", "classNameBindings", "use", "id", "growDuration", "growPixelsPerSecond", "growEasing", "enableGrowth", "containerless"].forEach(function (field) {
+    ['class', 'classNames', 'classNameBindings', 'use', 'id', 'growDuration', 'growPixelsPerSecond', 'growEasing', 'enableGrowth', 'containerless'].forEach(function (field) {
       if (hash.hasOwnProperty(field)) {
         innerHash[field] = hash[field];
         innerOptions.hashTypes[field] = options.hashTypes ? options.hashTypes[field] : undefined;
@@ -1248,9 +1248,9 @@ define('miume/helpers/liquid-with', ['exports', 'ember'], function (exports, Emb
       env.helpers.view.helperFunction.call(this, [View], innerHash, innerOptions, env);
     } else {
       if (containerless) {
-        delete innerOptions.hash["class"];
-        delete innerOptions.hash.classNames;
-        delete innerOptions.hash.classNameBindings;
+        delete innerOptions.hash['class'];
+        delete innerOptions.hash['classNames'];
+        delete innerOptions.hash['classNameBindings'];
       }
       return Ember['default'].Handlebars.helpers.view.call(this, View, innerOptions);
     }
@@ -1280,8 +1280,8 @@ define('miume/helpers/t', ['exports', 'ember-cli-i18n/utils/stream'], function (
     var path = params.shift();
 
     var container = view.container;
-    var t = container.lookup("utils:t");
-    var application = container.lookup("application:main");
+    var t = container.lookup('utils:t');
+    var application = container.lookup('application:main');
 
     var stream = new Stream['default'](function () {
       return t(path, params);
@@ -1326,41 +1326,41 @@ define('miume/helpers/with-apply', ['exports', 'ember'], function (exports, Embe
       view = options.data.view;
     }
 
-    var parent = view.get("liquidWithParent");
-    var withArgs = parent.get("originalArgs").slice();
+    var parent = view.get('liquidWithParent');
+    var withArgs = parent.get('originalArgs').slice();
 
-    withArgs[0] = "lwith-view.boundContext";
+    withArgs[0] = 'lwith-view.boundContext';
     options = Ember['default'].copy(options);
 
     // This works to inject our keyword in Ember >= 1.9
     if (!view._keywords) {
       view._keywords = {};
     }
-    view._keywords["lwith-view"] = view;
+    view._keywords['lwith-view'] = view;
 
     // This works to inject our keyword in Ember < 1.9
     if (!isHTMLBars) {
       if (!options.data.keywords) {
         options.data.keywords = {};
       }
-      options.data.keywords["lwith-view"] = view;
+      options.data.keywords['lwith-view'] = view;
     }
 
     if (isHTMLBars) {
-      options.template = parent.get("innerTemplate");
+      options.template = parent.get('innerTemplate');
     } else {
-      options.fn = parent.get("innerTemplate");
+      options.fn = parent.get('innerTemplate');
     }
 
-    hash = parent.get("originalHash");
-    options.hashTypes = parent.get("originalHashTypes");
+    hash = parent.get('originalHash');
+    options.hashTypes = parent.get('originalHashTypes');
 
     if (isHTMLBars) {
-      env.helpers["with"].helperFunction.call(this, [view.getStream(withArgs[0])], hash, options, env);
+      env.helpers['with'].helperFunction.call(this, [view.getStream(withArgs[0])], hash, options, env);
     } else {
       options.hash = hash;
       withArgs.push(options);
-      return Ember['default'].Handlebars.helpers["with"].apply(this, withArgs);
+      return Ember['default'].Handlebars.helpers['with'].apply(this, withArgs);
     }
   }
 
@@ -1383,7 +1383,7 @@ define('miume/initializers/app-version', ['exports', 'miume/config/environment',
   var classify = Ember['default'].String.classify;
 
   exports['default'] = {
-    name: "App Version",
+    name: 'App Version',
     initialize: function initialize(container, application) {
       var appName = classify(application.toString());
       Ember['default'].libraries.register(appName, config['default'].APP.version);
@@ -1396,12 +1396,33 @@ define('miume/initializers/csrf-service', ['exports'], function (exports) {
   'use strict';
 
   exports['default'] = {
-    name: "rails-csrf",
+    name: 'rails-csrf',
     initialize: function initialize(container, app) {
-      app.inject("route", "csrf", "service:csrf");
-      app.inject("controller", "csrf", "service:csrf");
+      app.inject('route', 'csrf', 'service:csrf');
+      app.inject('controller', 'csrf', 'service:csrf');
     }
   };
+
+});
+define('miume/initializers/debug', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  var DebugInitializer, initialize;
+
+  exports.initialize = initialize = function () {
+    return Ember['default'].l = function (x) {
+      console.log(x);
+      return x;
+    };
+  };
+
+  DebugInitializer = {
+    name: 'debug',
+    initialize: initialize
+  };
+
+  exports['default'] = DebugInitializer;
 
 });
 define('miume/initializers/ember-moment', ['exports', 'ember-moment/helpers/moment', 'ember-moment/helpers/ago', 'ember-moment/helpers/duration', 'ember'], function (exports, moment, ago, duration, Ember) {
@@ -1419,13 +1440,13 @@ define('miume/initializers/ember-moment', ['exports', 'ember-moment/helpers/mome
       registerHelper = Ember['default'].Handlebars.helper;
     };
 
-    registerHelper("moment", moment['default']);
-    registerHelper("ago", ago['default']);
-    registerHelper("duration", duration['default']);
+    registerHelper('moment', moment['default']);
+    registerHelper('ago', ago['default']);
+    registerHelper('duration', duration['default']);
   };
 
   exports['default'] = {
-    name: "ember-moment",
+    name: 'ember-moment',
 
     initialize: initialize
   };
@@ -1451,7 +1472,7 @@ define('miume/initializers/export-application-global', ['exports', 'ember', 'miu
   ;
 
   exports['default'] = {
-    name: "export-application-global",
+    name: 'export-application-global',
 
     initialize: initialize
   };
@@ -1462,10 +1483,10 @@ define('miume/initializers/lazy-video', ['exports', 'ember-lazy-video/services/l
   'use strict';
 
   exports['default'] = {
-    name: "flash-messages",
+    name: 'flash-messages',
     initialize: function initialize(container, application) {
-      application.register("service:lazy-video-providers", LazyVideoProviders['default'], { singleton: true });
-      application.inject("component:lazy-video", "providers", "service:lazy-video-providers");
+      application.register('service:lazy-video-providers', LazyVideoProviders['default'], { singleton: true });
+      application.inject('component:lazy-video', 'providers', 'service:lazy-video-providers');
     }
   };
 
@@ -1478,12 +1499,12 @@ define('miume/initializers/link-view', ['exports', 'ember'], function (exports, 
 
   function initialize() {
     Ember['default'].LinkView.reopen({
-      attributeBindings: ["data-activates"]
+      attributeBindings: ['data-activates']
     });
   }
 
   exports['default'] = {
-    name: "link-view",
+    name: 'link-view',
     initialize: initialize
   };
   /* container, application */
@@ -1496,17 +1517,7 @@ define('miume/initializers/liquid-fire', ['exports', 'liquid-fire', 'ember'], fu
   exports['default'] = {
     name: "liquid-fire",
 
-    initialize: (function (_initialize) {
-      var _initializeWrapper = function initialize(_x) {
-        return _initialize.apply(this, arguments);
-      };
-
-      _initializeWrapper.toString = function () {
-        return _initialize.toString();
-      };
-
-      return _initializeWrapper;
-    })(function (container) {
+    initialize: function initialize(container) {
       if (!Ember['default'].$.Velocity) {
         Ember['default'].warn("Velocity.js is missing");
       } else {
@@ -1518,7 +1529,7 @@ define('miume/initializers/liquid-fire', ['exports', 'liquid-fire', 'ember'], fu
       }
 
       liquid_fire.initialize(container);
-    })
+    }
   };
 
 });
@@ -1529,27 +1540,27 @@ define('miume/initializers/t', ['exports', 'ember', 'ember-cli-i18n/utils/t', 'm
   exports.initialize = initialize;
 
   function initialize(container, application) {
-    Ember['default'].HTMLBars._registerHelper("t", tHelper['default']);
+    Ember['default'].HTMLBars._registerHelper('t', tHelper['default']);
 
     application.localeStream = new Stream['default'](function () {
-      return application.get("locale");
+      return application.get('locale');
     });
 
-    Ember['default'].addObserver(application, "locale", function () {
+    Ember['default'].addObserver(application, 'locale', function () {
       application.localeStream.notify();
     });
 
-    application.register("utils:t", T['default']);
-    application.inject("route", "t", "utils:t");
-    application.inject("model", "t", "utils:t");
-    application.inject("component", "t", "utils:t");
-    application.inject("controller", "t", "utils:t");
+    application.register('utils:t', T['default']);
+    application.inject('route', 't', 'utils:t');
+    application.inject('model', 't', 'utils:t');
+    application.inject('component', 't', 'utils:t');
+    application.inject('controller', 't', 'utils:t');
   }
 
   ;
 
   exports['default'] = {
-    name: "t",
+    name: 't',
     initialize: initialize
   };
 
@@ -1567,22 +1578,41 @@ define('miume/mixins/google-pageview', ['exports', 'ember', 'miume/config/enviro
 
   exports['default'] = Ember['default'].Mixin.create({
     pageviewToGA: (function () {
-      if (Ember['default'].get(ENV['default'], "googleAnalytics.webPropertyId") != null) {
-        var trackerType = Ember['default'].getWithDefault(ENV['default'], "googleAnalytics.tracker", "analytics.js");
+      if (Ember['default'].get(ENV['default'], 'googleAnalytics.webPropertyId') != null) {
+        var trackerType = Ember['default'].getWithDefault(ENV['default'], 'googleAnalytics.tracker', 'analytics.js');
 
-        if (trackerType === "analytics.js") {
-          var globalVariable = Ember['default'].getWithDefault(ENV['default'], "googleAnalytics.globalVariable", "ga");
+        if (trackerType === 'analytics.js') {
+          var globalVariable = Ember['default'].getWithDefault(ENV['default'], 'googleAnalytics.globalVariable', 'ga');
 
-          window[globalVariable]("send", "pageview", {
-            page: this.get("url"),
-            title: this.get("url")
+          window[globalVariable]('send', 'pageview', {
+            page: this.get('url'),
+            title: this.get('url')
           });
-        } else if (trackerType === "ga.js") {
-          window._gaq.push(["_trackPageview"]);
+        } else if (trackerType === 'ga.js') {
+          window._gaq.push(['_trackPageview']);
         }
       }
-    }).on("didTransition")
+    }).on('didTransition')
   });
+
+});
+define('miume/models/about', ['exports', 'ember', 'ember-data'], function (exports, Ember, DS) {
+
+  'use strict';
+
+  var About;
+
+  About = DS['default'].Model.extend({
+    intro: DS['default'].attr('string'),
+    icon: DS['default'].attr('string'),
+    pic: DS['default'].attr('string'),
+    headline: DS['default'].attr('string'),
+    details: DS['default'].attr('string'),
+    happenedAt: DS['default'].attr('date'),
+    createdAt: DS['default'].attr('date')
+  });
+
+  exports['default'] = About;
 
 });
 define('miume/models/promotion', ['exports', 'ember-data'], function (exports, DS) {
@@ -1608,16 +1638,16 @@ define('miume/models/youtube/channel', ['exports', 'ember-data', 'ember'], funct
   var YoutubeChannel;
 
   YoutubeChannel = DS['default'].Model.extend({
-    title: DS['default'].attr("string"),
-    description: DS['default'].attr("string"),
-    thumbnails: DS['default'].attr("thumbnails"),
-    publishedAt: DS['default'].attr("date"),
-    uploadId: DS['default'].attr("string"),
-    uploads: Ember['default'].computed("uploadId", function() {
-      if (Ember['default'].isBlank(this.get("uploadId"))) {
+    title: DS['default'].attr('string'),
+    description: DS['default'].attr('string'),
+    thumbnails: DS['default'].attr('thumbnails'),
+    publishedAt: DS['default'].attr('date'),
+    uploadId: DS['default'].attr('string'),
+    uploads: Ember['default'].computed('uploadId', function () {
+      if (Ember['default'].isBlank(this.get('uploadId'))) {
         return;
       }
-      return this.store.find("youtube/playlist", this.get("uploadId"));
+      return this.store.find('youtube/playlist', this.get('uploadId'));
     })
   });
 
@@ -1666,19 +1696,19 @@ define('miume/router', ['exports', 'ember', 'miume/config/environment'], functio
     location: config['default'].locationType
   });
 
-  Router.map(function() {
-    this.route("about");
-    this.resource("works", {
-      path: "/works"
-    }, function() {
-      return this.resource("work", {
-        path: "/work/:workId"
-      }, function() {});
+  Router.map(function () {
+    this.route('about');
+    this.resource('works', {
+      path: '/works'
+    }, function () {
+      return this.resource('work', {
+        path: '/work/:workId'
+      }, function () {});
     });
-    this.route("snackbar");
-    this.route("contact");
-    this.route("videos");
-    return this.route("dances");
+    this.route('snackbar');
+    this.route('contact');
+    this.route('videos');
+    return this.route('dances');
   });
 
   exports['default'] = Router;
@@ -1691,8 +1721,9 @@ define('miume/routes/about', ['exports', 'ember', 'miume/routes/application'], f
   var AboutRoute;
 
   AboutRoute = ApplicationRoute['default'].extend({
-    afterModel: function() {},
-    model: function() {}
+    model: function model() {
+      return this.store.find('about');
+    }
   });
 
   exports['default'] = AboutRoute;
@@ -1705,7 +1736,7 @@ define('miume/routes/application', ['exports', 'ember'], function (exports, Embe
   var ApplicationRoute;
 
   ApplicationRoute = Ember['default'].Route.extend({
-    renderTemplate: function() {
+    renderTemplate: function renderTemplate() {
       this._super.apply(this, arguments);
       return this.render("shared/navigation", {
         outlet: "top-nav",
@@ -1761,6 +1792,17 @@ define('miume/routes/snackbar', ['exports', 'ember', 'miume/routes/application']
 	exports['default'] = SnackbarRoute;
 
 });
+define('miume/serializers/about', ['exports', 'miume/serializers/tumblr'], function (exports, TumblrSerializer) {
+
+	'use strict';
+
+	var AboutSerializer;
+
+	AboutSerializer = TumblrSerializer['default'].extend();
+
+	exports['default'] = AboutSerializer;
+
+});
 define('miume/serializers/promotion', ['exports', 'miume/serializers/tumblr'], function (exports, TumblrSerializer) {
 
 	'use strict';
@@ -1780,31 +1822,31 @@ define('miume/serializers/tumblr', ['exports', 'ember', 'ember-data'], function 
 
   map = Ember['default'].EnumerableUtils.map;
 
-  lll = function(x) {
+  lll = function (x) {
     console.log(x);
     return x;
   };
 
-  getMeta = function(arg) {
+  getMeta = function (arg) {
     var meta, total_posts;
     meta = arg.meta, total_posts = arg.total_posts;
     meta.totalPosts = total_posts;
     return meta;
   };
 
-  getContent = function(arg) {
+  getContent = function (arg) {
     var post, ref;
     ref = arg.response.posts, post = ref[0];
     return parsePost(post);
   };
 
-  getContents = function(arg) {
+  getContents = function (arg) {
     var posts;
     posts = arg.response.posts;
     return map(posts, parsePost);
   };
 
-  camelizeKeys = function(hash) {
+  camelizeKeys = function (hash) {
     var camelKey, key, value;
     for (key in hash) {
       value = hash[key];
@@ -1817,11 +1859,11 @@ define('miume/serializers/tumblr', ['exports', 'ember', 'ember-data'], function 
     return hash;
   };
 
-  cleanString = function(string) {
+  cleanString = function (string) {
     return string.replace(/“/gi, '"').replace(/”/gi, '"');
   };
 
-  parsePost = function(arg) {
+  parsePost = function (arg) {
     var body, date, hash, id, tags, title;
     id = arg.id, date = arg.date, tags = arg.tags, title = arg.title, body = arg.body;
     hash = camelizeKeys(JSON.parse(cleanString(body)));
@@ -1833,7 +1875,7 @@ define('miume/serializers/tumblr', ['exports', 'ember', 'ember-data'], function 
   };
 
   TumblrSerializer = DS['default'].RESTSerializer.extend({
-    extract: function(store, type, payload, id, requestType) {
+    extract: function extract(store, type, payload, id, requestType) {
       var reformedPayload;
       reformedPayload = {
         meta: getMeta(payload)
@@ -1841,7 +1883,7 @@ define('miume/serializers/tumblr', ['exports', 'ember', 'ember-data'], function 
       if (Ember['default'].isPresent(id)) {
         reformedPayload[type.typeKey] = getContent(payload);
       } else {
-        reformedPayload[Ember['default'].string.pluralize(type.typeKey)] = getContents(payload);
+        reformedPayload[Ember['default'].String.pluralize(type.typeKey)] = getContents(payload);
       }
       return this._super(store, type, reformedPayload, id, requestType);
     }
@@ -1887,35 +1929,35 @@ define('miume/services/csrf', ['exports', 'ember'], function (exports, Ember) {
       var _this = this;
       this.fetchToken();
 
-      Ember['default'].$(document).on("ajaxComplete", function (event, xhr, settings) {
-        var csrf_param = xhr.getResponseHeader("X-CSRF-Param"),
-            csrf_token = xhr.getResponseHeader("X-CSRF-Token");
+      Ember['default'].$(document).on('ajaxComplete', function (event, xhr, settings) {
+        var csrf_param = xhr.getResponseHeader('X-CSRF-Param'),
+            csrf_token = xhr.getResponseHeader('X-CSRF-Token');
 
         if (csrf_param && csrf_token) {
           _this.setData({ csrf_param: csrf_token });
         }
       });
-    }).on("init"),
+    }).on('init'),
     setPrefilter: function setPrefilter() {
-      var token = this.get("data").token;
+      var token = this.get('data').token;
       var preFilter = function preFilter(options, originalOptions, jqXHR) {
-        return jqXHR.setRequestHeader("X-CSRF-Token", token);
+        return jqXHR.setRequestHeader('X-CSRF-Token', token);
       };
       $.ajaxPrefilter(preFilter);
     },
     setData: function setData(data) {
       var param = Ember['default'].keys(data)[0];
-      this.set("data", { param: param, token: data[param] });
+      this.set('data', { param: param, token: data[param] });
       this.setPrefilter();
 
-      return this.get("data");
+      return this.get('data');
     },
     fetchToken: function fetchToken() {
       var _this = this;
-      var token = Ember['default'].$("meta[name=\"csrf-token\"]").attr("content") || "";
+      var token = Ember['default'].$('meta[name="csrf-token"]').attr('content') || '';
 
       return Ember['default'].RSVP.resolve().then(function () {
-        return _this.setData({ authenticity_token: token });
+        return _this.setData({ 'authenticity_token': token });
       });
     }
   });
@@ -1929,20 +1971,105 @@ define('miume/templates/about', ['exports'], function (exports) {
     var child0 = (function() {
       var child0 = (function() {
         var child0 = (function() {
+          var child0 = (function() {
+            return {
+              isHTMLBars: true,
+              blockParams: 0,
+              cachedFragment: null,
+              hasRendered: false,
+              build: function build(dom) {
+                var el0 = dom.createElement("h4");
+                dom.setAttribute(el0,"class","catchphrase");
+                return el0;
+              },
+              render: function render(context, env, contextualElement) {
+                var dom = env.dom;
+                var hooks = env.hooks, content = hooks.content;
+                dom.detectNamespace(contextualElement);
+                var fragment;
+                if (env.useFragmentCache && dom.canClone) {
+                  if (this.cachedFragment === null) {
+                    fragment = this.build(dom);
+                    if (this.hasRendered) {
+                      this.cachedFragment = fragment;
+                    } else {
+                      this.hasRendered = true;
+                    }
+                  }
+                  if (this.cachedFragment) {
+                    fragment = dom.cloneNode(this.cachedFragment, true);
+                  }
+                } else {
+                  fragment = this.build(dom);
+                }
+                var morph0 = dom.createMorphAt(fragment,-1,-1);
+                content(env, morph0, context, "about.headline");
+                return fragment;
+              }
+            };
+          }());
+          var child1 = (function() {
+            return {
+              isHTMLBars: true,
+              blockParams: 0,
+              cachedFragment: null,
+              hasRendered: false,
+              build: function build(dom) {
+                var el0 = dom.createDocumentFragment();
+                var el1 = dom.createElement("h4");
+                dom.setAttribute(el1,"class","catchphrase");
+                dom.appendChild(el0, el1);
+                var el1 = dom.createElement("p");
+                dom.setAttribute(el1,"class","exposition");
+                dom.appendChild(el0, el1);
+                return el0;
+              },
+              render: function render(context, env, contextualElement) {
+                var dom = env.dom;
+                var hooks = env.hooks, content = hooks.content;
+                dom.detectNamespace(contextualElement);
+                var fragment;
+                if (env.useFragmentCache && dom.canClone) {
+                  if (this.cachedFragment === null) {
+                    fragment = this.build(dom);
+                    if (this.hasRendered) {
+                      this.cachedFragment = fragment;
+                    } else {
+                      this.hasRendered = true;
+                    }
+                  }
+                  if (this.cachedFragment) {
+                    fragment = dom.cloneNode(this.cachedFragment, true);
+                  }
+                } else {
+                  fragment = this.build(dom);
+                }
+                var morph0 = dom.createMorphAt(dom.childAt(fragment, [0]),-1,-1);
+                var morph1 = dom.createMorphAt(dom.childAt(fragment, [1]),-1,-1);
+                content(env, morph0, context, "about.headline");
+                content(env, morph1, context, "about.details");
+                return fragment;
+              }
+            };
+          }());
           return {
             isHTMLBars: true,
             blockParams: 0,
             cachedFragment: null,
             hasRendered: false,
             build: function build(dom) {
-              var el0 = dom.createElement("h4");
-              dom.setAttribute(el0,"class","catchphrase");
-              var el1 = dom.createTextNode("something about me");
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("");
               dom.appendChild(el0, el1);
               return el0;
             },
             render: function render(context, env, contextualElement) {
               var dom = env.dom;
+              var hooks = env.hooks, block = hooks.block;
               dom.detectNamespace(contextualElement);
               var fragment;
               if (env.useFragmentCache && dom.canClone) {
@@ -1960,6 +2087,11 @@ define('miume/templates/about', ['exports'], function (exports) {
               } else {
                 fragment = this.build(dom);
               }
+              if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1,2]); }
+              var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
+              var morph1 = dom.createMorphAt(fragment,1,2,contextualElement);
+              block(env, morph0, context, "materialize-card-content", [], {}, child0, null);
+              block(env, morph1, context, "materialize-card-reveal", [], {}, child1, null);
               return fragment;
             }
           };
@@ -1972,20 +2104,15 @@ define('miume/templates/about', ['exports'], function (exports) {
             hasRendered: false,
             build: function build(dom) {
               var el0 = dom.createDocumentFragment();
-              var el1 = dom.createElement("h4");
-              dom.setAttribute(el1,"class","catchphrase");
-              var el2 = dom.createTextNode("something about me");
-              dom.appendChild(el1, el2);
+              var el1 = dom.createTextNode("");
               dom.appendChild(el0, el1);
-              var el1 = dom.createElement("p");
-              dom.setAttribute(el1,"class","exposition");
-              var el2 = dom.createTextNode("faksdjf laksjd flkjas dflkjasdlfkjals djflakjsd flkjasdl fkjalsdkjf");
-              dom.appendChild(el1, el2);
+              var el1 = dom.createTextNode("");
               dom.appendChild(el0, el1);
               return el0;
             },
             render: function render(context, env, contextualElement) {
               var dom = env.dom;
+              var hooks = env.hooks, get = hooks.get, inline = hooks.inline;
               dom.detectNamespace(contextualElement);
               var fragment;
               if (env.useFragmentCache && dom.canClone) {
@@ -2003,6 +2130,50 @@ define('miume/templates/about', ['exports'], function (exports) {
               } else {
                 fragment = this.build(dom);
               }
+              if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1]); }
+              var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
+              inline(env, morph0, context, "fa-icon", [get(env, context, "about.icon")], {});
+              return fragment;
+            }
+          };
+        }());
+        var child2 = (function() {
+          return {
+            isHTMLBars: true,
+            blockParams: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            build: function build(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            render: function render(context, env, contextualElement) {
+              var dom = env.dom;
+              var hooks = env.hooks, inline = hooks.inline;
+              dom.detectNamespace(contextualElement);
+              var fragment;
+              if (env.useFragmentCache && dom.canClone) {
+                if (this.cachedFragment === null) {
+                  fragment = this.build(dom);
+                  if (this.hasRendered) {
+                    this.cachedFragment = fragment;
+                  } else {
+                    this.hasRendered = true;
+                  }
+                }
+                if (this.cachedFragment) {
+                  fragment = dom.cloneNode(this.cachedFragment, true);
+                }
+              } else {
+                fragment = this.build(dom);
+              }
+              if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1]); }
+              var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
+              inline(env, morph0, context, "fa-icon", ["bomb"], {});
               return fragment;
             }
           };
@@ -2014,17 +2185,26 @@ define('miume/templates/about', ['exports'], function (exports) {
           hasRendered: false,
           build: function build(dom) {
             var el0 = dom.createDocumentFragment();
-            var el1 = dom.createTextNode("");
+            var el1 = dom.createElement("div");
+            dom.setAttribute(el1,"class","col l5 m6 s12");
             dom.appendChild(el0, el1);
-            var el1 = dom.createTextNode("");
+            var el1 = dom.createElement("div");
+            dom.setAttribute(el1,"class","col l2 m6 s12 hide-on-small-and-down vertical-centered timecard");
+            var el2 = dom.createElement("div");
+            dom.setAttribute(el2,"class","btn-floating btn-large waves-effect waves-light red timeline-icon disabled");
+            dom.appendChild(el1, el2);
             dom.appendChild(el0, el1);
-            var el1 = dom.createTextNode("");
+            var el1 = dom.createElement("div");
+            dom.setAttribute(el1,"class","col l5 hide-on-med-and-down plain-centered timecard");
+            var el2 = dom.createElement("div");
+            dom.setAttribute(el2,"class","timeline-date");
+            dom.appendChild(el1, el2);
             dom.appendChild(el0, el1);
             return el0;
           },
           render: function render(context, env, contextualElement) {
             var dom = env.dom;
-            var hooks = env.hooks, block = hooks.block;
+            var hooks = env.hooks, get = hooks.get, block = hooks.block, inline = hooks.inline;
             dom.detectNamespace(contextualElement);
             var fragment;
             if (env.useFragmentCache && dom.canClone) {
@@ -2042,11 +2222,12 @@ define('miume/templates/about', ['exports'], function (exports) {
             } else {
               fragment = this.build(dom);
             }
-            if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1,2]); }
-            var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
-            var morph1 = dom.createMorphAt(fragment,1,2,contextualElement);
-            block(env, morph0, context, "materialize-card-content", [], {}, child0, null);
-            block(env, morph1, context, "materialize-card-reveal", [], {}, child1, null);
+            var morph0 = dom.createMorphAt(dom.childAt(fragment, [0]),-1,-1);
+            var morph1 = dom.createMorphAt(dom.childAt(fragment, [1, 0]),-1,-1);
+            var morph2 = dom.createMorphAt(dom.childAt(fragment, [2, 0]),-1,-1);
+            block(env, morph0, context, "materialize-card", [], {"title": get(env, context, "about.intro"), "titleClass": "green-text darken-1", "image": get(env, context, "about.pic"), "classNames": "medium", "activator": true}, child0, null);
+            block(env, morph1, context, "if", [get(env, context, "about.icon")], {}, child1, child2);
+            inline(env, morph2, context, "ago", [get(env, context, "about.happenedAt")], {});
             return fragment;
           }
         };
@@ -2058,28 +2239,15 @@ define('miume/templates/about', ['exports'], function (exports) {
         hasRendered: false,
         build: function build(dom) {
           var el0 = dom.createDocumentFragment();
-          var el1 = dom.createElement("div");
-          dom.setAttribute(el1,"class","col l5 m6 s12");
+          var el1 = dom.createTextNode("");
           dom.appendChild(el0, el1);
-          var el1 = dom.createElement("div");
-          dom.setAttribute(el1,"class","col l2 m6 s12 hide-on-small-and-down vertical-centered timecard");
-          var el2 = dom.createElement("div");
-          dom.setAttribute(el2,"class","btn-floating btn-large waves-effect waves-light red timeline-icon disabled");
-          dom.appendChild(el1, el2);
-          dom.appendChild(el0, el1);
-          var el1 = dom.createElement("div");
-          dom.setAttribute(el1,"class","col l5 hide-on-med-and-down plain-centered timecard");
-          var el2 = dom.createElement("div");
-          dom.setAttribute(el2,"class","timeline-date");
-          var el3 = dom.createTextNode("december 7, 1941");
-          dom.appendChild(el2, el3);
-          dom.appendChild(el1, el2);
+          var el1 = dom.createTextNode("");
           dom.appendChild(el0, el1);
           return el0;
         },
         render: function render(context, env, contextualElement) {
           var dom = env.dom;
-          var hooks = env.hooks, block = hooks.block, inline = hooks.inline;
+          var hooks = env.hooks, block = hooks.block;
           dom.detectNamespace(contextualElement);
           var fragment;
           if (env.useFragmentCache && dom.canClone) {
@@ -2097,189 +2265,9 @@ define('miume/templates/about', ['exports'], function (exports) {
           } else {
             fragment = this.build(dom);
           }
-          var morph0 = dom.createMorphAt(dom.childAt(fragment, [0]),-1,-1);
-          var morph1 = dom.createMorphAt(dom.childAt(fragment, [1, 0]),-1,-1);
-          block(env, morph0, context, "materialize-card", [], {"title": "introduction", "titleClass": "green-text darken-1", "image": "images/doge.jpg", "classNames": "medium", "activator": true}, child0, null);
-          inline(env, morph1, context, "fa-icon", ["bomb"], {});
-          return fragment;
-        }
-      };
-    }());
-    var child1 = (function() {
-      var child0 = (function() {
-        var child0 = (function() {
-          return {
-            isHTMLBars: true,
-            blockParams: 0,
-            cachedFragment: null,
-            hasRendered: false,
-            build: function build(dom) {
-              var el0 = dom.createElement("h4");
-              dom.setAttribute(el0,"class","catchphrase");
-              var el1 = dom.createTextNode("something else");
-              dom.appendChild(el0, el1);
-              return el0;
-            },
-            render: function render(context, env, contextualElement) {
-              var dom = env.dom;
-              dom.detectNamespace(contextualElement);
-              var fragment;
-              if (env.useFragmentCache && dom.canClone) {
-                if (this.cachedFragment === null) {
-                  fragment = this.build(dom);
-                  if (this.hasRendered) {
-                    this.cachedFragment = fragment;
-                  } else {
-                    this.hasRendered = true;
-                  }
-                }
-                if (this.cachedFragment) {
-                  fragment = dom.cloneNode(this.cachedFragment, true);
-                }
-              } else {
-                fragment = this.build(dom);
-              }
-              return fragment;
-            }
-          };
-        }());
-        var child1 = (function() {
-          return {
-            isHTMLBars: true,
-            blockParams: 0,
-            cachedFragment: null,
-            hasRendered: false,
-            build: function build(dom) {
-              var el0 = dom.createDocumentFragment();
-              var el1 = dom.createElement("h4");
-              dom.setAttribute(el1,"class","catchphrase");
-              var el2 = dom.createTextNode("something else");
-              dom.appendChild(el1, el2);
-              dom.appendChild(el0, el1);
-              var el1 = dom.createElement("p");
-              dom.setAttribute(el1,"class","exposition");
-              var el2 = dom.createTextNode("faksdjf laksjd flkjas dflkjasdlfkjals djflakjsd flkjasdl fkjalsdkjf");
-              dom.appendChild(el1, el2);
-              dom.appendChild(el0, el1);
-              return el0;
-            },
-            render: function render(context, env, contextualElement) {
-              var dom = env.dom;
-              dom.detectNamespace(contextualElement);
-              var fragment;
-              if (env.useFragmentCache && dom.canClone) {
-                if (this.cachedFragment === null) {
-                  fragment = this.build(dom);
-                  if (this.hasRendered) {
-                    this.cachedFragment = fragment;
-                  } else {
-                    this.hasRendered = true;
-                  }
-                }
-                if (this.cachedFragment) {
-                  fragment = dom.cloneNode(this.cachedFragment, true);
-                }
-              } else {
-                fragment = this.build(dom);
-              }
-              return fragment;
-            }
-          };
-        }());
-        return {
-          isHTMLBars: true,
-          blockParams: 0,
-          cachedFragment: null,
-          hasRendered: false,
-          build: function build(dom) {
-            var el0 = dom.createDocumentFragment();
-            var el1 = dom.createTextNode("");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createTextNode("");
-            dom.appendChild(el0, el1);
-            var el1 = dom.createTextNode("");
-            dom.appendChild(el0, el1);
-            return el0;
-          },
-          render: function render(context, env, contextualElement) {
-            var dom = env.dom;
-            var hooks = env.hooks, block = hooks.block;
-            dom.detectNamespace(contextualElement);
-            var fragment;
-            if (env.useFragmentCache && dom.canClone) {
-              if (this.cachedFragment === null) {
-                fragment = this.build(dom);
-                if (this.hasRendered) {
-                  this.cachedFragment = fragment;
-                } else {
-                  this.hasRendered = true;
-                }
-              }
-              if (this.cachedFragment) {
-                fragment = dom.cloneNode(this.cachedFragment, true);
-              }
-            } else {
-              fragment = this.build(dom);
-            }
-            if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1,2]); }
-            var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
-            var morph1 = dom.createMorphAt(fragment,1,2,contextualElement);
-            block(env, morph0, context, "materialize-card-content", [], {}, child0, null);
-            block(env, morph1, context, "materialize-card-reveal", [], {}, child1, null);
-            return fragment;
-          }
-        };
-      }());
-      return {
-        isHTMLBars: true,
-        blockParams: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        build: function build(dom) {
-          var el0 = dom.createDocumentFragment();
-          var el1 = dom.createElement("div");
-          dom.setAttribute(el1,"class","col l5 m6 s12");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createElement("div");
-          dom.setAttribute(el1,"class","col l2 m6 s12 hide-on-small-and-down vertical-centered timecard");
-          var el2 = dom.createElement("div");
-          dom.setAttribute(el2,"class","btn-floating btn-large waves-effect waves-light red timeline-icon disabled");
-          dom.appendChild(el1, el2);
-          dom.appendChild(el0, el1);
-          var el1 = dom.createElement("div");
-          dom.setAttribute(el1,"class","col l5 hide-on-med-and-down plain-centered timecard");
-          var el2 = dom.createElement("div");
-          dom.setAttribute(el2,"class","timeline-date");
-          var el3 = dom.createTextNode("december 7, 1940");
-          dom.appendChild(el2, el3);
-          dom.appendChild(el1, el2);
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        render: function render(context, env, contextualElement) {
-          var dom = env.dom;
-          var hooks = env.hooks, block = hooks.block, inline = hooks.inline;
-          dom.detectNamespace(contextualElement);
-          var fragment;
-          if (env.useFragmentCache && dom.canClone) {
-            if (this.cachedFragment === null) {
-              fragment = this.build(dom);
-              if (this.hasRendered) {
-                this.cachedFragment = fragment;
-              } else {
-                this.hasRendered = true;
-              }
-            }
-            if (this.cachedFragment) {
-              fragment = dom.cloneNode(this.cachedFragment, true);
-            }
-          } else {
-            fragment = this.build(dom);
-          }
-          var morph0 = dom.createMorphAt(dom.childAt(fragment, [0]),-1,-1);
-          var morph1 = dom.createMorphAt(dom.childAt(fragment, [1, 0]),-1,-1);
-          block(env, morph0, context, "materialize-card", [], {"title": "stage 2", "titleClass": "green-text darken-1", "image": "images/doge.jpg", "classNames": "medium", "activator": true}, child0, null);
-          inline(env, morph1, context, "fa-icon", ["bomb"], {});
+          if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1]); }
+          var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
+          block(env, morph0, context, "ember-scrolltop-holder", [], {"classNames": "row scroll-holder"}, child0, null);
           return fragment;
         }
       };
@@ -2311,8 +2299,6 @@ define('miume/templates/about', ['exports'], function (exports) {
         dom.appendChild(el3, el4);
         var el4 = dom.createElement("div");
         dom.setAttribute(el4,"class","timeline");
-        var el5 = dom.createTextNode("");
-        dom.appendChild(el4, el5);
         dom.appendChild(el3, el4);
         dom.appendChild(el2, el3);
         dom.appendChild(el1, el2);
@@ -2321,7 +2307,7 @@ define('miume/templates/about', ['exports'], function (exports) {
       },
       render: function render(context, env, contextualElement) {
         var dom = env.dom;
-        var hooks = env.hooks, block = hooks.block;
+        var hooks = env.hooks, get = hooks.get, block = hooks.block;
         dom.detectNamespace(contextualElement);
         var fragment;
         if (env.useFragmentCache && dom.canClone) {
@@ -2339,12 +2325,8 @@ define('miume/templates/about', ['exports'], function (exports) {
         } else {
           fragment = this.build(dom);
         }
-        var element0 = dom.childAt(fragment, [0, 0, 0, 2]);
-        if (this.cachedFragment) { dom.repairClonedNode(element0,[0]); }
-        var morph0 = dom.createMorphAt(element0,-1,0);
-        var morph1 = dom.createMorphAt(element0,0,-1);
-        block(env, morph0, context, "ember-scrolltop-holder", [], {"classNames": "row scroll-holder"}, child0, null);
-        block(env, morph1, context, "ember-scrolltop-holder", [], {"classNames": "row scroll-holder"}, child1, null);
+        var morph0 = dom.createMorphAt(dom.childAt(fragment, [0, 0, 0, 2]),-1,-1);
+        block(env, morph0, context, "each", [get(env, context, "model")], {"keyword": "about"}, child0, null);
         return fragment;
       }
     };
@@ -5853,10 +5835,10 @@ define('miume/tests/acceptance/tumblr-promotion-test', ['ember', 'qunit', 'miume
   store = null;
 
   qunit.module('Acceptance: TumblrPromotion', {
-    beforeEach: function() {
+    beforeEach: function beforeEach() {
       application = startApp['default']();
       container = application.__container__;
-      store = container.lookup("store:main");
+      store = container.lookup('store:main');
 
       /*
       Don't return as Ember.Application.then is deprecated.
@@ -5864,20 +5846,20 @@ define('miume/tests/acceptance/tumblr-promotion-test', ['ember', 'qunit', 'miume
       function to wait for promises if it exists.
        */
     },
-    afterEach: function() {
+    afterEach: function afterEach() {
       return Ember['default'].run(application, 'destroy');
     }
   });
 
-  qunit.test('hitting up remot tumblr', function(assert) {
-    return Ember['default'].run(function() {
-      return store.find('promotion', '118064140679').then(function(promotion) {
-        assert.ok(promotion, "it should find a promotion from tumblr");
-        assert.equal(promotion.get("message"), "you should be able to read this from ember", 'it should have the correct message attr');
-        return assert.deepEqual(promotion.get("tags"), ["datamodel:promotion"], 'it should have the correct tag attribute');
-      })["catch"](function(error) {
+  qunit.test('hitting up remot tumblr', function (assert) {
+    return Ember['default'].run(function () {
+      return store.find('promotion', '118064140679').then(function (promotion) {
+        assert.ok(promotion, 'it should find a promotion from tumblr');
+        assert.equal(promotion.get('message'), 'you should be able to read this from ember', 'it should have the correct message attr');
+        return assert.deepEqual(promotion.get('tags'), ['datamodel:promotion'], 'it should have the correct tag attribute');
+      })['catch'](function (error) {
         console.log(error);
-        return assert.ok(false, "should not have error");
+        return assert.ok(false, 'should not have error');
       });
     });
   });
@@ -5903,16 +5885,16 @@ define('miume/tests/ember-cli-i18n-test', ['ember', 'miume/config/environment'],
     var keys = Ember['default'].keys;
 
     var locales, defaultLocale;
-    module("ember-cli-i18n", {
+    module('ember-cli-i18n', {
       setup: function setup() {
-        var localRegExp = new RegExp(config['default'].modulePrefix + "/locales/(.+)");
+        var localRegExp = new RegExp(config['default'].modulePrefix + '/locales/(.+)');
         var match, moduleName;
 
         locales = {};
 
         for (moduleName in requirejs.entries) {
           if (match = moduleName.match(localRegExp)) {
-            locales[match[1]] = require(moduleName)["default"];
+            locales[match[1]] = require(moduleName)['default'];
           }
         }
 
@@ -5920,7 +5902,7 @@ define('miume/tests/ember-cli-i18n-test', ['ember', 'miume/config/environment'],
       }
     });
 
-    test("locales all contain the same keys", function () {
+    test('locales all contain the same keys', function () {
       var knownLocales = keys(locales);
       if (knownLocales.length === 1) {
         expect(0);
@@ -5935,7 +5917,7 @@ define('miume/tests/ember-cli-i18n-test', ['ember', 'miume/config/environment'],
         }
 
         for (var translationKey in defaultLocale) {
-          ok(currentLocale[translationKey], "`" + translationKey + "` should exist in the `" + knownLocales[i] + "` locale.");
+          ok(currentLocale[translationKey], '`' + translationKey + '` should exist in the `' + knownLocales[i] + '` locale.');
         }
       }
     });
@@ -6022,7 +6004,7 @@ define('miume/tests/unit/adapters/application-test', ['ember-qunit'], function (
 
   ember_qunit.moduleFor('adapter:application', 'ApplicationAdapter', {});
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var adapter;
     adapter = this.subject();
     return assert.ok(adapter);
@@ -6035,7 +6017,7 @@ define('miume/tests/unit/adapters/tumblr-test', ['ember-qunit'], function (ember
 
   ember_qunit.moduleFor('adapter:tumblr', 'TumblrAdapter', {});
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var adapter;
     adapter = this.subject();
     return assert.ok(adapter);
@@ -6048,7 +6030,7 @@ define('miume/tests/unit/adapters/youtube-test', ['ember-qunit'], function (embe
 
   ember_qunit.moduleFor('adapter:youtube', 'YoutubeAdapter', {});
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var adapter;
     adapter = this.subject();
     return assert.ok(adapter);
@@ -6061,7 +6043,7 @@ define('miume/tests/unit/adapters/youtube/channel-test', ['ember-qunit'], functi
 
   ember_qunit.moduleFor('adapter:youtube/channel', 'YoutubeChannelAdapter', {});
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var adapter;
     adapter = this.subject();
     return assert.ok(adapter);
@@ -6074,7 +6056,7 @@ define('miume/tests/unit/adapters/youtube/playlist-test', ['ember-qunit'], funct
 
   ember_qunit.moduleFor('adapter:youtube/playlist', 'YoutubePlaylistAdapter', {});
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var adapter;
     adapter = this.subject();
     return assert.ok(adapter);
@@ -6087,7 +6069,7 @@ define('miume/tests/unit/adapters/youtube/video-test', ['ember-qunit'], function
 
   ember_qunit.moduleFor('adapter:youtube/video', 'YoutubeVideoAdapter', {});
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var adapter;
     adapter = this.subject();
     return assert.ok(adapter);
@@ -6100,7 +6082,7 @@ define('miume/tests/unit/components/announcement-card-test', ['ember-qunit'], fu
 
   ember_qunit.moduleForComponent('announcement-card', {});
 
-  ember_qunit.test('it renders', function(assert) {
+  ember_qunit.test('it renders', function (assert) {
     var component;
     assert.expect(2);
     component = this.subject();
@@ -6116,7 +6098,7 @@ define('miume/tests/unit/components/iframe-block-test', ['ember-qunit'], functio
 
   ember_qunit.moduleForComponent('iframe-block', {});
 
-  ember_qunit.test('it renders', function(assert) {
+  ember_qunit.test('it renders', function (assert) {
     var component;
     assert.expect(2);
     component = this.subject();
@@ -6132,7 +6114,7 @@ define('miume/tests/unit/components/lazy-scroll-load-test', ['ember-qunit'], fun
 
   ember_qunit.moduleForComponent('lazy-scroll-load', {});
 
-  ember_qunit.test('it renders', function(assert) {
+  ember_qunit.test('it renders', function (assert) {
     var component;
     assert.expect(2);
     component = this.subject();
@@ -6148,7 +6130,7 @@ define('miume/tests/unit/components/materialize-parallax-image-test', ['ember-qu
 
   ember_qunit.moduleForComponent('materialize-parallax-image', {});
 
-  ember_qunit.test('it renders', function(assert) {
+  ember_qunit.test('it renders', function (assert) {
     var component;
     assert.expect(2);
     component = this.subject();
@@ -6164,7 +6146,7 @@ define('miume/tests/unit/components/materialize-parallax-test', ['ember-qunit'],
 
   ember_qunit.moduleForComponent('materialize-parallax', {});
 
-  ember_qunit.test('it renders', function(assert) {
+  ember_qunit.test('it renders', function (assert) {
     var component;
     assert.expect(2);
     component = this.subject();
@@ -6180,7 +6162,7 @@ define('miume/tests/unit/components/round-hover-button-test', ['ember-qunit'], f
 
   ember_qunit.moduleForComponent('round-hover-button', {});
 
-  ember_qunit.test('it renders', function(assert) {
+  ember_qunit.test('it renders', function (assert) {
     var component;
     assert.expect(2);
     component = this.subject();
@@ -6196,7 +6178,7 @@ define('miume/tests/unit/components/scroll-spy-test', ['ember-qunit'], function 
 
   ember_qunit.moduleForComponent('scroll-spy', {});
 
-  ember_qunit.test('it renders', function(assert) {
+  ember_qunit.test('it renders', function (assert) {
     var component;
     assert.expect(2);
     component = this.subject();
@@ -6212,7 +6194,7 @@ define('miume/tests/unit/components/side-nav-test', ['ember-qunit'], function (e
 
   ember_qunit.moduleForComponent('side-nav', {});
 
-  ember_qunit.test('it renders', function(assert) {
+  ember_qunit.test('it renders', function (assert) {
     var component;
     assert.expect(2);
     component = this.subject();
@@ -6228,7 +6210,7 @@ define('miume/tests/unit/components/site-nav-test', ['ember-qunit'], function (e
 
   ember_qunit.moduleForComponent('site-nav', {});
 
-  ember_qunit.test('it renders', function(assert) {
+  ember_qunit.test('it renders', function (assert) {
     var component;
     assert.expect(2);
     component = this.subject();
@@ -6244,7 +6226,7 @@ define('miume/tests/unit/components/twitter-card-iframe-test', ['ember-qunit'], 
 
   ember_qunit.moduleForComponent('twitter-card-iframe', {});
 
-  ember_qunit.test('it renders', function(assert) {
+  ember_qunit.test('it renders', function (assert) {
     var component;
     assert.expect(2);
     component = this.subject();
@@ -6260,10 +6242,36 @@ define('miume/tests/unit/controllers/application-test', ['ember-qunit'], functio
 
   ember_qunit.moduleFor('controller:application', {});
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var controller;
     controller = this.subject();
     return assert.ok(controller);
+  });
+
+});
+define('miume/tests/unit/initializers/debug-test', ['ember', 'miume/initializers/debug', 'qunit'], function (Ember, debug, qunit) {
+
+  'use strict';
+
+  var application, container;
+
+  container = null;
+
+  application = null;
+
+  qunit.module('DebugInitializer', {
+    beforeEach: function beforeEach() {
+      return Ember['default'].run(function () {
+        application = Ember['default'].Application.create();
+        container = application.__container__;
+        return application.deferReadiness();
+      });
+    }
+  });
+
+  qunit.test('it works', function (assert) {
+    debug.initialize(container, application);
+    return assert.ok(true);
   });
 
 });
@@ -6275,7 +6283,7 @@ define('miume/tests/unit/models/promotion-test', ['ember-qunit'], function (embe
     needs: []
   });
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var model;
     model = this.subject();
     return assert.ok(!!model);
@@ -6290,7 +6298,7 @@ define('miume/tests/unit/models/youtube/channel-test', ['ember-qunit'], function
     needs: []
   });
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var model;
     model = this.subject();
     return assert.ok(!!model);
@@ -6305,7 +6313,7 @@ define('miume/tests/unit/models/youtube/playlist-test', ['ember-qunit'], functio
     needs: []
   });
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var model;
     model = this.subject();
     return assert.ok(!!model);
@@ -6320,7 +6328,7 @@ define('miume/tests/unit/models/youtube/video-test', ['ember-qunit'], function (
     needs: []
   });
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var model;
     model = this.subject();
     return assert.ok(!!model);
@@ -6333,7 +6341,7 @@ define('miume/tests/unit/routes/about-test', ['ember-qunit'], function (ember_qu
 
   ember_qunit.moduleFor('route:about', {});
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var route;
     route = this.subject();
     return assert.ok(route);
@@ -6346,7 +6354,7 @@ define('miume/tests/unit/routes/contact-test', ['ember-qunit'], function (ember_
 
   ember_qunit.moduleFor('route:contact', {});
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var route;
     route = this.subject();
     return assert.ok(route);
@@ -6359,7 +6367,7 @@ define('miume/tests/unit/routes/dances-test', ['ember-qunit'], function (ember_q
 
   ember_qunit.moduleFor('route:dances', {});
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var route;
     route = this.subject();
     return assert.ok(route);
@@ -6372,7 +6380,7 @@ define('miume/tests/unit/routes/index-test', ['ember-qunit'], function (ember_qu
 
   ember_qunit.moduleFor('route:index', {});
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var route;
     route = this.subject();
     return assert.ok(route);
@@ -6385,7 +6393,7 @@ define('miume/tests/unit/routes/snackbar-test', ['ember-qunit'], function (ember
 
   ember_qunit.moduleFor('route:snackbar', {});
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var route;
     route = this.subject();
     return assert.ok(route);
@@ -6398,7 +6406,7 @@ define('miume/tests/unit/routes/works-test', ['ember-qunit'], function (ember_qu
 
   ember_qunit.moduleFor('route:works', {});
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var route;
     route = this.subject();
     return assert.ok(route);
@@ -6411,7 +6419,7 @@ define('miume/tests/unit/serializers/promotion-test', ['ember-qunit'], function 
 
   ember_qunit.moduleFor('serializer:promotion', {});
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var serializer;
     serializer = this.subject();
     return assert.ok(serializer);
@@ -6424,7 +6432,7 @@ define('miume/tests/unit/serializers/tumblr-test', ['ember-qunit'], function (em
 
   ember_qunit.moduleFor('serializer:tumblr', {});
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var serializer;
     serializer = this.subject();
     return assert.ok(serializer);
@@ -6437,7 +6445,7 @@ define('miume/tests/unit/serializers/youtube-test', ['ember-qunit'], function (e
 
   ember_qunit.moduleFor('serializer:youtube', {});
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var serializer;
     serializer = this.subject();
     return assert.ok(serializer);
@@ -6450,7 +6458,7 @@ define('miume/tests/unit/serializers/youtube/channel-test', ['ember-qunit'], fun
 
   ember_qunit.moduleFor('serializer:youtube/channel', {});
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var serializer;
     serializer = this.subject();
     return assert.ok(serializer);
@@ -6463,7 +6471,7 @@ define('miume/tests/unit/serializers/youtube/playlist-test', ['ember-qunit'], fu
 
   ember_qunit.moduleFor('serializer:youtube/playlist', {});
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var serializer;
     serializer = this.subject();
     return assert.ok(serializer);
@@ -6476,7 +6484,7 @@ define('miume/tests/unit/serializers/youtube/video-test', ['ember-qunit'], funct
 
   ember_qunit.moduleFor('serializer:youtube/video', {});
 
-  ember_qunit.test('it exists', function(assert) {
+  ember_qunit.test('it exists', function (assert) {
     var serializer;
     serializer = this.subject();
     return assert.ok(serializer);
@@ -6489,7 +6497,7 @@ define('miume/tests/unit/utils/fun-ex-test', ['miume/utils/fun-ex', 'qunit'], fu
 
   qunit.module('funEx');
 
-  qunit.test('it works', function(assert) {
+  qunit.test('it works', function (assert) {
     var result;
     result = funEx['default']();
     return assert.ok(result);
@@ -6503,10 +6511,10 @@ define('miume/transforms/thumbnails', ['exports', 'ember-data'], function (expor
   var ThumbnailsTransform;
 
   ThumbnailsTransform = DS['default'].Transform.extend({
-    deserialize: function(serialized) {
+    deserialize: function deserialize(serialized) {
       return serialized;
     },
-    serialize: function(deserialized) {
+    serialize: function serialize(deserialized) {
       return deserialized;
     }
   });
@@ -6520,7 +6528,7 @@ define('miume/transition', ['exports', 'liquid-fire'], function (exports, liquid
 
   var transitionMap;
 
-  transitionMap = function() {
+  transitionMap = function () {
     this.transition(this.fromRoute("index"), this.toRoute("about"), this.use("toDown"), this.reverse("toUp"));
     this.transition(this.fromRoute("about"), this.toRoute("works"), this.use("toDown"), this.reverse("toUp"));
     this.transition(this.fromRoute("works"), this.toRoute("contact"), this.use("toDown"), this.reverse("toUp"));
@@ -6557,21 +6565,21 @@ define('miume/transitions/fade', ['exports', 'liquid-fire'], function (exports, 
     var firstStep,
         outOpts = opts;
 
-    if (liquid_fire.isAnimating(oldView, "fade-out")) {
+    if (liquid_fire.isAnimating(oldView, 'fade-out')) {
       // if the old view is already fading out, let it finish.
-      firstStep = liquid_fire.finish(oldView, "fade-out");
+      firstStep = liquid_fire.finish(oldView, 'fade-out');
     } else {
-      if (liquid_fire.isAnimating(oldView, "fade-in")) {
+      if (liquid_fire.isAnimating(oldView, 'fade-in')) {
         // if the old view is partially faded in, scale its fade-out
         // duration appropriately.
-        outOpts = { duration: liquid_fire.timeSpent(oldView, "fade-in") };
+        outOpts = { duration: liquid_fire.timeSpent(oldView, 'fade-in') };
       }
       liquid_fire.stop(oldView);
-      firstStep = liquid_fire.animate(oldView, { opacity: 0 }, outOpts, "fade-out");
+      firstStep = liquid_fire.animate(oldView, { opacity: 0 }, outOpts, 'fade-out');
     }
 
     return firstStep.then(insertNewView).then(function (newView) {
-      return liquid_fire.animate(newView, { opacity: [1, 0] }, opts, "fade-in");
+      return liquid_fire.animate(newView, { opacity: [1, 0] }, opts, 'fade-in');
     });
   } // END-SNIPPET
 
@@ -6585,7 +6593,7 @@ define('miume/transitions/flex-grow', ['exports', 'liquid-fire'], function (expo
   function flexGrow(oldView, insertNewView, opts) {
     liquid_fire.stop(oldView);
     return insertNewView().then(function (newView) {
-      return liquid_fire.Promise.all([liquid_fire.animate(oldView, { "flex-grow": 0 }, opts), liquid_fire.animate(newView, { "flex-grow": [1, 0] }, opts)]);
+      return liquid_fire.Promise.all([liquid_fire.animate(oldView, { 'flex-grow': 0 }, opts), liquid_fire.animate(newView, { 'flex-grow': [1, 0] }, opts)]);
     });
   }
 
@@ -6655,16 +6663,16 @@ define('miume/transitions/move-over', ['exports', 'liquid-fire'], function (expo
         property,
         measure;
 
-    if (dimension.toLowerCase() === "x") {
-      property = "translateX";
-      measure = "width";
+    if (dimension.toLowerCase() === 'x') {
+      property = 'translateX';
+      measure = 'width';
     } else {
-      property = "translateY";
-      measure = "height";
+      property = 'translateY';
+      measure = 'height';
     }
 
-    if (liquid_fire.isAnimating(oldView, "moving-in")) {
-      firstStep = liquid_fire.finish(oldView, "moving-in");
+    if (liquid_fire.isAnimating(oldView, 'moving-in')) {
+      firstStep = liquid_fire.finish(oldView, 'moving-in');
     } else {
       liquid_fire.stop(oldView);
       firstStep = liquid_fire.Promise.resolve();
@@ -6674,14 +6682,14 @@ define('miume/transitions/move-over', ['exports', 'liquid-fire'], function (expo
       if (newView && newView.$() && oldView && oldView.$()) {
         var sizes = [parseInt(newView.$().css(measure), 10), parseInt(oldView.$().css(measure), 10)];
         var bigger = Math.max.apply(null, sizes);
-        oldParams[property] = bigger * direction + "px";
-        newParams[property] = ["0px", -1 * bigger * direction + "px"];
+        oldParams[property] = bigger * direction + 'px';
+        newParams[property] = ['0px', -1 * bigger * direction + 'px'];
       } else {
-        oldParams[property] = 100 * direction + "%";
-        newParams[property] = ["0%", -100 * direction + "%"];
+        oldParams[property] = 100 * direction + '%';
+        newParams[property] = ['0%', -100 * direction + '%'];
       }
 
-      return liquid_fire.Promise.all([liquid_fire.animate(oldView, oldParams, opts), liquid_fire.animate(newView, newParams, opts, "moving-in")]);
+      return liquid_fire.Promise.all([liquid_fire.animate(oldView, oldParams, opts), liquid_fire.animate(newView, newParams, opts, 'moving-in')]);
     });
   }
 
@@ -6691,15 +6699,15 @@ define('miume/transitions/scroll-then', ['exports', 'ember'], function (exports,
   'use strict';
 
   exports['default'] = function () {
-    Ember['default'].assert("You must provide a transition name as the first argument to scrollThen. Example: this.use('scrollThen', 'toLeft')", "string" === typeof arguments[2]);
+    Ember['default'].assert('You must provide a transition name as the first argument to scrollThen. Example: this.use(\'scrollThen\', \'toLeft\')', 'string' === typeof arguments[2]);
 
-    var el = document.getElementsByTagName("html"),
+    var el = document.getElementsByTagName('html'),
         transitionArgs = Array.prototype.slice.call(arguments, 0, 2),
         nextTransition = this.lookup(arguments[2]),
         self = this,
         options = arguments[3] || {};
 
-    Ember['default'].assert("The second argument to scrollThen is passed to Velocity's scroll function and must be an object", "object" === typeof options);
+    Ember['default'].assert('The second argument to scrollThen is passed to Velocity\'s scroll function and must be an object', 'object' === typeof options);
 
     // set scroll options via: this.use('scrollThen', 'ToLeft', {easing: 'spring'})
     options = Ember['default'].merge({ duration: 500, offset: 0 }, options);
@@ -6708,10 +6716,10 @@ define('miume/transitions/scroll-then', ['exports', 'ember'], function (exports,
     // like so: this.use('scrollThen', 'moveOver', {duration: 100}, 'x', -1);
     transitionArgs.push.apply(transitionArgs, Array.prototype.slice.call(arguments, 4));
 
-    return window.$.Velocity(el, "scroll", options).then(function () {
+    return window.$.Velocity(el, 'scroll', options).then(function () {
       nextTransition.apply(self, transitionArgs);
     });
-  };
+  }
 
 });
 define('miume/transitions/to-down', ['exports', 'liquid-fire'], function (exports, liquid_fire) {
@@ -6747,39 +6755,39 @@ define('miume/utils/fun-ex', ['exports', 'ember'], function (exports, Ember) {
   'use strict';
 
   var FunEx,
-    slice = [].slice;
+      slice = [].slice;
 
-  FunEx = (function() {
+  FunEx = (function () {
     function FunEx() {}
 
-    FunEx.reverse = function(f) {
-      return function() {
+    FunEx.reverse = function (f) {
+      return function () {
         var args;
         args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
         return f.apply(this, args.reverse());
       };
     };
 
-    FunEx.flip = function(f) {
-      return function() {
+    FunEx.flip = function (f) {
+      return function () {
         var arg1, arg2, rest;
         arg1 = arguments[0], arg2 = arguments[1], rest = 3 <= arguments.length ? slice.call(arguments, 2) : [];
         return f.apply(this, [arg2, arg1].concat(rest));
       };
     };
 
-    FunEx.computed = function() {
+    FunEx.computed = function () {
       var deps, ff, fun, i;
       deps = 2 <= arguments.length ? slice.call(arguments, 0, i = arguments.length - 1) : (i = 0, []), fun = arguments[i++];
       ff = Ember['default'].computed(fun);
       return ff.property.apply(ff, deps);
     };
 
-    FunEx.volatile = function(f) {
+    FunEx.volatile = function (f) {
       return Ember['default'].computed(f).volatile();
     };
 
-    FunEx.observed = function() {
+    FunEx.observed = function () {
       var fields, fun, i;
       fields = 2 <= arguments.length ? slice.call(arguments, 0, i = arguments.length - 1) : (i = 0, []), fun = arguments[i++];
       return fun.observes.apply(fun, fields);
@@ -6787,12 +6795,11 @@ define('miume/utils/fun-ex', ['exports', 'ember'], function (exports, Ember) {
 
     FunEx.isBlank = Ember['default'].isBlank;
 
-    FunEx.isPresent = function(x) {
+    FunEx.isPresent = function (x) {
       return !Ember['default'].isBlank(x);
     };
 
     return FunEx;
-
   })();
 
   exports['default'] = FunEx;
@@ -6803,12 +6810,12 @@ define('miume/views/liquid-child', ['exports', 'ember'], function (exports, Embe
   'use strict';
 
   exports['default'] = Ember['default'].ContainerView.extend({
-    classNames: ["liquid-child"],
-    resolveInsertionPromise: Ember['default'].on("didInsertElement", function () {
+    classNames: ['liquid-child'],
+    resolveInsertionPromise: Ember['default'].on('didInsertElement', function () {
       // Children start out hidden and invisible.
       // Measurement will `show` them and Velocity will make them visible.
       // This prevents a flash of pre-animated content.
-      this.$().css({ visibility: "hidden" }).hide();
+      this.$().css({ visibility: 'hidden' }).hide();
       if (this._resolveInsertion) {
         this._resolveInsertion(this);
       }
@@ -7083,7 +7090,7 @@ catch(err) {
 if (runningTests) {
   require("miume/tests/test-helper");
 } else {
-  require("miume/app")["default"].create({"name":"miume","version":"0.0.0.5fcc15a1"});
+  require("miume/app")["default"].create({"name":"miume","version":"0.0.0.523ee982"});
 }
 
 /* jshint ignore:end */
